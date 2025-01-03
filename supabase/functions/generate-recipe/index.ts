@@ -15,12 +15,12 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, mealType, cuisineType } = await req.json();
-    console.log('Received request:', { prompt, mealType, cuisineType });
-
     if (!openAIApiKey) {
       throw new Error('OpenAI API key is not configured');
     }
+
+    const { prompt, mealType, cuisineType } = await req.json();
+    console.log('Received request:', { prompt, mealType, cuisineType });
 
     const systemPrompt = `You are a helpful chef assistant that provides detailed recipes. 
     ${mealType ? `Focus on ${mealType} recipes. ` : ''}
