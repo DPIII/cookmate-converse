@@ -105,8 +105,8 @@ export const ChatInterface = ({
   };
 
   return (
-    <div className="space-y-4 bg-card/50 p-6 rounded-lg shadow-lg">
-      <ScrollArea className="h-[400px] border border-border/50 rounded-lg p-4 mb-4 bg-background/50">
+    <div className="space-y-4 bg-white p-6 rounded-lg shadow-lg border border-primary/10">
+      <ScrollArea className="h-[400px] border border-primary/10 rounded-lg p-4 mb-4 bg-white">
         {chatHistory.map((msg, index) => (
           <MessageBubble key={index} message={msg} />
         ))}
@@ -118,13 +118,13 @@ export const ChatInterface = ({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Ask for a specific recipe or dietary requirements..."
-          className="flex-1 bg-background/50 border-primary/20"
+          className="flex-1 bg-white border-primary/20"
           onKeyPress={handleKeyPress}
           disabled={isLoading}
         />
         <Button
           onClick={handleSendMessage}
-          className="bg-primary hover:bg-primary/90"
+          className="bg-primary hover:bg-primary/90 text-white"
           disabled={isLoading}
         >
           <Send className="h-4 w-4" />
