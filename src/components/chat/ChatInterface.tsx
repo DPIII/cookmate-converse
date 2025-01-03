@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Save } from "lucide-react";
+import { Send, Save, Edit, RefreshCw } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -18,11 +18,12 @@ interface Message {
 interface ChatInterfaceProps {
   chatHistory: Message[];
   isLoading: boolean;
-  onSend: (message: string) => void;
+  onSend: (message: string, isEdit?: boolean) => void;
   selectedMeal?: string;
   selectedCuisine?: string;
   customMeal: string;
   customCuisine: string;
+  onReset?: () => void;
 }
 
 export const ChatInterface = ({
@@ -33,11 +34,15 @@ export const ChatInterface = ({
   selectedCuisine,
   customMeal,
   customCuisine,
+  onReset,
 }: ChatInterfaceProps) => {
   const [message, setMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { session } = useAuth();
+
+  const hasRecipe = chatHistory.some(msg => msg.role === "assistant");
 
   const handleSaveRecipe = async () => {
     if (!session?.user?.id) {
@@ -93,7 +98,7 @@ export const ChatInterface = ({
 
   const handleSendMessage = () => {
     if (message.trim() && !isLoading) {
-      onSend(message);
+      onSend(message, isEditing);
       setMessage("");
     }
   };
@@ -101,6 +106,21 @@ export const ChatInterface = ({
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !isLoading) {
       handleSendMessage();
+    }
+  };
+
+  const startEditing = () => {
+    setIsEditing(true);
+    toast({
+      title: "Edit Mode",
+      description: "Type your modifications to the recipe",
+    });
+  };
+
+  const handleNewRecipe = () => {
+    if (onReset) {
+      onReset();
+      setIsEditing(false);
     }
   };
 
@@ -117,7 +137,7 @@ export const ChatInterface = ({
         <Input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Ask for a specific recipe or dietary requirements..."
+          placeholder={isEditing ? "Type your modifications..." : "Ask for a specific recipe or dietary requirements..."}
           className="flex-1 bg-white border-primary/20"
           onKeyPress={handleKeyPress}
           disabled={isLoading}
@@ -131,8 +151,16 @@ export const ChatInterface = ({
         </Button>
       </div>
 
-      {chatHistory.length > 0 && (
-        <div className="mt-4 flex justify-end">
+      {hasRecipe && (
+        <div className="mt-4 flex justify-center gap-4">
+          <Button
+            onClick={startEditing}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/10"
+          >
+            <Edit className="mr-2 h-4 w-4" />
+            Edit Recipe
+          </Button>
           <Button
             onClick={handleSaveRecipe}
             variant="outline"
@@ -140,6 +168,14 @@ export const ChatInterface = ({
           >
             <Save className="mr-2 h-4 w-4" />
             Save Recipe
+          </Button>
+          <Button
+            onClick={handleNewRecipe}
+            variant="outline"
+            className="border-primary text-primary hover:bg-primary/10"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            New Recipe
           </Button>
         </div>
       )}

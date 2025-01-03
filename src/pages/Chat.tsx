@@ -21,20 +21,23 @@ const Chat = () => {
   const { toast } = useToast();
   const { session } = useAuth();
 
-  const handleSend = async (message: string) => {
+  const handleSend = async (message: string, isEdit: boolean = false) => {
     if (!message.trim()) return;
 
     const mealType = selectedMeal === "Other" ? customMeal : selectedMeal;
     const cuisineType = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
     const dietaryRestriction = selectedDiet === "Other" ? customDiet : selectedDiet;
 
-    const userMessage = `${
-      mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
-    }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
-      dietaryRestriction && dietaryRestriction !== "None"
-        ? ` that is ${dietaryRestriction.toLowerCase()}`
-        : ""
-    }. ${message}`;
+    let userMessage = message;
+    if (!isEdit) {
+      userMessage = `${
+        mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
+      }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
+        dietaryRestriction && dietaryRestriction !== "None"
+          ? ` that is ${dietaryRestriction.toLowerCase()}`
+          : ""
+      }. ${message}`;
+    }
 
     setChatHistory((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
@@ -43,9 +46,11 @@ const Chat = () => {
       const { data, error } = await supabase.functions.invoke("generate-recipe", {
         body: {
           prompt: message,
-          mealType,
-          cuisineType,
-          dietaryRestriction,
+          mealType: isEdit ? undefined : mealType,
+          cuisineType: isEdit ? undefined : cuisineType,
+          dietaryRestriction: isEdit ? undefined : dietaryRestriction,
+          isEdit,
+          previousRecipe: isEdit ? chatHistory[chatHistory.length - 2]?.content : undefined,
         },
       });
 
@@ -65,6 +70,16 @@ const Chat = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReset = () => {
+    setChatHistory([]);
+    setSelectedMeal(undefined);
+    setSelectedCuisine(undefined);
+    setSelectedDiet(undefined);
+    setCustomMeal("");
+    setCustomCuisine("");
+    setCustomDiet("");
   };
 
   return (
@@ -94,6 +109,7 @@ const Chat = () => {
             selectedCuisine={selectedCuisine}
             customMeal={customMeal}
             customCuisine={customCuisine}
+            onReset={handleReset}
           />
         </Card>
       </div>
