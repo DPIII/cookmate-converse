@@ -13,11 +13,17 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Pencil } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Recipes = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const { toast } = useToast();
 
-  const { data: recipes, isLoading } = useQuery({
+  const { data: recipes, isLoading, refetch } = useQuery({
     queryKey: ["saved-recipes"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -29,6 +35,32 @@ const Recipes = () => {
       return data;
     },
   });
+
+  const handleEditTitle = async () => {
+    try {
+      const { error } = await supabase
+        .from("saved_recipes")
+        .update({ title: newTitle })
+        .eq("id", selectedRecipe.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Recipe title updated successfully",
+      });
+
+      setEditingTitle(false);
+      refetch();
+      setSelectedRecipe(prev => ({ ...prev, title: newTitle }));
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update recipe title",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -69,7 +101,10 @@ const Recipes = () => {
             <Card 
               key={recipe.id} 
               className="hover:shadow-lg transition-shadow cursor-pointer"
-              onClick={() => setSelectedRecipe(recipe)}
+              onClick={() => {
+                setSelectedRecipe(recipe);
+                setNewTitle(recipe.title);
+              }}
             >
               <CardHeader>
                 <CardTitle className="text-lg">{recipe.title}</CardTitle>
@@ -96,10 +131,38 @@ const Recipes = () => {
           ))}
         </div>
 
-        <Dialog open={!!selectedRecipe} onOpenChange={() => setSelectedRecipe(null)}>
+        <Dialog open={!!selectedRecipe} onOpenChange={() => {
+          setSelectedRecipe(null);
+          setEditingTitle(false);
+        }}>
           <DialogContent className="max-w-3xl">
             <DialogHeader>
-              <DialogTitle>{selectedRecipe?.title}</DialogTitle>
+              <div className="flex items-center gap-2">
+                {editingTitle ? (
+                  <div className="flex gap-2 w-full">
+                    <Input
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button onClick={handleEditTitle}>Save</Button>
+                    <Button variant="outline" onClick={() => setEditingTitle(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <DialogTitle>{selectedRecipe?.title}</DialogTitle>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setEditingTitle(true)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
             </DialogHeader>
             <ScrollArea className="max-h-[70vh]">
               <div className="space-y-4">
