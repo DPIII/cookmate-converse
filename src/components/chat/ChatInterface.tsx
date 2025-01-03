@@ -33,6 +33,15 @@ export const ChatInterface = ({
   const { session } = useAuth();
 
   const handleSaveRecipe = async () => {
+    if (!session?.user?.id) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to save recipes.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const lastAssistantMessage = [...chatHistory]
       .reverse()
       .find((msg) => msg.role === "assistant");
@@ -54,7 +63,7 @@ export const ChatInterface = ({
         content: lastAssistantMessage.content,
         meal_type: selectedMeal === "Other" ? customMeal : selectedMeal,
         cuisine_type: selectedCuisine === "Other" ? customCuisine : selectedCuisine,
-        user_id: session?.user.id,
+        user_id: session.user.id,
       });
 
       if (error) throw error;
