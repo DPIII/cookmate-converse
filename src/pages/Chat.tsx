@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Navigation } from "@/components/Navigation";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { RecipeFilters } from "@/components/chat/RecipeFilters";
