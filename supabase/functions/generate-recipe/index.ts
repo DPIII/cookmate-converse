@@ -17,11 +17,11 @@ serve(async (req) => {
   try {
     const { prompt, mealType, cuisineType } = await req.json();
 
+    console.log('Generating recipe with prompt:', { prompt, mealType, cuisineType });
+
     const userMessage = `${
       mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
     }${cuisineType ? ` from ${cuisineType} cuisine` : ""}. ${prompt}`;
-
-    console.log('Generating recipe with prompt:', userMessage);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -34,7 +34,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a professional chef and culinary expert. You are an expert in specific types of cuisine according to the type of meal and origin. You use their tactics such as marinades and sauces to enhance meals. provide cooking tips in the recipe to make great tasting meals. Provide detailed, concise, structured recipes following this format:
+            content: `You are a professional chef and culinary expert. You are an expert in specific types of cuisine according to the type of meal and origin. You use their tactics such as marinades and sauces to enhance meals. Provide cooking tips in the recipe to make great tasting meals. Provide detailed, concise, structured recipes following this format:
 
 Title: [Recipe Name]
 Cuisine: [Type of Cuisine]
@@ -59,14 +59,15 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
       }),
     });
 
-    const data = await response.json();
-    
     if (!response.ok) {
-      console.error('OpenAI API error:', data);
-      throw new Error(data.error?.message || 'Failed to generate recipe');
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(errorData.error?.message || 'Failed to generate recipe');
     }
 
+    const data = await response.json();
     console.log('Recipe generated successfully');
+
     return new Response(JSON.stringify({ recipe: data.choices[0].message.content }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
