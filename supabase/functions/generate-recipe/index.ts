@@ -9,26 +9,20 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key is not configured');
-    }
-
     const { prompt, mealType, cuisineType } = await req.json();
-    console.log('Received request:', { prompt, mealType, cuisineType });
 
-    const systemPrompt = `You are a helpful chef assistant that provides detailed recipes. 
-    ${mealType ? `Focus on ${mealType} recipes. ` : ''}
-    ${cuisineType ? `Provide recipes from ${cuisineType} cuisine. ` : ''}
-    Include ingredients list, step-by-step instructions, cooking time, and any relevant tips.
-    Format the response with clear sections using markdown.`;
-
-    console.log('Sending request to OpenAI with system prompt:', systemPrompt);
+    // Construct a detailed prompt for the recipe
+    const systemPrompt = `You are a professional chef who creates detailed, easy-to-follow recipes. Always format your responses with clear sections for Ingredients and Instructions. Include estimated cooking time and serving size.`;
+    
+    const userPrompt = `Create a recipe with these requirements:
+${mealType ? `Meal type: ${mealType}` : ''}
+${cuisineType ? `Cuisine: ${cuisineType}` : ''}
+Additional requirements: ${prompt}`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -40,25 +34,18 @@ serve(async (req) => {
         model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: prompt }
+          { role: 'user', content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 1000,
       }),
     });
 
+    const data = await response.json();
+    
     if (!response.ok) {
-      const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      throw new Error(data.error?.message || 'Failed to generate recipe');
     }
 
-    const data = await response.json();
-    console.log('OpenAI response received:', data);
-
-    const recipe = data.choices[0].message.content;
-
-    return new Response(JSON.stringify({ recipe }), {
+    return new Response(JSON.stringify({ recipe: data.choices[0].message.content }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

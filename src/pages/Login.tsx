@@ -20,22 +20,41 @@ const Login = () => {
   const handleGuestLogin = async () => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: "guest@example.com",
-        password: "guestpassword123",
+        email: "guest@anyrecipe.com",
+        password: "guestaccount123!",
       });
 
       if (error) {
-        // If guest account doesn't exist, create it
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: "guest@example.com",
-          password: "guestpassword123",
-        });
+        if (error.message.includes('Invalid login credentials')) {
+          // If guest account doesn't exist, create it
+          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+            email: "guest@anyrecipe.com",
+            password: "guestaccount123!",
+            options: {
+              data: {
+                username: "Guest User",
+              },
+            },
+          });
 
-        if (signUpError) {
-          console.error("Error creating guest account:", signUpError);
-          toast.error("Failed to create guest account");
+          if (signUpError) {
+            console.error("Error creating guest account:", signUpError);
+            toast.error("Failed to create guest account");
+          } else {
+            // Try logging in again after creating the account
+            const { error: loginError } = await supabase.auth.signInWithPassword({
+              email: "guest@anyrecipe.com",
+              password: "guestaccount123!",
+            });
+
+            if (loginError) {
+              toast.error("Failed to log in as guest");
+            } else {
+              toast.success("Logged in as guest");
+            }
+          }
         } else {
-          toast.success("Guest account created successfully");
+          toast.error("Failed to log in as guest");
         }
       } else {
         toast.success("Logged in as guest");
@@ -51,7 +70,7 @@ const Login = () => {
       <div className="w-full max-w-md">
         <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
           <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-            Welcome to RecipeBot
+            Welcome to AnyRecipe
           </h1>
           <div className="mb-6">
             <Button
