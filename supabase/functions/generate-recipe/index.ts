@@ -9,18 +9,26 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { prompt, mealType, cuisineType } = await req.json();
+    console.log('Received request:', { prompt, mealType, cuisineType });
+
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key is not configured');
+    }
 
     const systemPrompt = `You are a helpful chef assistant that provides detailed recipes. 
     ${mealType ? `Focus on ${mealType} recipes. ` : ''}
     ${cuisineType ? `Provide recipes from ${cuisineType} cuisine. ` : ''}
     Include ingredients list, step-by-step instructions, cooking time, and any relevant tips.
     Format the response with clear sections using markdown.`;
+
+    console.log('Sending request to OpenAI with system prompt:', systemPrompt);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -34,12 +42,20 @@ serve(async (req) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt }
         ],
+        temperature: 0.7,
+        max_tokens: 1000,
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
     const data = await response.json();
-    console.log('OpenAI Response:', data);
-    
+    console.log('OpenAI response received:', data);
+
     const recipe = data.choices[0].message.content;
 
     return new Response(JSON.stringify({ recipe }), {
