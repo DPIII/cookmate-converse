@@ -14,30 +14,11 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, mealType, cuisineType, dietaryRestriction } = await req.json();
+    const { prompt, mealType, cuisineType, dietaryRestriction, isEdit, previousRecipe } = await req.json();
 
-    console.log('Generating recipe with prompt:', { prompt, mealType, cuisineType, dietaryRestriction });
+    console.log('Generating recipe with:', { prompt, mealType, cuisineType, dietaryRestriction, isEdit });
 
-    const userMessage = `${
-      mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
-    }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
-      dietaryRestriction && dietaryRestriction !== "None"
-        ? ` that is ${dietaryRestriction.toLowerCase()}`
-        : ""
-    }. ${prompt}`;
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are a professional chef and culinary expert. You are an expert in specific types of cuisine according to the type of meal and origin. You use their tactics such as marinades and sauces to enhance meals. Provide cooking tips in the recipe to make great tasting meals. Provide detailed, concise, structured recipes following this format:
+    let systemPrompt = `You are a professional chef and culinary expert. You are an expert in specific types of cuisine according to the type of meal and origin. You use their tactics such as marinades and sauces to enhance meals. Provide cooking tips in the recipe to make great tasting meals. Provide detailed, concise, structured recipes following this format:
 
 Title: [Recipe Name]
 Cuisine: [Type of Cuisine]
@@ -53,8 +34,31 @@ Instructions:
 2. [Include cooking temperatures and times]
 3. [Add helpful tips where relevant]
 
-Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
-          },
+Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`;
+
+    let userMessage;
+    if (isEdit && previousRecipe) {
+      userMessage = `Here is the current recipe:\n\n${previousRecipe}\n\nPlease adjust this recipe according to these modifications: ${prompt}\n\nProvide the complete updated recipe in the same format.`;
+    } else {
+      userMessage = `${
+        mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
+      }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
+        dietaryRestriction && dietaryRestriction !== "None"
+          ? ` that is ${dietaryRestriction.toLowerCase()}`
+          : ""
+      }. ${prompt}`;
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
         ],
         temperature: 0.7,
