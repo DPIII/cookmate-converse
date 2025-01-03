@@ -5,6 +5,8 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Send } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert", "Other"];
 const CUISINES = ["Italian", "American", "Mexican", "Chinese", "Indian", "Japanese", "Mediterranean", "French", "Other"];
@@ -15,7 +17,9 @@ export const Chat = () => {
   const [customMeal, setCustomMeal] = useState("");
   const [customCuisine, setCustomCuisine] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<Array<{ role: "user" | "assistant", content: string }>>([]);
+  const { toast } = useToast();
 
   const handleSend = async () => {
     if (!message.trim()) return;
@@ -29,6 +33,30 @@ export const Chat = () => {
     
     setChatHistory(prev => [...prev, { role: "user", content: userMessage }]);
     setMessage("");
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-recipe', {
+        body: {
+          prompt: message,
+          mealType,
+          cuisineType,
+        },
+      });
+
+      if (error) throw error;
+
+      setChatHistory(prev => [...prev, { role: "assistant", content: data.recipe }]);
+    } catch (error) {
+      console.error('Error generating recipe:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate recipe. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -99,26 +127,32 @@ export const Chat = () => {
               className={`mb-4 p-3 rounded-lg ${
                 msg.role === "user"
                   ? "bg-green-100 ml-auto max-w-[80%]"
-                  : "bg-gray-100 mr-auto max-w-[80%]"
+                  : "bg-gray-100 mr-auto max-w-[80%] whitespace-pre-wrap"
               }`}
             >
               {msg.content}
             </div>
           ))}
+          {isLoading && (
+            <div className="flex justify-center items-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-700"></div>
+            </div>
+          )}
         </ScrollArea>
 
         <div className="flex gap-2">
-          <input
-            type="text"
+          <Input
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Ask for a specific recipe or dietary requirements..."
-            className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            className="flex-1"
+            onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSend()}
+            disabled={isLoading}
           />
           <Button 
             onClick={handleSend}
             className="bg-green-600 hover:bg-green-700"
+            disabled={isLoading}
           >
             <Send className="h-4 w-4" />
           </Button>

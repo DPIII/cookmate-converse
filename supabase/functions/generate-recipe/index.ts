@@ -14,7 +14,13 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt } = await req.json();
+    const { prompt, mealType, cuisineType } = await req.json();
+
+    const systemPrompt = `You are a helpful chef assistant that provides detailed recipes. 
+    ${mealType ? `Focus on ${mealType} recipes. ` : ''}
+    ${cuisineType ? `Provide recipes from ${cuisineType} cuisine. ` : ''}
+    Include ingredients list, step-by-step instructions, cooking time, and any relevant tips.
+    Format the response with clear sections using markdown.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -25,16 +31,15 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { 
-            role: 'system', 
-            content: 'You are a helpful chef assistant that provides detailed recipes based on user requests. Include ingredients, steps, cooking time, and any relevant tips.' 
-          },
+          { role: 'system', content: systemPrompt },
           { role: 'user', content: prompt }
         ],
       }),
     });
 
     const data = await response.json();
+    console.log('OpenAI Response:', data);
+    
     const recipe = data.choices[0].message.content;
 
     return new Response(JSON.stringify({ recipe }), {
