@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Navigation } from "@/components/Navigation";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { RecipeFilters } from "@/components/chat/RecipeFilters";
+import { useAuth } from "@/components/AuthProvider";
 
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
@@ -16,6 +17,7 @@ const Chat = () => {
     Array<{ role: "user" | "assistant"; content: string }>
   >([]);
   const { toast } = useToast();
+  const { session } = useAuth();
 
   const handleSend = async (message: string) => {
     if (!message.trim()) return;
