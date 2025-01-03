@@ -68,10 +68,10 @@ const Chat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-green-50/30">
+    <div className="min-h-screen bg-background">
       <Navigation />
-      <div className="container mx-auto max-w-3xl px-4 py-6 pt-20">
-        <Card className="p-4">
+      <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
+        <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
           <RecipeFilters
             selectedMeal={selectedMeal}
             setSelectedMeal={setSelectedMeal}

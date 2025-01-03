@@ -70,11 +70,11 @@ export const RecipeFilters = ({
   setCustomDiet,
 }: RecipeFiltersProps) => {
   return (
-    <div className="space-y-4 mb-4">
+    <div className="space-y-6 mb-6 bg-card/50 p-6 rounded-lg shadow-lg">
       <div>
-        <h3 className="text-lg font-medium mb-2 text-green-700">Type of Meal</h3>
+        <h3 className="text-lg font-medium mb-3 text-primary">Type of Meal</h3>
         <Select value={selectedMeal} onValueChange={setSelectedMeal}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px] bg-background/50 border-primary/20">
             <SelectValue placeholder="Select meal type" />
           </SelectTrigger>
           <SelectContent>
@@ -90,17 +90,17 @@ export const RecipeFilters = ({
             placeholder="Enter custom meal type"
             value={customMeal}
             onChange={(e) => setCustomMeal(e.target.value)}
-            className="mt-2 max-w-xs"
+            className="mt-2 max-w-xs bg-background/50 border-primary/20"
           />
         )}
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-2 text-green-700">
+        <h3 className="text-lg font-medium mb-3 text-primary">
           Type of Cuisine
         </h3>
         <Select value={selectedCuisine} onValueChange={setSelectedCuisine}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px] bg-background/50 border-primary/20">
             <SelectValue placeholder="Select cuisine type" />
           </SelectTrigger>
           <SelectContent>
@@ -116,17 +116,17 @@ export const RecipeFilters = ({
             placeholder="Enter custom cuisine type"
             value={customCuisine}
             onChange={(e) => setCustomCuisine(e.target.value)}
-            className="mt-2 max-w-xs"
+            className="mt-2 max-w-xs bg-background/50 border-primary/20"
           />
         )}
       </div>
 
       <div>
-        <h3 className="text-lg font-medium mb-2 text-green-700">
+        <h3 className="text-lg font-medium mb-3 text-primary">
           Dietary Restrictions
         </h3>
         <Select value={selectedDiet} onValueChange={setSelectedDiet}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-[200px] bg-background/50 border-primary/20">
             <SelectValue placeholder="Select dietary restrictions" />
           </SelectTrigger>
           <SelectContent>
@@ -142,7 +142,7 @@ export const RecipeFilters = ({
             placeholder="Enter custom dietary restriction"
             value={customDiet}
             onChange={(e) => setCustomDiet(e.target.value)}
-            className="mt-2 max-w-xs"
+            className="mt-2 max-w-xs bg-background/50 border-primary/20"
           />
         )}
       </div>

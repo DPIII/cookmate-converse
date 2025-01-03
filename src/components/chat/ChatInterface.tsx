@@ -8,8 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
 interface ChatInterfaceProps {
-  chatHistory: Array<{ role: "user" | "assistant"; content: string }>;
+  chatHistory: Message[];
   isLoading: boolean;
   onSend: (message: string) => void;
   selectedMeal?: string;
@@ -17,6 +22,33 @@ interface ChatInterfaceProps {
   customMeal: string;
   customCuisine: string;
 }
+
+const MessageBubble = ({ message }: { message: Message }) => {
+  const isUser = message.role === "user";
+  return (
+    <div
+      className={`mb-4 p-3 rounded-lg ${
+        isUser
+          ? "bg-primary/20 ml-auto max-w-[80%]"
+          : "bg-accent/20 mr-auto max-w-[80%] whitespace-pre-wrap"
+      }`}
+    >
+      {message.content}
+    </div>
+  );
+};
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center">
+    <div className="relative w-12 h-12">
+      <div className="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+      <div
+        className="absolute top-0 left-1/2 w-1 h-6 bg-primary origin-bottom transform -translate-x-1/2 animate-spin"
+        style={{ animationDuration: '2s' }}
+      ></div>
+    </div>
+  </div>
+);
 
 export const ChatInterface = ({
   chatHistory,
@@ -84,29 +116,26 @@ export const ChatInterface = ({
     }
   };
 
+  const handleSendMessage = () => {
+    if (message.trim() && !isLoading) {
+      onSend(message);
+      setMessage("");
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !isLoading) {
+      handleSendMessage();
+    }
+  };
+
   return (
-    <div className="space-y-4">
-      <ScrollArea className="h-[300px] border rounded-lg p-4 mb-4">
+    <div className="space-y-4 bg-card/50 p-6 rounded-lg shadow-lg">
+      <ScrollArea className="h-[400px] border border-border/50 rounded-lg p-4 mb-4 bg-background/50">
         {chatHistory.map((msg, index) => (
-          <div
-            key={index}
-            className={`mb-4 p-3 rounded-lg ${
-              msg.role === "user"
-                ? "bg-green-100 ml-auto max-w-[80%]"
-                : "bg-gray-100 mr-auto max-w-[80%] whitespace-pre-wrap"
-            }`}
-          >
-            {msg.content}
-          </div>
+          <MessageBubble key={index} message={msg} />
         ))}
-        {isLoading && (
-          <div className="flex justify-center items-center">
-            <div className="relative w-12 h-12">
-              <div className="absolute inset-0 border-4 border-green-200 rounded-full"></div>
-              <div className="absolute top-0 left-1/2 w-1 h-6 bg-green-600 origin-bottom transform -translate-x-1/2 animate-spin" style={{ animationDuration: '2s' }}></div>
-            </div>
-          </div>
-        )}
+        {isLoading && <LoadingSpinner />}
       </ScrollArea>
 
       <div className="flex gap-2">
@@ -114,13 +143,13 @@ export const ChatInterface = ({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Ask for a specific recipe or dietary requirements..."
-          className="flex-1"
-          onKeyPress={(e) => e.key === "Enter" && !isLoading && onSend(message)}
+          className="flex-1 bg-background/50 border-primary/20"
+          onKeyPress={handleKeyPress}
           disabled={isLoading}
         />
         <Button
-          onClick={() => onSend(message)}
-          className="bg-green-600 hover:bg-green-700"
+          onClick={handleSendMessage}
+          className="bg-primary hover:bg-primary/90"
           disabled={isLoading}
         >
           <Send className="h-4 w-4" />
@@ -132,7 +161,7 @@ export const ChatInterface = ({
           <Button
             onClick={handleSaveRecipe}
             variant="outline"
-            className="border-green-600 text-green-600 hover:bg-green-50"
+            className="border-primary text-primary hover:bg-primary/10"
           >
             <Save className="mr-2 h-4 w-4" />
             Save Recipe
