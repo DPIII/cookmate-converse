@@ -17,38 +17,40 @@ export const Navigation = () => {
 
   if (isMobile) {
     return (
-      <nav className="bg-white border-b border-green-100 fixed top-0 w-full z-50 flex flex-col">
-        <Link 
-          to="/" 
-          className="w-full py-3 px-4 flex items-center justify-center gap-2 text-green-700 hover:bg-green-50 border-b border-green-100"
-        >
-          <Home className="h-5 w-5" />
-          <span className="font-semibold">RecipeBot</span>
-        </Link>
-        <div className="flex flex-col w-full">
+      <nav className="bg-white border-b border-green-100 fixed top-0 w-full z-50">
+        <div className="flex items-center justify-between px-4 py-3">
           <Link 
-            to="/chat" 
-            className="w-full py-3 px-4 flex items-center justify-center gap-2 text-green-600 hover:bg-green-50 border-b border-green-100"
+            to="/" 
+            className="text-green-700 hover:bg-green-50 p-2 rounded-full"
+            aria-label="AnyRecipe Home"
           >
-            <MessageSquare className="h-5 w-5" />
-            <span>Chat</span>
+            <Home className="h-6 w-6" />
           </Link>
-          <Link 
-            to="/recipes" 
-            className="w-full py-3 px-4 flex items-center justify-center gap-2 text-green-600 hover:bg-green-50 border-b border-green-100"
-          >
-            <List className="h-5 w-5" />
-            <span>Recipes</span>
-          </Link>
-          {session && (
-            <button
-              onClick={handleLogout}
-              className="w-full py-3 px-4 flex items-center justify-center gap-2 text-green-600 hover:bg-green-50"
+          <div className="flex items-center gap-4">
+            <Link 
+              to="/chat" 
+              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+              aria-label="Chat"
             >
-              <LogOut className="h-5 w-5" />
-              <span>Logout</span>
-            </button>
-          )}
+              <MessageSquare className="h-6 w-6" />
+            </Link>
+            <Link 
+              to="/recipes" 
+              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+              aria-label="Recipes"
+            >
+              <List className="h-6 w-6" />
+            </Link>
+            {session && (
+              <button
+                onClick={handleLogout}
+                className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+                aria-label="Logout"
+              >
+                <LogOut className="h-6 w-6" />
+              </button>
+            )}
+          </div>
         </div>
       </nav>
     );
@@ -60,7 +62,7 @@ export const Navigation = () => {
         <div className="flex items-center gap-6">
           <Link to="/" className="text-xl font-semibold text-green-700 flex items-center gap-2">
             <Home className="h-5 w-5" />
-            RecipeBot
+            AnyRecipe
           </Link>
           <div className="flex items-center gap-2">
             <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
