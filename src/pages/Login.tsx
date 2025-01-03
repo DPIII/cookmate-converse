@@ -12,7 +12,7 @@ const Login = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/");
+        navigate("/chat");
       }
     });
   }, [navigate]);
@@ -25,6 +25,7 @@ const Login = () => {
       });
 
       if (error) {
+        console.log("Login error:", error.message);
         if (error.message.includes('Invalid login credentials')) {
           // If guest account doesn't exist, create it
           const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -51,6 +52,7 @@ const Login = () => {
               toast.error("Failed to log in as guest");
             } else {
               toast.success("Logged in as guest");
+              navigate("/chat");
             }
           }
         } else {
@@ -58,6 +60,7 @@ const Login = () => {
         }
       } else {
         toast.success("Logged in as guest");
+        navigate("/chat");
       }
     } catch (error) {
       console.error("Error with guest login:", error);
