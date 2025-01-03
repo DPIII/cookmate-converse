@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,21 +18,31 @@ const Login = () => {
   }, [navigate]);
 
   const handleGuestLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: 'guest@example.com',
-      password: 'guestpassword123',
-    });
-
-    if (error) {
-      // If guest account doesn't exist, create it
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: 'guest@example.com',
-        password: 'guestpassword123',
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: "guest@example.com",
+        password: "guestpassword123",
       });
 
-      if (signUpError) {
-        console.error('Error creating guest account:', signUpError);
+      if (error) {
+        // If guest account doesn't exist, create it
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: "guest@example.com",
+          password: "guestpassword123",
+        });
+
+        if (signUpError) {
+          console.error("Error creating guest account:", signUpError);
+          toast.error("Failed to create guest account");
+        } else {
+          toast.success("Guest account created successfully");
+        }
+      } else {
+        toast.success("Logged in as guest");
       }
+    } catch (error) {
+      console.error("Error with guest login:", error);
+      toast.error("Failed to log in as guest");
     }
   };
 
@@ -39,9 +50,11 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sage-50 to-cream-50 p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Welcome to RecipeBot</h1>
+          <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+            Welcome to RecipeBot
+          </h1>
           <div className="mb-6">
-            <Button 
+            <Button
               onClick={handleGuestLogin}
               className="w-full bg-green-600 hover:bg-green-700 mb-4"
             >
@@ -65,8 +78,8 @@ const Login = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: '#94A187',
-                    brandAccent: '#E07A5F',
+                    brand: "#94A187",
+                    brandAccent: "#E07A5F",
                   },
                 },
               },
