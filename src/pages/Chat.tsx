@@ -10,8 +10,10 @@ import { useAuth } from "@/components/AuthProvider";
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
   const [selectedCuisine, setSelectedCuisine] = useState<string>();
+  const [selectedDiet, setSelectedDiet] = useState<string>();
   const [customMeal, setCustomMeal] = useState("");
   const [customCuisine, setCustomCuisine] = useState("");
+  const [customDiet, setCustomDiet] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [chatHistory, setChatHistory] = useState<
     Array<{ role: "user" | "assistant"; content: string }>
@@ -24,10 +26,15 @@ const Chat = () => {
 
     const mealType = selectedMeal === "Other" ? customMeal : selectedMeal;
     const cuisineType = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
+    const dietaryRestriction = selectedDiet === "Other" ? customDiet : selectedDiet;
 
     const userMessage = `${
       mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
-    }${cuisineType ? ` from ${cuisineType} cuisine` : ""}. ${message}`;
+    }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
+      dietaryRestriction && dietaryRestriction !== "None"
+        ? ` that is ${dietaryRestriction.toLowerCase()}`
+        : ""
+    }. ${message}`;
 
     setChatHistory((prev) => [...prev, { role: "user", content: userMessage }]);
     setIsLoading(true);
@@ -38,6 +45,7 @@ const Chat = () => {
           prompt: message,
           mealType,
           cuisineType,
+          dietaryRestriction,
         },
       });
 
@@ -69,10 +77,14 @@ const Chat = () => {
             setSelectedMeal={setSelectedMeal}
             selectedCuisine={selectedCuisine}
             setSelectedCuisine={setSelectedCuisine}
+            selectedDiet={selectedDiet}
+            setSelectedDiet={setSelectedDiet}
             customMeal={customMeal}
             setCustomMeal={setCustomMeal}
             customCuisine={customCuisine}
             setCustomCuisine={setCustomCuisine}
+            customDiet={customDiet}
+            setCustomDiet={setCustomDiet}
           />
           <ChatInterface
             chatHistory={chatHistory}

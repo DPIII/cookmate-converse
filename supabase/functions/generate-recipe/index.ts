@@ -9,19 +9,22 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { prompt, mealType, cuisineType } = await req.json();
+    const { prompt, mealType, cuisineType, dietaryRestriction } = await req.json();
 
-    console.log('Generating recipe with prompt:', { prompt, mealType, cuisineType });
+    console.log('Generating recipe with prompt:', { prompt, mealType, cuisineType, dietaryRestriction });
 
     const userMessage = `${
       mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
-    }${cuisineType ? ` from ${cuisineType} cuisine` : ""}. ${prompt}`;
+    }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
+      dietaryRestriction && dietaryRestriction !== "None"
+        ? ` that is ${dietaryRestriction.toLowerCase()}`
+        : ""
+    }. ${prompt}`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
