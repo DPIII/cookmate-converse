@@ -1,12 +1,66 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Navigation } from "@/components/Navigation";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-green-50/30">
+      <Navigation />
+      <SidebarProvider>
+        <div className="flex min-h-[calc(100vh-4rem)] pt-16">
+          <Sidebar>
+            <SidebarHeader className="border-b border-green-100">
+              <h2 className="text-lg font-semibold text-green-700 px-4 py-2">
+                Menu
+              </h2>
+            </SidebarHeader>
+            <SidebarContent>
+              {/* Sidebar content will be added when implementing chat and recipes features */}
+            </SidebarContent>
+          </Sidebar>
+          <main className="flex-1 p-6">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="text-3xl font-bold text-green-800 mb-6">
+                Welcome to RecipeBot
+              </h1>
+              <p className="text-green-600 mb-4">
+                Start chatting with RecipeBot to discover and save your favorite recipes.
+              </p>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100">
+                  <h2 className="text-xl font-semibold text-green-700 mb-3">
+                    Chat with RecipeBot
+                  </h2>
+                  <p className="text-green-600 mb-4">
+                    Ask questions, get recipe recommendations, and cooking tips.
+                  </p>
+                  <Button variant="default" className="bg-green-600 hover:bg-green-700" asChild>
+                    <Link to="/chat">Start Chatting</Link>
+                  </Button>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100">
+                  <h2 className="text-xl font-semibold text-green-700 mb-3">
+                    Saved Recipes
+                  </h2>
+                  <p className="text-green-600 mb-4">
+                    Access your collection of saved recipes anytime.
+                  </p>
+                  <Button variant="default" className="bg-green-600 hover:bg-green-700" asChild>
+                    <Link to="/recipes">View Recipes</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </SidebarProvider>
     </div>
   );
 };
