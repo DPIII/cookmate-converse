@@ -4,34 +4,39 @@ import { Card } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Send } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 
-const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"];
-const CUISINES = ["Italian", "American", "Mexican", "Chinese", "Indian", "Japanese", "Mediterranean", "French"];
+const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack", "Dessert", "Other"];
+const CUISINES = ["Italian", "American", "Mexican", "Chinese", "Indian", "Japanese", "Mediterranean", "French", "Other"];
 
 export const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
   const [selectedCuisine, setSelectedCuisine] = useState<string>();
+  const [customMeal, setCustomMeal] = useState("");
+  const [customCuisine, setCustomCuisine] = useState("");
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<Array<{ role: "user" | "assistant", content: string }>>([]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message.trim()) return;
     
-    const userMessage = `I want a ${selectedMeal?.toLowerCase() || ''} recipe${
-      selectedCuisine ? ` from ${selectedCuisine} cuisine` : ''
+    const mealType = selectedMeal === "Other" ? customMeal : selectedMeal;
+    const cuisineType = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
+    
+    const userMessage = `${mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"}${
+      cuisineType ? ` from ${cuisineType} cuisine` : ''
     }. ${message}`;
     
     setChatHistory(prev => [...prev, { role: "user", content: userMessage }]);
-    // TODO: Implement AI response logic
     setMessage("");
   };
 
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-8">
-      <Card className="p-6">
-        <div className="space-y-4 mb-6">
+    <div className="container mx-auto max-w-3xl px-4 py-6">
+      <Card className="p-4">
+        <div className="space-y-4 mb-4">
           <div>
-            <h3 className="text-lg font-medium mb-2 text-green-700">Type of Meal</h3>
+            <h3 className="text-lg font-medium mb-2 text-green-700">Type of Meal (Optional)</h3>
             <ToggleGroup 
               type="single" 
               value={selectedMeal} 
@@ -48,10 +53,18 @@ export const Chat = () => {
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
+            {selectedMeal === "Other" && (
+              <Input
+                placeholder="Enter custom meal type"
+                value={customMeal}
+                onChange={(e) => setCustomMeal(e.target.value)}
+                className="mt-2 max-w-xs"
+              />
+            )}
           </div>
 
           <div>
-            <h3 className="text-lg font-medium mb-2 text-green-700">Type of Cuisine</h3>
+            <h3 className="text-lg font-medium mb-2 text-green-700">Type of Cuisine (Optional)</h3>
             <ToggleGroup 
               type="single" 
               value={selectedCuisine} 
@@ -68,10 +81,18 @@ export const Chat = () => {
                 </ToggleGroupItem>
               ))}
             </ToggleGroup>
+            {selectedCuisine === "Other" && (
+              <Input
+                placeholder="Enter custom cuisine type"
+                value={customCuisine}
+                onChange={(e) => setCustomCuisine(e.target.value)}
+                className="mt-2 max-w-xs"
+              />
+            )}
           </div>
         </div>
 
-        <ScrollArea className="h-[400px] border rounded-lg p-4 mb-4">
+        <ScrollArea className="h-[300px] border rounded-lg p-4 mb-4">
           {chatHistory.map((msg, index) => (
             <div
               key={index}
