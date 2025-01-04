@@ -25,38 +25,28 @@ const Login = () => {
       });
 
       if (error) {
-        console.log("Login error:", error.message);
-        if (error.message.includes('Invalid login credentials')) {
-          // If guest account doesn't exist, create it
-          const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        // If guest account doesn't exist, create it
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: "guest@anyrecipe.com",
+          password: "guestaccount123!",
+        });
+
+        if (signUpError) {
+          console.error("Error creating guest account:", signUpError);
+          toast.error("Failed to create guest account");
+        } else {
+          // Try logging in again after creating the account
+          const { error: loginError } = await supabase.auth.signInWithPassword({
             email: "guest@anyrecipe.com",
             password: "guestaccount123!",
-            options: {
-              data: {
-                username: "Guest User",
-              },
-            },
           });
 
-          if (signUpError) {
-            console.error("Error creating guest account:", signUpError);
-            toast.error("Failed to create guest account");
+          if (loginError) {
+            toast.error("Failed to log in as guest");
           } else {
-            // Try logging in again after creating the account
-            const { error: loginError } = await supabase.auth.signInWithPassword({
-              email: "guest@anyrecipe.com",
-              password: "guestaccount123!",
-            });
-
-            if (loginError) {
-              toast.error("Failed to log in as guest");
-            } else {
-              toast.success("Logged in as guest");
-              navigate("/chat");
-            }
+            toast.success("Logged in as guest");
+            navigate("/chat");
           }
-        } else {
-          toast.error("Failed to log in as guest");
         }
       } else {
         toast.success("Logged in as guest");
@@ -100,8 +90,8 @@ const Login = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: "#94A187",
-                    brandAccent: "#E07A5F",
+                    brand: "#16a34a",
+                    brandAccent: "#15803d",
                   },
                 },
               },

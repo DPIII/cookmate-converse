@@ -34,25 +34,29 @@ const Index = () => {
                 Start chatting with RecipeBot to discover and save your favorite recipes.
               </p>
               <div className="grid gap-6 md:grid-cols-2">
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100">
-                  <h2 className="text-xl font-semibold text-green-700 mb-3">
-                    Chat with RecipeBot
-                  </h2>
-                  <p className="text-green-600 mb-4">
-                    Ask questions, get recipe recommendations, and cooking tips.
-                  </p>
-                  <Button variant="default" className="bg-green-600 hover:bg-green-700" asChild>
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100 flex flex-col h-full">
+                  <div className="flex-grow">
+                    <h2 className="text-xl font-semibold text-green-700 mb-3">
+                      Chat with RecipeBot
+                    </h2>
+                    <p className="text-green-600 mb-4">
+                      Ask questions, get recipe recommendations, and cooking tips.
+                    </p>
+                  </div>
+                  <Button variant="default" className="bg-green-600 hover:bg-green-700 w-full" asChild>
                     <Link to="/chat">Start Chatting</Link>
                   </Button>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100">
-                  <h2 className="text-xl font-semibold text-green-700 mb-3">
-                    Saved Recipes
-                  </h2>
-                  <p className="text-green-600 mb-4">
-                    Access your collection of saved recipes anytime.
-                  </p>
-                  <Button variant="default" className="bg-green-600 hover:bg-green-700" asChild>
+                <div className="bg-white p-6 rounded-lg shadow-sm border border-green-100 flex flex-col h-full">
+                  <div className="flex-grow">
+                    <h2 className="text-xl font-semibold text-green-700 mb-3">
+                      Saved Recipes
+                    </h2>
+                    <p className="text-green-600 mb-4">
+                      Access your collection of saved recipes anytime.
+                    </p>
+                  </div>
+                  <Button variant="default" className="bg-green-600 hover:bg-green-700 w-full" asChild>
                     <Link to="/recipes">View Recipes</Link>
                   </Button>
                 </div>
