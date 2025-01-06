@@ -113,11 +113,11 @@ View full recipe: ${shareUrl}`;
             </div>
             <Button
               variant="outline"
-              size="icon"
               className="ml-2"
               onClick={handleShare}
             >
               <Share2 className="h-4 w-4" />
+              Share
             </Button>
           </div>
         </DialogHeader>
