@@ -14,7 +14,7 @@ const Recipes = () => {
   const [editingTitle, setEditingTitle] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedMealType, setSelectedMealType] = useState<string>("");
+  const [selectedMealType, setSelectedMealType] = useState<string>("all");
   const { toast } = useToast();
 
   const { data: recipes, isLoading, refetch } = useQuery({
@@ -59,7 +59,8 @@ const Recipes = () => {
   const filteredRecipes = recipes?.filter((recipe) => {
     const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          recipe.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesMealType = !selectedMealType || recipe.meal_type === selectedMealType;
+    const matchesMealType = selectedMealType === "all" || 
+                           (recipe.meal_type && recipe.meal_type.toLowerCase() === selectedMealType.toLowerCase());
     return matchesSearch && matchesMealType;
   });
 
