@@ -164,7 +164,7 @@ export const ChatInterface = ({
   };
 
   return (
-    <div className="space-y-4 bg-white p-6 rounded-lg shadow-lg border border-primary/10">
+    <div className="space-y-2 sm:space-y-4 bg-white p-3 sm:p-6 rounded-lg shadow-lg border border-primary/10">
       <ChatHistory messages={chatHistory} isLoading={isLoading} />
       
       <ChatInput
