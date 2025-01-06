@@ -61,37 +61,39 @@ export const RecipeDialog = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2 flex-1">
-              {editingTitle ? (
-                <div className="flex gap-2 w-full">
-                  <Input
-                    value={newTitle}
-                    onChange={(e) => onNewTitleChange(e.target.value)}
-                    className="flex-1"
-                  />
-                  <Button onClick={onSaveTitleClick}>Save</Button>
-                  <Button variant="outline" onClick={onCancelEditClick}>
-                    Cancel
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <DialogTitle>{recipe.title}</DialogTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onEditTitleClick}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </>
-              )}
+          <div className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2 flex-1">
+                {editingTitle ? (
+                  <div className="flex gap-2 w-full">
+                    <Input
+                      value={newTitle}
+                      onChange={(e) => onNewTitleChange(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button onClick={onSaveTitleClick}>Save</Button>
+                    <Button variant="outline" onClick={onCancelEditClick}>
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <DialogTitle>{recipe.title}</DialogTitle>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={onEditTitleClick}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
             <Button
               variant="outline"
-              className="ml-2"
               onClick={handleShare}
+              className="self-start"
             >
               <Share2 className="h-4 w-4" />
               Share
