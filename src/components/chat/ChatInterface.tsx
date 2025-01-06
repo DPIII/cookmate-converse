@@ -7,6 +7,7 @@ import { ChatHistory } from "./ChatHistory";
 import { ChatInput } from "./ChatInput";
 import { ChatActions } from "./ChatActions";
 import { SaveRecipeDialog } from "./SaveRecipeDialog";
+import { ChatContainer } from "./ChatContainer";
 import { ChatInterfaceProps } from "./types";
 
 export const ChatInterface = ({
@@ -164,7 +165,7 @@ export const ChatInterface = ({
   };
 
   return (
-    <div className="space-y-2 sm:space-y-4 bg-white p-3 sm:p-6 rounded-lg shadow-lg border border-primary/10">
+    <ChatContainer>
       <ChatHistory messages={chatHistory} isLoading={isLoading} />
       
       <ChatInput
@@ -193,6 +194,6 @@ export const ChatInterface = ({
         isGeneratingImage={isGeneratingImage}
         generatedImage={generatedImage}
       />
-    </div>
+    </ChatContainer>
   );
 };
