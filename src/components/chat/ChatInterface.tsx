@@ -90,7 +90,8 @@ export const ChatInterface = ({
     }
 
     if (generatePhoto && !generatedImage) {
-      await generateImage(title, lastAssistantMessage.content);
+      const imageUrl = await generateImage();
+      setGeneratedImage(imageUrl);
     }
 
     try {
