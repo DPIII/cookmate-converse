@@ -26,6 +26,7 @@ interface ChatInterfaceProps {
   selectedCuisine?: string;
   customMeal: string;
   customCuisine: string;
+  selectedPeople: string;
   onReset?: () => void;
 }
 
@@ -37,6 +38,7 @@ export const ChatInterface = ({
   selectedCuisine,
   customMeal,
   customCuisine,
+  selectedPeople,
   onReset,
 }: ChatInterfaceProps) => {
   const [message, setMessage] = useState("");
@@ -44,11 +46,34 @@ export const ChatInterface = ({
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [recipeTitle, setRecipeTitle] = useState("");
   const [recipeNotes, setRecipeNotes] = useState("");
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { session } = useAuth();
 
   const hasRecipe = chatHistory.some(msg => msg.role === "assistant");
+
+  const generateImage = async (title: string, cuisine?: string) => {
+    setIsGeneratingImage(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-recipe-image", {
+        body: { title, cuisine },
+      });
+
+      if (error) throw error;
+      setGeneratedImage(data.imageUrl);
+    } catch (error) {
+      console.error("Error generating image:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate recipe image. Proceeding without image.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
 
   const handleSaveRecipe = async () => {
     if (!session?.user?.id) {
@@ -83,6 +108,7 @@ export const ChatInterface = ({
         cuisine_type: selectedCuisine === "Other" ? customCuisine : selectedCuisine,
         user_id: session.user.id,
         notes: recipeNotes,
+        image_url: generatedImage,
       });
 
       if (error) throw error;
@@ -95,6 +121,7 @@ export const ChatInterface = ({
       setIsSaveDialogOpen(false);
       setRecipeTitle("");
       setRecipeNotes("");
+      setGeneratedImage(null);
       navigate("/recipes");
     } catch (error) {
       console.error("Error saving recipe:", error);
@@ -172,7 +199,12 @@ export const ChatInterface = ({
             Edit Recipe
           </Button>
           <Button
-            onClick={() => setIsSaveDialogOpen(true)}
+            onClick={() => {
+              setIsSaveDialogOpen(true);
+              const title = selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish";
+              const cuisine = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
+              generateImage(title, cuisine);
+            }}
             variant="outline"
             className="border-primary text-primary hover:bg-primary/10"
           >
@@ -191,7 +223,7 @@ export const ChatInterface = ({
       )}
 
       <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>Save Recipe</DialogTitle>
             <DialogDescription>
@@ -218,6 +250,22 @@ export const ChatInterface = ({
                 className="min-h-[100px]"
               />
             </div>
+            {isGeneratingImage && (
+              <div className="text-center">
+                <LoadingSpinner />
+                <p className="text-sm text-gray-500">Generating recipe image...</p>
+              </div>
+            )}
+            {generatedImage && (
+              <div className="space-y-2">
+                <Label>Generated Image</Label>
+                <img
+                  src={generatedImage}
+                  alt="Generated recipe"
+                  className="w-full rounded-lg"
+                />
+              </div>
+            )}
           </div>
           <div className="flex justify-end gap-4">
             <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
