@@ -6,7 +6,6 @@ import { Navigation } from "@/components/Navigation";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { RecipeFilters } from "@/components/chat/RecipeFilters";
 import { useAuth } from "@/components/AuthProvider";
-import { EatingPartnersFilter } from "@/components/chat/filters/EatingPartnersFilter";
 
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
@@ -120,25 +119,21 @@ const Chat = () => {
               setCustomCuisine={setCustomCuisine}
               customDiet={customDiet}
               setCustomDiet={setCustomDiet}
+              selectedPeople={selectedPeople}
+              setSelectedPeople={setSelectedPeople}
             />
-            <div className="flex justify-center">
-              <EatingPartnersFilter
-                value={selectedPeople}
-                onChange={setSelectedPeople}
-              />
-            </div>
+            <ChatInterface
+              chatHistory={chatHistory}
+              isLoading={isLoading}
+              onSend={handleSend}
+              selectedMeal={selectedMeal}
+              selectedCuisine={selectedCuisine}
+              customMeal={customMeal}
+              customCuisine={customCuisine}
+              selectedPeople={selectedPeople}
+              onReset={handleReset}
+            />
           </div>
-          <ChatInterface
-            chatHistory={chatHistory}
-            isLoading={isLoading}
-            onSend={handleSend}
-            selectedMeal={selectedMeal}
-            selectedCuisine={selectedCuisine}
-            customMeal={customMeal}
-            customCuisine={customCuisine}
-            onReset={handleReset}
-            selectedPeople={selectedPeople}
-          />
         </Card>
       </div>
     </div>
