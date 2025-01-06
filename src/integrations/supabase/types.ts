@@ -9,26 +9,162 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      collection_recipes: {
+        Row: {
+          added_at: string | null
+          collection_id: string
+          recipe_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          collection_id: string
+          recipe_id: string
+        }
+        Update: {
+          added_at?: string | null
+          collection_id?: string
+          recipe_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_recipes_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "recipe_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_recipes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "saved_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
+          dietary_preferences: string[] | null
+          favorite_cuisines: string[] | null
           id: string
+          profile_picture_url: string | null
+          skill_level: string | null
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          dietary_preferences?: string[] | null
+          favorite_cuisines?: string[] | null
           id: string
+          profile_picture_url?: string | null
+          skill_level?: string | null
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          dietary_preferences?: string[] | null
+          favorite_cuisines?: string[] | null
           id?: string
+          profile_picture_url?: string | null
+          skill_level?: string | null
           username?: string | null
         }
         Relationships: []
+      }
+      recipe_collections: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      recipe_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          rating: number | null
+          recipe_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          recipe_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          recipe_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_comments_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "saved_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recipe_likes: {
+        Row: {
+          created_at: string | null
+          id: string
+          recipe_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          recipe_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          recipe_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipe_likes_recipe_id_fkey"
+            columns: ["recipe_id"]
+            isOneToOne: false
+            referencedRelation: "saved_recipes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_recipes: {
         Row: {

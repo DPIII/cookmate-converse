@@ -1,7 +1,7 @@
 import { useAuth } from "./AuthProvider";
 import { Navigate } from "react-router-dom";
 
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth();
 
   if (loading) {
@@ -18,3 +18,5 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   return <>{children}</>;
 };
+
+export default ProtectedRoute;
