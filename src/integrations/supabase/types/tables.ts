@@ -1,4 +1,4 @@
-import { Json } from './base';
+import { Json } from './helpers';
 
 export interface CollectionRecipesTable {
   Row: {

@@ -14,5 +14,5 @@ export interface TimelinePost {
 
 export interface UserProfile {
   id: string;
-  username: string;
+  username: string | null;
 }

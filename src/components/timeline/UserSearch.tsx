@@ -48,6 +48,19 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
         return;
       }
 
+      // First check if connection already exists
+      const { data: existingConnection } = await supabase
+        .from('user_connections')
+        .select()
+        .eq('user_id', user.id)
+        .eq('connected_user_id', userId)
+        .single();
+
+      if (existingConnection) {
+        toast.error('Connection already exists');
+        return;
+      }
+
       const { error } = await supabase
         .from('user_connections')
         .insert({
