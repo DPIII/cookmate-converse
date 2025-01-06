@@ -31,6 +31,7 @@ You MUST strictly follow these requirements:
 3. The recipe MUST be portioned for ${servings || '2'} ${servings === '1' ? 'person' : 'people'}
 4. The recipe title MUST match the meal type (${mealType})
 5. DO NOT generate recipes that don't match these criteria
+6. When modifying an existing recipe, maintain its core characteristics and only apply the requested changes
 
 Provide detailed, structured recipes following this format:
 
@@ -52,7 +53,7 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
 
     let userMessage;
     if (isEdit && previousRecipe) {
-      userMessage = `Here is the current recipe:\n\n${previousRecipe}\n\nPlease adjust this recipe according to these modifications: ${prompt}\n\nProvide the complete updated recipe in the same format.`;
+      userMessage = `Here is the current recipe:\n\n${previousRecipe}\n\nPlease adjust this recipe according to these modifications: ${prompt}\n\nProvide the complete updated recipe in the same format, maintaining the core characteristics of the original recipe while incorporating the requested changes.`;
     } else {
       userMessage = `Create a ${mealType ? mealType.toLowerCase() : ''} recipe${
         cuisineType ? ` from ${cuisineType} cuisine` : ""

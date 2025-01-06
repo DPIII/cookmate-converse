@@ -24,7 +24,7 @@ export const ChatInput = ({
       <Input
         value={message}
         onChange={(e) => onMessageChange(e.target.value)}
-        placeholder={isEditing ? "Type your modifications..." : "Ask for a specific recipe or dietary requirements..."}
+        placeholder={isEditing ? "Describe your modifications to the recipe..." : "Ask for a specific recipe or dietary requirements..."}
         className="flex-1 bg-white border-primary/20"
         onKeyPress={onKeyPress}
         disabled={isLoading}
