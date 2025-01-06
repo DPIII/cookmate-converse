@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { Session } from "@supabase/supabase-js";
+import { Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,22 +25,37 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const handleAuthError = async (error: AuthError) => {
+    console.error("Auth error:", error);
+    
+    // Check if it's a refresh token error
+    if (error.message.includes("refresh_token_not_found") || 
+        error.message.includes("Invalid Refresh Token")) {
+      await supabase.auth.signOut();
+      setSession(null);
+      // Clear all auth-related data
+      localStorage.clear();
+      toast.error("Session expired. Please log in again.");
+    } else {
+      toast.error("Authentication error. Please try logging in again.");
+    }
+  };
+
   useEffect(() => {
     // Get initial session
     const initializeAuth = async () => {
       try {
-        const { data: { session: initialSession }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session: initialSession }, error: sessionError } = 
+          await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error("Error getting session:", sessionError);
-          toast.error("Authentication error. Please try logging in again.");
-          await supabase.auth.signOut();
-        } else {
+          await handleAuthError(sessionError);
+        } else if (initialSession) {
           setSession(initialSession);
         }
       } catch (error) {
         console.error("Error in auth initialization:", error);
-        toast.error("Authentication error. Please try logging in again.");
+        toast.error("Error initializing authentication");
       } finally {
         setLoading(false);
       }
@@ -51,17 +66,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, currentSession) => {
-      console.log("Auth state changed:", _event);
-      setSession(currentSession);
-      setLoading(false);
-
-      if (_event === 'SIGNED_OUT') {
-        // Clear any auth-related state
+    } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
+      console.log("Auth state changed:", event);
+      
+      if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+        // Clear all auth-related state and storage
         setSession(null);
-        // You might want to clear any user-related data from localStorage here
-        localStorage.removeItem('supabase.auth.token');
+        localStorage.clear();
+      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setSession(currentSession);
+      } else if (event === 'USER_UPDATED') {
+        setSession(currentSession);
       }
+
+      setLoading(false);
     });
 
     // Cleanup subscription
