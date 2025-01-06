@@ -12,6 +12,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface UserSearchProps {
   showSearch: boolean;
@@ -21,19 +29,42 @@ interface UserSearchProps {
 export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
+  const [open, setOpen] = useState(false);
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+  const handleSearch = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      return;
+    }
 
     try {
-      const { data, error } = await supabase
+      const { data: usernameResults, error: usernameError } = await supabase
         .from('profiles')
-        .select('id, username')
-        .ilike('username', `%${searchQuery}%`)
+        .select('id, username, avatar_url')
+        .or(`username.ilike.%${query}%,id.eq.${query}`)
         .limit(10);
 
-      if (error) throw error;
-      setSearchResults(data as UserProfile[]);
+      if (usernameError) throw usernameError;
+      
+      // If query looks like an email, also search in auth.users
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (emailPattern.test(query)) {
+        const { data: emailResults, error: emailError } = await supabase
+          .from('profiles')
+          .select('id, username, avatar_url')
+          .eq('id', query)
+          .limit(1);
+
+        if (emailError) throw emailError;
+        
+        if (emailResults && emailResults.length > 0) {
+          setSearchResults([...usernameResults, ...emailResults]);
+        } else {
+          setSearchResults(usernameResults);
+        }
+      } else {
+        setSearchResults(usernameResults);
+      }
     } catch (error) {
       console.error('Error searching users:', error);
       toast.error('Failed to search users');
@@ -48,7 +79,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
         return;
       }
 
-      // First check if connection already exists
+      // Check if connection already exists
       const { data: existingConnection } = await supabase
         .from('user_connections')
         .select()
@@ -71,6 +102,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
 
       if (error) throw error;
       toast.success('Connection request sent');
+      setOpen(false);
     } catch (error) {
       console.error('Error connecting with user:', error);
       toast.error('Failed to send connection request');
@@ -83,39 +115,50 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
         <DialogHeader>
           <DialogTitle>Find Friends</DialogTitle>
           <DialogDescription>
-            Search for users by username and connect with them.
+            Search for users by username or email and connect with them.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Search by username"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <Button onClick={handleSearch}>
-              <Search className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="space-y-2">
-            {searchResults.map((user) => (
-              <div
-                key={user.id}
-                className="flex items-center justify-between p-2 bg-gray-50 rounded"
-              >
-                <span>{user.username}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleConnect(user.id)}
-                >
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Connect
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search by username or email"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    handleSearch(e.target.value);
+                  }}
+                />
+                <Button variant="outline">
+                  <Search className="h-4 w-4" />
                 </Button>
               </div>
-            ))}
-          </div>
+            </PopoverTrigger>
+            <PopoverContent className="p-0" align="start">
+              <Command>
+                <CommandEmpty>No users found.</CommandEmpty>
+                <CommandGroup>
+                  {searchResults.map((user) => (
+                    <CommandItem
+                      key={user.id}
+                      className="flex items-center justify-between p-2"
+                    >
+                      <span>{user.username}</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleConnect(user.id)}
+                      >
+                        <UserPlus className="h-4 w-4 mr-2" />
+                        Connect
+                      </Button>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
       </DialogContent>
     </Dialog>
