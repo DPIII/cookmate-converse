@@ -20,6 +20,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface UserSearchProps {
   showSearch: boolean;
@@ -30,10 +31,12 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<UserProfile[]>([]);
   const [open, setOpen] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) {
       setSearchResults([]);
+      setHasSearched(false);
       return;
     }
 
@@ -65,6 +68,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
       } else {
         setSearchResults(usernameResults);
       }
+      setHasSearched(true);
     } catch (error) {
       console.error('Error searching users:', error);
       toast.error('Failed to search users');
@@ -137,25 +141,37 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
             </PopoverTrigger>
             <PopoverContent className="p-0" align="start">
               <Command>
-                <CommandEmpty>No users found.</CommandEmpty>
-                <CommandGroup>
-                  {searchResults.map((user) => (
-                    <CommandItem
-                      key={user.id}
-                      className="flex items-center justify-between p-2"
-                    >
-                      <span>{user.username}</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleConnect(user.id)}
-                      >
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Connect
-                      </Button>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                {hasSearched && searchResults.length === 0 ? (
+                  <div className="p-4">
+                    <Alert variant="default" className="bg-muted">
+                      <AlertDescription className="text-sm text-muted-foreground">
+                        No users found matching "{searchQuery}"
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                ) : (
+                  <>
+                    <CommandEmpty>Start typing to search users...</CommandEmpty>
+                    <CommandGroup>
+                      {searchResults.map((user) => (
+                        <CommandItem
+                          key={user.id}
+                          className="flex items-center justify-between p-2"
+                        >
+                          <span>{user.username}</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleConnect(user.id)}
+                          >
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Connect
+                          </Button>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </>
+                )}
               </Command>
             </PopoverContent>
           </Popover>
