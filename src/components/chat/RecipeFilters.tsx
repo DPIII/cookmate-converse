@@ -32,7 +32,7 @@ export const RecipeFilters = ({
 }: RecipeFiltersProps) => {
   return (
     <div className="space-y-6 mb-6 bg-white p-6 rounded-lg shadow-lg border border-primary/10">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 gap-6">
         <SelectFilter
           label="Type of Meal"
           value={selectedMeal}
@@ -60,6 +60,11 @@ export const RecipeFilters = ({
           onCustomChange={setCustomDiet}
           placeholder="Select dietary restrictions"
         />
+        <div className="flex items-end">
+          <div className="w-full">
+            {/* This empty div maintains grid symmetry */}
+          </div>
+        </div>
       </div>
     </div>
   );
