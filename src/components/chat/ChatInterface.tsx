@@ -139,6 +139,18 @@ export const ChatInterface = ({
     });
   };
 
+  const handleNewRecipe = () => {
+    if (message.trim()) {
+      onSend(message, false);
+      setMessage("");
+    } else {
+      if (onReset) {
+        onReset();
+        setIsEditing(false);
+      }
+    }
+  };
+
   return (
     <div className="space-y-4 bg-white p-6 rounded-lg shadow-lg border border-primary/10">
       <ChatHistory messages={chatHistory} isLoading={isLoading} />
@@ -156,12 +168,8 @@ export const ChatInterface = ({
         <ChatActions
           onEdit={startEditing}
           onSave={() => setIsSaveDialogOpen(true)}
-          onNewRecipe={() => {
-            if (onReset) {
-              onReset();
-              setIsEditing(false);
-            }
-          }}
+          onNewRecipe={handleNewRecipe}
+          isLoading={isLoading}
         />
       )}
 
