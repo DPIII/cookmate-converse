@@ -40,7 +40,7 @@ export const RecipeFilters = ({
         <SelectContent>
           <SelectItem value="all">All meal types</SelectItem>
           {MEAL_TYPES.map((type) => (
-            <SelectItem key={type} value={type}>
+            <SelectItem key={type} value={type.toLowerCase()}>
               {type}
             </SelectItem>
           ))}
