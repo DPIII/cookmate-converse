@@ -41,42 +41,19 @@ export const RecipeDialog = ({
   const handleShare = async () => {
     const shareUrl = `${window.location.origin}/recipes/shared/${recipe.share_id}`;
     
-    // Format recipe for text sharing
-    const textContent = `
-${recipe.title}
-
-${recipe.content}
-
-View full recipe: ${shareUrl}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: recipe.title,
-          text: textContent,
-          url: shareUrl,
-        });
-      } catch (error) {
-        if (error instanceof Error && error.name !== "AbortError") {
-          console.error("Error sharing:", error);
-        }
-      }
-    } else {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(textContent);
-        toast({
-          title: "Link copied!",
-          description: "Recipe link has been copied to your clipboard",
-        });
-      } catch (err) {
-        console.error("Failed to copy:", err);
-        toast({
-          title: "Error",
-          description: "Failed to copy link to clipboard",
-          variant: "destructive",
-        });
-      }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast({
+        title: "Link copied!",
+        description: "Recipe link has been copied to your clipboard",
+      });
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      toast({
+        title: "Error",
+        description: "Failed to copy link to clipboard",
+        variant: "destructive",
+      });
     }
   };
 
