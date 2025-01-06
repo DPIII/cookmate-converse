@@ -4,7 +4,7 @@ import { Navigation } from "@/components/Navigation";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeDialog } from "@/components/recipes/RecipeDialog";
 import { RecipeFilters } from "@/components/recipes/RecipeFilters";
@@ -54,6 +54,10 @@ const Recipes = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleRecipeDeleted = () => {
+    refetch();
   };
 
   const filteredRecipes = recipes?.filter((recipe) => {
@@ -134,6 +138,7 @@ const Recipes = () => {
           onEditTitleClick={() => setEditingTitle(true)}
           onSaveTitleClick={handleEditTitle}
           onCancelEditClick={() => setEditingTitle(false)}
+          onDelete={handleRecipeDeleted}
         />
       </div>
     </div>
