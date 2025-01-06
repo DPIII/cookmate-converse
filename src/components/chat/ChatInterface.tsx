@@ -31,27 +31,38 @@ export const ChatInterface = ({
 
   const hasRecipe = chatHistory.some(msg => msg.role === "assistant");
 
-  const generateImage = async (title: string, recipeContent: string) => {
-    setIsGeneratingImage(true);
+  const generateImage = async () => {
     try {
-      const words = recipeContent.split(' ').slice(0, 100).join(' ');
+      const lastAssistantMessage = [...chatHistory]
+        .reverse()
+        .find((msg) => msg.role === "assistant");
+
+      if (!lastAssistantMessage) {
+        toast({
+          title: "No recipe found",
+          description: "Generate a recipe first before creating an image.",
+          variant: "destructive",
+        });
+        return null;
+      }
+
+      const words = lastAssistantMessage.content.split(' ').slice(0, 100).join(' ');
       const prompt = `${words}\n\nclean, lifelike overhead photo of the entree. camera, on a dinner table`;
 
       const { data, error } = await supabase.functions.invoke("generate-recipe-image", {
-        body: { title, prompt },
+        body: { title: selectedMeal || "Recipe", prompt },
       });
 
       if (error) throw error;
-      setGeneratedImage(data.imageUrl);
+      return data.imageUrl;
     } catch (error) {
       console.error("Error generating image:", error);
       toast({
         title: "Error",
-        description: "Failed to generate recipe image. Proceeding without image.",
+        description: "Failed to generate recipe image.",
         variant: "destructive",
       });
-    } finally {
-      setIsGeneratingImage(false);
+      return null;
     }
   };
 
@@ -169,6 +180,7 @@ export const ChatInterface = ({
           onEdit={startEditing}
           onSave={() => setIsSaveDialogOpen(true)}
           onNewRecipe={handleNewRecipe}
+          onGenerateImage={generateImage}
           isLoading={isLoading}
         />
       )}
