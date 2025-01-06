@@ -37,6 +37,7 @@ export type Database = {
           created_at: string
           cuisine_type: string | null
           id: string
+          image_url: string | null
           ingredients: Json | null
           is_favorite: boolean | null
           meal_type: string | null
@@ -49,6 +50,7 @@ export type Database = {
           created_at?: string
           cuisine_type?: string | null
           id?: string
+          image_url?: string | null
           ingredients?: Json | null
           is_favorite?: boolean | null
           meal_type?: string | null
@@ -61,6 +63,7 @@ export type Database = {
           created_at?: string
           cuisine_type?: string | null
           id?: string
+          image_url?: string | null
           ingredients?: Json | null
           is_favorite?: boolean | null
           meal_type?: string | null
