@@ -14,9 +14,9 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt, mealType, cuisineType, dietaryRestriction, isEdit, previousRecipe } = await req.json();
+    const { prompt, mealType, cuisineType, dietaryRestriction, isEdit, previousRecipe, servings } = await req.json();
 
-    console.log('Generating recipe with:', { prompt, mealType, cuisineType, dietaryRestriction, isEdit });
+    console.log('Generating recipe with:', { prompt, mealType, cuisineType, dietaryRestriction, isEdit, servings });
 
     let systemPrompt = `You are a professional chef and culinary expert. You are an expert in specific types of cuisine according to the type of meal and origin. You use their tactics such as marinades and sauces to enhance meals. Provide cooking tips in the recipe to make great tasting meals. Provide detailed, concise, structured recipes following this format:
 
@@ -46,8 +46,10 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
         dietaryRestriction && dietaryRestriction !== "None"
           ? ` that is ${dietaryRestriction.toLowerCase()}`
           : ""
-      }. ${prompt}`;
+      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. ${prompt}`;
     }
+
+    console.log('Sending request to OpenAI with message:', userMessage);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
