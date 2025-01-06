@@ -11,9 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { title, cuisine } = await req.json()
-
-    const prompt = `A professional, appetizing photo of ${title}${cuisine ? ` from ${cuisine} cuisine` : ''}, food photography, high resolution, natural lighting, styled plating`
+    const { title, prompt } = await req.json()
 
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',

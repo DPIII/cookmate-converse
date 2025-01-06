@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Save, Edit, RefreshCw } from "lucide-react";
+import { Send, Save, Edit, RefreshCw, Image } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +12,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 interface Message {
   role: "user" | "assistant";
@@ -46,6 +47,7 @@ export const ChatInterface = ({
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [recipeTitle, setRecipeTitle] = useState("");
   const [recipeNotes, setRecipeNotes] = useState("");
+  const [generatePhoto, setGeneratePhoto] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const { toast } = useToast();
@@ -54,11 +56,15 @@ export const ChatInterface = ({
 
   const hasRecipe = chatHistory.some(msg => msg.role === "assistant");
 
-  const generateImage = async (title: string, cuisine?: string) => {
+  const generateImage = async (title: string, recipeContent: string) => {
     setIsGeneratingImage(true);
     try {
+      // Take first 100 words of the recipe
+      const words = recipeContent.split(' ').slice(0, 100).join(' ');
+      const prompt = `${words}\n\nclean, lifelike overhead photo of the entree. camera, on a dinner table`;
+
       const { data, error } = await supabase.functions.invoke("generate-recipe-image", {
-        body: { title, cuisine },
+        body: { title, prompt },
       });
 
       if (error) throw error;
@@ -98,6 +104,13 @@ export const ChatInterface = ({
       return;
     }
 
+    if (generatePhoto && !generatedImage) {
+      const title = recipeTitle || `Recipe for ${
+        selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish"
+      }`;
+      await generateImage(title, lastAssistantMessage.content);
+    }
+
     try {
       const { error } = await supabase.from("saved_recipes").insert({
         title: recipeTitle || `Recipe for ${
@@ -122,6 +135,7 @@ export const ChatInterface = ({
       setRecipeTitle("");
       setRecipeNotes("");
       setGeneratedImage(null);
+      setGeneratePhoto(false);
       navigate("/recipes");
     } catch (error) {
       console.error("Error saving recipe:", error);
@@ -201,9 +215,6 @@ export const ChatInterface = ({
           <Button
             onClick={() => {
               setIsSaveDialogOpen(true);
-              const title = selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish";
-              const cuisine = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
-              generateImage(title, cuisine);
             }}
             variant="outline"
             className="border-primary text-primary hover:bg-primary/10"
@@ -249,6 +260,16 @@ export const ChatInterface = ({
                 onChange={(e) => setRecipeNotes(e.target.value)}
                 className="min-h-[100px]"
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="generate-photo"
+                checked={generatePhoto}
+                onCheckedChange={setGeneratePhoto}
+              />
+              <Label htmlFor="generate-photo" className="cursor-pointer">
+                Generate Recipe Photo
+              </Label>
             </div>
             {isGeneratingImage && (
               <div className="text-center">
