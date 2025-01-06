@@ -6,12 +6,17 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const { title, prompt } = await req.json()
+
+    if (!title || !prompt) {
+      throw new Error('Missing required parameters: title and prompt are required')
+    }
 
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
@@ -28,17 +33,36 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
+      const error = await response.json()
+      console.error('OpenAI API error:', error)
       throw new Error(`OpenAI API error: ${response.statusText}`)
     }
 
     const data = await response.json()
-    return new Response(JSON.stringify({ imageUrl: data.data[0].url }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    
+    return new Response(
+      JSON.stringify({ imageUrl: data.data[0].url }), 
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
+    )
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    })
+    console.error('Error in generate-recipe-image:', error)
+    
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'An error occurred while generating the image' 
+      }), 
+      { 
+        status: 500,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
+    )
   }
 })
