@@ -25,7 +25,6 @@ export const ChatInterface = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { session } = useAuth();
@@ -96,9 +95,6 @@ export const ChatInterface = ({
     }
 
     try {
-      // Add a delay to allow schema cache to update
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       const { error } = await supabase.from("saved_recipes").insert({
         title: title || `Recipe for ${
           selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish"
@@ -147,19 +143,19 @@ export const ChatInterface = ({
   const startEditing = () => {
     setIsEditing(true);
     toast({
-      title: "Edit Mode",
-      description: "Type your modifications to the recipe",
+      title: "Edit Mode Enabled",
+      description: "Type your modifications to the recipe and I'll update it accordingly.",
     });
   };
 
   const handleNewRecipe = () => {
+    setIsEditing(false);
     if (message.trim()) {
       onSend(message, false);
       setMessage("");
     } else {
       if (onReset) {
         onReset();
-        setIsEditing(false);
       }
     }
   };
@@ -191,7 +187,7 @@ export const ChatInterface = ({
         open={isSaveDialogOpen}
         onOpenChange={setIsSaveDialogOpen}
         onSave={handleSaveRecipe}
-        isGeneratingImage={isGeneratingImage}
+        isGeneratingImage={false}
         generatedImage={generatedImage}
       />
     </ChatContainer>
