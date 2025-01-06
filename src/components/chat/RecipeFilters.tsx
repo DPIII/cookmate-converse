@@ -1,5 +1,6 @@
 import { SelectFilter } from "./filters/SelectFilter";
 import { MEAL_TYPES, CUISINES, DIETARY_RESTRICTIONS } from "./filters/FilterConstants";
+import { EatingPartnersFilter } from "./filters/EatingPartnersFilter";
 
 interface RecipeFiltersProps {
   selectedMeal?: string;
@@ -14,6 +15,8 @@ interface RecipeFiltersProps {
   setCustomCuisine: (value: string) => void;
   customDiet: string;
   setCustomDiet: (value: string) => void;
+  selectedPeople: string;
+  setSelectedPeople: (value: string) => void;
 }
 
 export const RecipeFilters = ({
@@ -29,6 +32,8 @@ export const RecipeFilters = ({
   setCustomCuisine,
   customDiet,
   setCustomDiet,
+  selectedPeople,
+  setSelectedPeople,
 }: RecipeFiltersProps) => {
   return (
     <div className="space-y-6 mb-6 bg-white p-6 rounded-lg shadow-lg border border-primary/10">
@@ -60,11 +65,10 @@ export const RecipeFilters = ({
           onCustomChange={setCustomDiet}
           placeholder="Select dietary restrictions"
         />
-        <div className="flex items-end">
-          <div className="w-full">
-            {/* This empty div maintains grid symmetry */}
-          </div>
-        </div>
+        <EatingPartnersFilter
+          value={selectedPeople}
+          onChange={setSelectedPeople}
+        />
       </div>
     </div>
   );
