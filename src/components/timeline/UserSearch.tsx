@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 interface UserSearchProps {
@@ -41,10 +42,16 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
 
   const handleConnect = async (userId: string) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to connect with users');
+        return;
+      }
+
       const { error } = await supabase
         .from('user_connections')
         .insert({
-          user_id: (await supabase.auth.getUser()).data.user?.id,
+          user_id: user.id,
           connected_user_id: userId,
           status: 'pending'
         });
@@ -62,6 +69,9 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Find Friends</DialogTitle>
+          <DialogDescription>
+            Search for users by username and connect with them.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="flex gap-2">

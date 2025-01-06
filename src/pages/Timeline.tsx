@@ -27,12 +27,12 @@ export default function Timeline() {
           id,
           content,
           created_at,
-          recipe:recipe_id (
+          recipe:saved_recipes!timeline_posts_recipe_id_fkey (
             title,
             content,
             image_url
           ),
-          user:user_id (
+          user:profiles!timeline_posts_user_id_fkey (
             username
           )
         `)
