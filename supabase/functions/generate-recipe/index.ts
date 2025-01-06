@@ -28,10 +28,12 @@ You MUST strictly follow these requirements:
 1. The recipe MUST be for a ${mealType || 'meal'} dish only
 2. If dietary restrictions are specified (${dietaryRestriction || 'none'}), they MUST be strictly followed
 3. The recipe MUST be portioned for ${servings || '2'} ${servings === '1' ? 'person' : 'people'}
+4. The recipe title MUST match the meal type (${mealType})
+5. DO NOT generate recipes that don't match these criteria
 
 Provide detailed, structured recipes following this format:
 
-Title: [Recipe Name - MUST match the meal type: ${mealType}]
+Title: [Recipe Name - MUST be a ${mealType} dish]
 Cuisine: [${cuisineType || 'Various'} cuisine]
 Prep Time: [Time]
 Cook Time: [Time]
@@ -57,7 +59,7 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
         dietaryRestriction && dietaryRestriction !== "None"
           ? ` that is ${dietaryRestriction.toLowerCase()}`
           : ""
-      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. Additional requirements: ${prompt}`;
+      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. Additional requirements: ${prompt}. IMPORTANT: The recipe MUST be a ${mealType} dish.`;
     }
 
     console.log('Sending request to OpenAI with message:', userMessage);
@@ -69,7 +71,7 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
