@@ -9,13 +9,11 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Check if OpenAI API key is configured
     if (!openAIApiKey) {
       console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
@@ -25,13 +23,19 @@ serve(async (req) => {
 
     console.log('Generating recipe with:', { prompt, mealType, cuisineType, dietaryRestriction, isEdit, servings });
 
-    let systemPrompt = `You are a professional chef and culinary expert. You are an expert in specific types of cuisine according to the type of meal and origin. You use their tactics such as marinades and sauces to enhance meals. Provide cooking tips in the recipe to make great tasting meals. Provide detailed, concise, structured recipes following this format:
+    let systemPrompt = `You are a professional chef and culinary expert specializing in ${cuisineType || 'various'} cuisine. 
+You MUST strictly follow these requirements:
+1. The recipe MUST be for a ${mealType || 'meal'} dish only
+2. If dietary restrictions are specified (${dietaryRestriction || 'none'}), they MUST be strictly followed
+3. The recipe MUST be portioned for ${servings || '2'} ${servings === '1' ? 'person' : 'people'}
 
-Title: [Recipe Name]
-Cuisine: [Type of Cuisine]
+Provide detailed, structured recipes following this format:
+
+Title: [Recipe Name - MUST match the meal type: ${mealType}]
+Cuisine: [${cuisineType || 'Various'} cuisine]
 Prep Time: [Time]
 Cook Time: [Time]
-Servings: [Number]
+Servings: [${servings || '2'}]
 
 Ingredients:
 - [List each ingredient with precise measurements]
@@ -47,13 +51,13 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
     if (isEdit && previousRecipe) {
       userMessage = `Here is the current recipe:\n\n${previousRecipe}\n\nPlease adjust this recipe according to these modifications: ${prompt}\n\nProvide the complete updated recipe in the same format.`;
     } else {
-      userMessage = `${
-        mealType ? `I want a ${mealType.toLowerCase()} recipe` : "I want a recipe"
-      }${cuisineType ? ` from ${cuisineType} cuisine` : ""}${
+      userMessage = `Create a ${mealType.toLowerCase()} recipe${
+        cuisineType ? ` from ${cuisineType} cuisine` : ""
+      }${
         dietaryRestriction && dietaryRestriction !== "None"
           ? ` that is ${dietaryRestriction.toLowerCase()}`
           : ""
-      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. ${prompt}`;
+      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. Additional requirements: ${prompt}`;
     }
 
     console.log('Sending request to OpenAI with message:', userMessage);
@@ -65,7 +69,7 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
