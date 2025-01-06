@@ -1,8 +1,9 @@
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil } from "lucide-react";
+import { Pencil, Share2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -33,37 +34,91 @@ export const RecipeDialog = ({
   onSaveTitleClick,
   onCancelEditClick,
 }: RecipeDialogProps) => {
+  const { toast } = useToast();
+  
   if (!recipe) return null;
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/recipes/shared/${recipe.share_id}`;
+    
+    // Format recipe for text sharing
+    const textContent = `
+${recipe.title}
+
+${recipe.content}
+
+View full recipe: ${shareUrl}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: recipe.title,
+          text: textContent,
+          url: shareUrl,
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Error sharing:", error);
+        }
+      }
+    } else {
+      // Fallback to clipboard
+      try {
+        await navigator.clipboard.writeText(textContent);
+        toast({
+          title: "Link copied!",
+          description: "Recipe link has been copied to your clipboard",
+        });
+      } catch (err) {
+        console.error("Failed to copy:", err);
+        toast({
+          title: "Error",
+          description: "Failed to copy link to clipboard",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <div className="flex items-center gap-2">
-            {editingTitle ? (
-              <div className="flex gap-2 w-full">
-                <Input
-                  value={newTitle}
-                  onChange={(e) => onNewTitleChange(e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={onSaveTitleClick}>Save</Button>
-                <Button variant="outline" onClick={onCancelEditClick}>
-                  Cancel
-                </Button>
-              </div>
-            ) : (
-              <>
-                <DialogTitle>{recipe.title}</DialogTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onEditTitleClick}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </>
-            )}
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2 flex-1">
+              {editingTitle ? (
+                <div className="flex gap-2 w-full">
+                  <Input
+                    value={newTitle}
+                    onChange={(e) => onNewTitleChange(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button onClick={onSaveTitleClick}>Save</Button>
+                  <Button variant="outline" onClick={onCancelEditClick}>
+                    Cancel
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <DialogTitle>{recipe.title}</DialogTitle>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onEditTitleClick}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              size="icon"
+              className="ml-2"
+              onClick={handleShare}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
           </div>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh]">

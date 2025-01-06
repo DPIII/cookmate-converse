@@ -178,6 +178,7 @@ export type Database = {
           is_favorite: boolean | null
           meal_type: string | null
           notes: string | null
+          share_id: string | null
           title: string
           user_id: string
         }
@@ -192,6 +193,7 @@ export type Database = {
           is_favorite?: boolean | null
           meal_type?: string | null
           notes?: string | null
+          share_id?: string | null
           title: string
           user_id: string
         }
@@ -206,6 +208,7 @@ export type Database = {
           is_favorite?: boolean | null
           meal_type?: string | null
           notes?: string | null
+          share_id?: string | null
           title?: string
           user_id?: string
         }
