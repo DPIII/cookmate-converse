@@ -38,7 +38,7 @@ export const RecipeFilters = ({
           <SelectValue placeholder="Filter by meal type" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All meal types</SelectItem>
+          <SelectItem value="all">All meal types</SelectItem>
           {MEAL_TYPES.map((type) => (
             <SelectItem key={type} value={type}>
               {type}
