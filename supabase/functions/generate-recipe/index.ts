@@ -9,6 +9,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -53,13 +54,13 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
     if (isEdit && previousRecipe) {
       userMessage = `Here is the current recipe:\n\n${previousRecipe}\n\nPlease adjust this recipe according to these modifications: ${prompt}\n\nProvide the complete updated recipe in the same format.`;
     } else {
-      userMessage = `Create a ${mealType.toLowerCase()} recipe${
+      userMessage = `Create a ${mealType ? mealType.toLowerCase() : ''} recipe${
         cuisineType ? ` from ${cuisineType} cuisine` : ""
       }${
         dietaryRestriction && dietaryRestriction !== "None"
           ? ` that is ${dietaryRestriction.toLowerCase()}`
           : ""
-      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. Additional requirements: ${prompt}. IMPORTANT: The recipe MUST be a ${mealType} dish.`;
+      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. Additional requirements: ${prompt}${mealType ? `. IMPORTANT: The recipe MUST be a ${mealType} dish.` : ''}`;
     }
 
     console.log('Sending request to OpenAI with message:', userMessage);
