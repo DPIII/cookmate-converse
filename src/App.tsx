@@ -10,12 +10,20 @@ import Recipes from "@/pages/Recipes";
 import Timeline from "@/pages/Timeline";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 
-const queryClient = new QueryClient();
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -48,8 +56,8 @@ function App() {
           </Routes>
           <Toaster />
         </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 
