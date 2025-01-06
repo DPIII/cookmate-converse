@@ -9,6 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { MessageBubble } from "./MessageBubble";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface Message {
   role: "user" | "assistant";
@@ -38,6 +41,9 @@ export const ChatInterface = ({
 }: ChatInterfaceProps) => {
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [recipeTitle, setRecipeTitle] = useState("");
+  const [recipeNotes, setRecipeNotes] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
   const { session } = useAuth();
@@ -69,13 +75,14 @@ export const ChatInterface = ({
 
     try {
       const { error } = await supabase.from("saved_recipes").insert({
-        title: `Recipe for ${
+        title: recipeTitle || `Recipe for ${
           selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish"
         }`,
         content: lastAssistantMessage.content,
         meal_type: selectedMeal === "Other" ? customMeal : selectedMeal,
         cuisine_type: selectedCuisine === "Other" ? customCuisine : selectedCuisine,
         user_id: session.user.id,
+        notes: recipeNotes,
       });
 
       if (error) throw error;
@@ -85,6 +92,9 @@ export const ChatInterface = ({
         description: "Recipe saved successfully!",
       });
 
+      setIsSaveDialogOpen(false);
+      setRecipeTitle("");
+      setRecipeNotes("");
       navigate("/recipes");
     } catch (error) {
       console.error("Error saving recipe:", error);
@@ -162,7 +172,7 @@ export const ChatInterface = ({
             Edit Recipe
           </Button>
           <Button
-            onClick={handleSaveRecipe}
+            onClick={() => setIsSaveDialogOpen(true)}
             variant="outline"
             className="border-primary text-primary hover:bg-primary/10"
           >
@@ -179,6 +189,46 @@ export const ChatInterface = ({
           </Button>
         </div>
       )}
+
+      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Recipe</DialogTitle>
+            <DialogDescription>
+              Give your recipe a name and add any notes you'd like to remember.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Recipe Name</Label>
+              <Input
+                id="title"
+                placeholder="Enter recipe name"
+                value={recipeTitle}
+                onChange={(e) => setRecipeTitle(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add any notes about this recipe..."
+                value={recipeNotes}
+                onChange={(e) => setRecipeNotes(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+          </div>
+          <div className="flex justify-end gap-4">
+            <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveRecipe}>
+              Save Recipe
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
