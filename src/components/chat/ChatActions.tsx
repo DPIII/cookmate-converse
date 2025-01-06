@@ -33,11 +33,11 @@ export const ChatActions = ({
 
   return (
     <>
-      <div className="mt-4 flex justify-center gap-4">
+      <div className="mt-4 flex flex-col sm:flex-row justify-center gap-4 w-full sm:w-auto">
         <Button
           onClick={onEdit}
           variant="outline"
-          className="border-primary text-primary hover:bg-primary/10"
+          className="border-primary text-primary hover:bg-primary/10 w-full sm:w-auto"
           disabled={isLoading}
         >
           <Edit className="mr-2 h-4 w-4" />
@@ -46,7 +46,7 @@ export const ChatActions = ({
         <Button
           onClick={handleGenerateImage}
           variant="outline"
-          className="border-primary text-primary hover:bg-primary/10"
+          className="border-primary text-primary hover:bg-primary/10 w-full sm:w-auto"
           disabled={isLoading || generatingImage}
         >
           <Image className="mr-2 h-4 w-4" />
@@ -55,7 +55,7 @@ export const ChatActions = ({
         <Button
           onClick={onSave}
           variant="outline"
-          className="border-primary text-primary hover:bg-primary/10"
+          className="border-primary text-primary hover:bg-primary/10 w-full sm:w-auto"
           disabled={isLoading}
         >
           <Save className="mr-2 h-4 w-4" />
@@ -64,7 +64,7 @@ export const ChatActions = ({
         <Button
           onClick={onNewRecipe}
           variant="outline"
-          className="border-primary text-primary hover:bg-primary/10"
+          className="border-primary text-primary hover:bg-primary/10 w-full sm:w-auto"
           disabled={isLoading}
         >
           <RefreshCw className="mr-2 h-4 w-4" />
