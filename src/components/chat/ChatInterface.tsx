@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Send, Save, Edit, RefreshCw, Image } from "lucide-react";
+import { Send, Save, Edit, RefreshCw } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -9,27 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { MessageBubble } from "./MessageBubble";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
-interface ChatInterfaceProps {
-  chatHistory: Message[];
-  isLoading: boolean;
-  onSend: (message: string, isEdit?: boolean) => void;
-  selectedMeal?: string;
-  selectedCuisine?: string;
-  customMeal: string;
-  customCuisine: string;
-  selectedPeople: string;
-  onReset?: () => void;
-}
+import { SaveRecipeDialog } from "./SaveRecipeDialog";
+import { ChatInterfaceProps } from "./types";
 
 export const ChatInterface = ({
   chatHistory,
@@ -45,9 +26,6 @@ export const ChatInterface = ({
   const [message, setMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
-  const [recipeTitle, setRecipeTitle] = useState("");
-  const [recipeNotes, setRecipeNotes] = useState("");
-  const [generatePhoto, setGeneratePhoto] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const { toast } = useToast();
@@ -59,7 +37,6 @@ export const ChatInterface = ({
   const generateImage = async (title: string, recipeContent: string) => {
     setIsGeneratingImage(true);
     try {
-      // Take first 100 words of the recipe
       const words = recipeContent.split(' ').slice(0, 100).join(' ');
       const prompt = `${words}\n\nclean, lifelike overhead photo of the entree. camera, on a dinner table`;
 
@@ -81,7 +58,7 @@ export const ChatInterface = ({
     }
   };
 
-  const handleSaveRecipe = async () => {
+  const handleSaveRecipe = async (title: string, notes: string, generatePhoto: boolean) => {
     if (!session?.user?.id) {
       toast({
         title: "Authentication required",
@@ -105,22 +82,22 @@ export const ChatInterface = ({
     }
 
     if (generatePhoto && !generatedImage) {
-      const title = recipeTitle || `Recipe for ${
-        selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish"
-      }`;
       await generateImage(title, lastAssistantMessage.content);
     }
 
+    // Add a small delay to allow Supabase's schema cache to update
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     try {
       const { error } = await supabase.from("saved_recipes").insert({
-        title: recipeTitle || `Recipe for ${
+        title: title || `Recipe for ${
           selectedMeal === "Other" ? customMeal : selectedMeal || "Custom Dish"
         }`,
         content: lastAssistantMessage.content,
         meal_type: selectedMeal === "Other" ? customMeal : selectedMeal,
         cuisine_type: selectedCuisine === "Other" ? customCuisine : selectedCuisine,
         user_id: session.user.id,
-        notes: recipeNotes,
+        notes,
         image_url: generatedImage,
       });
 
@@ -132,10 +109,7 @@ export const ChatInterface = ({
       });
 
       setIsSaveDialogOpen(false);
-      setRecipeTitle("");
-      setRecipeNotes("");
       setGeneratedImage(null);
-      setGeneratePhoto(false);
       navigate("/recipes");
     } catch (error) {
       console.error("Error saving recipe:", error);
@@ -213,9 +187,7 @@ export const ChatInterface = ({
             Edit Recipe
           </Button>
           <Button
-            onClick={() => {
-              setIsSaveDialogOpen(true);
-            }}
+            onClick={() => setIsSaveDialogOpen(true)}
             variant="outline"
             className="border-primary text-primary hover:bg-primary/10"
           >
@@ -233,71 +205,13 @@ export const ChatInterface = ({
         </div>
       )}
 
-      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Save Recipe</DialogTitle>
-            <DialogDescription>
-              Give your recipe a name and add any notes you'd like to remember.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Recipe Name</Label>
-              <Input
-                id="title"
-                placeholder="Enter recipe name"
-                value={recipeTitle}
-                onChange={(e) => setRecipeTitle(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                placeholder="Add any notes about this recipe..."
-                value={recipeNotes}
-                onChange={(e) => setRecipeNotes(e.target.value)}
-                className="min-h-[100px]"
-              />
-            </div>
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="generate-photo"
-                checked={generatePhoto}
-                onCheckedChange={setGeneratePhoto}
-              />
-              <Label htmlFor="generate-photo" className="cursor-pointer">
-                Generate Recipe Photo
-              </Label>
-            </div>
-            {isGeneratingImage && (
-              <div className="text-center">
-                <LoadingSpinner />
-                <p className="text-sm text-gray-500">Generating recipe image...</p>
-              </div>
-            )}
-            {generatedImage && (
-              <div className="space-y-2">
-                <Label>Generated Image</Label>
-                <img
-                  src={generatedImage}
-                  alt="Generated recipe"
-                  className="w-full rounded-lg"
-                />
-              </div>
-            )}
-          </div>
-          <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={() => setIsSaveDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveRecipe}>
-              Save Recipe
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SaveRecipeDialog
+        open={isSaveDialogOpen}
+        onOpenChange={setIsSaveDialogOpen}
+        onSave={handleSaveRecipe}
+        isGeneratingImage={isGeneratingImage}
+        generatedImage={generatedImage}
+      />
     </div>
   );
 };
