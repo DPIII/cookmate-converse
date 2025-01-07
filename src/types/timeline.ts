@@ -3,6 +3,7 @@ export interface TimelinePost {
   content: string;
   created_at: string;
   recipe: {
+    id: string;
     title: string;
     content: string;
     image_url: string | null;
