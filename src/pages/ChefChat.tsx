@@ -6,7 +6,9 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ChefHat, Send } from "lucide-react";
+import { ChefHat, Send, Save } from "lucide-react";
+import { SaveRecipeDialog } from "@/components/chat/SaveRecipeDialog";
+import { useAuth } from "@/components/AuthProvider";
 
 interface Message {
   role: "user" | "assistant";
@@ -17,7 +19,10 @@ const ChefChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const { toast } = useToast();
+  const { session } = useAuth();
 
   const handleSend = async () => {
     if (!input.trim() || isLoading) return;
@@ -51,6 +56,56 @@ const ChefChat = () => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handleSaveRecipe = async (title: string, notes: string, generatePhoto: boolean) => {
+    if (!session?.user?.id) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to save recipes.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const lastAssistantMessage = [...messages]
+      .reverse()
+      .find((msg) => msg.role === "assistant");
+
+    if (!lastAssistantMessage) {
+      toast({
+        title: "No recipe to save",
+        description: "Generate a recipe first before saving.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("saved_recipes").insert({
+        title,
+        content: lastAssistantMessage.content,
+        user_id: session.user.id,
+        notes,
+        image_url: null,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Recipe saved successfully!",
+      });
+
+      setIsSaveDialogOpen(false);
+    } catch (error) {
+      console.error("Error saving recipe:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save recipe. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -99,8 +154,28 @@ const ChefChat = () => {
               <Send className="h-4 w-4" />
             </Button>
           </div>
+          {messages.length > 0 && (
+            <div className="mt-4 flex justify-center">
+              <Button
+                onClick={() => setIsSaveDialogOpen(true)}
+                variant="outline"
+                className="border-green-600 text-green-600 hover:bg-green-50"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save Recipe
+              </Button>
+            </div>
+          )}
         </Card>
       </div>
+
+      <SaveRecipeDialog
+        open={isSaveDialogOpen}
+        onOpenChange={setIsSaveDialogOpen}
+        onSave={handleSaveRecipe}
+        isGeneratingImage={false}
+        generatedImage={generatedImage}
+      />
     </div>
   );
 };
