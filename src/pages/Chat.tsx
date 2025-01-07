@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +6,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { FilterSection } from "@/components/chat/sections/FilterSection";
 import { ImageUploadSection } from "@/components/chat/sections/ImageUploadSection";
 import { ChatSection } from "@/components/chat/sections/ChatSection";
+import { useState, useEffect } from "react";
 
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
@@ -115,40 +115,51 @@ const Chat = () => {
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
-        <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
-          <div className="space-y-8">
-            <FilterSection
-              selectedMeal={selectedMeal}
-              setSelectedMeal={setSelectedMeal}
-              selectedCuisine={selectedCuisine}
-              setSelectedCuisine={setSelectedCuisine}
-              selectedDiet={selectedDiet}
-              setSelectedDiet={setSelectedDiet}
-              customMeal={customMeal}
-              setCustomMeal={setCustomMeal}
-              customCuisine={customCuisine}
-              setCustomCuisine={setCustomCuisine}
-              customDiet={customDiet}
-              setCustomDiet={setCustomDiet}
-              selectedPeople={selectedPeople}
-              setSelectedPeople={setSelectedPeople}
-            />
+        <div className="space-y-6">
+          {/* First Card: Filters and Chat Interface */}
+          <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
+            <div className="space-y-8">
+              <FilterSection
+                selectedMeal={selectedMeal}
+                setSelectedMeal={setSelectedMeal}
+                selectedCuisine={selectedCuisine}
+                setSelectedCuisine={setSelectedCuisine}
+                selectedDiet={selectedDiet}
+                setSelectedDiet={setSelectedDiet}
+                customMeal={customMeal}
+                setCustomMeal={setCustomMeal}
+                customCuisine={customCuisine}
+                setCustomCuisine={setCustomCuisine}
+                customDiet={customDiet}
+                setCustomDiet={setCustomDiet}
+                selectedPeople={selectedPeople}
+                setSelectedPeople={setSelectedPeople}
+              />
 
-            <ImageUploadSection onFileUpload={handleFileUpload} />
+              <ChatSection
+                chatHistory={chatHistory}
+                isLoading={isLoading}
+                onSend={handleSend}
+                selectedMeal={selectedMeal}
+                selectedCuisine={selectedCuisine}
+                customMeal={customMeal}
+                customCuisine={customCuisine}
+                selectedPeople={selectedPeople}
+                onReset={handleReset}
+              />
+            </div>
+          </Card>
 
-            <ChatSection
-              chatHistory={chatHistory}
-              isLoading={isLoading}
-              onSend={handleSend}
-              selectedMeal={selectedMeal}
-              selectedCuisine={selectedCuisine}
-              customMeal={customMeal}
-              customCuisine={customCuisine}
-              selectedPeople={selectedPeople}
-              onReset={handleReset}
-            />
-          </div>
-        </Card>
+          {/* Second Card: Image Upload Interface */}
+          <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-primary mb-4">
+                Recipe from Image
+              </h2>
+              <ImageUploadSection onFileUpload={handleFileUpload} />
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );
