@@ -43,7 +43,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
     try {
       const { data: usernameResults, error: usernameError } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url')
+        .select('id, username, avatar_url, created_at')
         .or(`username.ilike.%${query}%,id.eq.${query}`)
         .limit(10);
 
@@ -54,7 +54,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
       if (emailPattern.test(query)) {
         const { data: emailResults, error: emailError } = await supabase
           .from('profiles')
-          .select('id, username, avatar_url')
+          .select('id, username, avatar_url, created_at')
           .eq('id', query)
           .limit(1);
 
