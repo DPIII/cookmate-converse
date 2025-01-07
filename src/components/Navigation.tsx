@@ -1,4 +1,4 @@
-import { Home, MessageSquare, List, LogOut, Clock } from "lucide-react";
+import { Home, MessageSquare, List, LogOut, Clock, ChefHat } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "./AuthProvider";
@@ -48,6 +48,13 @@ export const Navigation = () => {
             >
               <List className="h-6 w-6" />
             </Link>
+            <Link 
+              to="/chef" 
+              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+              aria-label="Chef Chat"
+            >
+              <ChefHat className="h-6 w-6" />
+            </Link>
             {session && (
               <button
                 onClick={handleLogout}
@@ -88,6 +95,12 @@ export const Navigation = () => {
               <Link to="/recipes">
                 <List className="h-4 w-4 mr-2" />
                 Recipes
+              </Link>
+            </Button>
+            <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
+              <Link to="/chef">
+                <ChefHat className="h-4 w-4 mr-2" />
+                Chef Chat
               </Link>
             </Button>
           </div>

@@ -8,13 +8,13 @@ import Login from "@/pages/Login";
 import Chat from "@/pages/Chat";
 import Recipes from "@/pages/Recipes";
 import Timeline from "@/pages/Timeline";
+import ChefChat from "@/pages/ChefChat";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 
-// Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       retry: 1,
     },
   },
@@ -49,6 +49,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Timeline />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chef"
+              element={
+                <ProtectedRoute>
+                  <ChefChat />
                 </ProtectedRoute>
               }
             />
