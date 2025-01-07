@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from 'react';
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -114,9 +114,12 @@ const ChefChat = () => {
       <Navigation />
       <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
         <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <ChefHat className="h-6 w-6 text-green-600" />
-            <h1 className="text-2xl font-bold text-green-700">Chef Ramsay's Kitchen</h1>
+          <div className="flex flex-col mb-4">
+            <div className="flex items-center gap-2">
+              <ChefHat className="h-6 w-6 text-green-600" />
+              <h1 className="text-2xl font-bold text-green-700">Chef Ramsay's Kitchen</h1>
+            </div>
+            <p className="text-muted-foreground mt-2 ml-8">Ask me cooking, recipe or life advice</p>
           </div>
           <ScrollArea className="h-[60vh] border rounded-lg p-4 mb-4">
             {messages.map((msg, index) => (
