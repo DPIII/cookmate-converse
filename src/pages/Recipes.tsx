@@ -15,6 +15,7 @@ const Recipes = () => {
   const [newTitle, setNewTitle] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMealType, setSelectedMealType] = useState<string>("all");
+  const [isSortedByRating, setIsSortedByRating] = useState(false);
   const { toast } = useToast();
 
   const { data: recipes, isLoading, refetch } = useQuery({
@@ -60,12 +61,21 @@ const Recipes = () => {
     refetch();
   };
 
-  const filteredRecipes = recipes?.filter((recipe) => {
+  const toggleSortByRating = () => {
+    setIsSortedByRating(!isSortedByRating);
+  };
+
+  const filteredAndSortedRecipes = recipes?.filter((recipe) => {
     const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          recipe.content.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMealType = selectedMealType === "all" || 
                            (recipe.meal_type && recipe.meal_type.toLowerCase() === selectedMealType.toLowerCase());
     return matchesSearch && matchesMealType;
+  }).sort((a, b) => {
+    if (!isSortedByRating) return 0;
+    const ratingA = a.rating ?? 0;
+    const ratingB = b.rating ?? 0;
+    return ratingB - ratingA;
   });
 
   if (isLoading) {
@@ -109,10 +119,12 @@ const Recipes = () => {
             onSearchChange={setSearchQuery}
             selectedMealType={selectedMealType}
             onMealTypeChange={setSelectedMealType}
+            onSortByRating={toggleSortByRating}
+            isSortedByRating={isSortedByRating}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredRecipes?.map((recipe) => (
+            {filteredAndSortedRecipes?.map((recipe) => (
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}

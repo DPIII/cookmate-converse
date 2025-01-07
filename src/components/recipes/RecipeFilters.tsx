@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
+import { Search, Star } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { MEAL_TYPES } from "@/components/chat/filters/FilterConstants";
 
 interface RecipeFiltersProps {
@@ -14,6 +15,8 @@ interface RecipeFiltersProps {
   onSearchChange: (value: string) => void;
   selectedMealType: string;
   onMealTypeChange: (value: string) => void;
+  onSortByRating: () => void;
+  isSortedByRating: boolean;
 }
 
 export const RecipeFilters = ({
@@ -21,6 +24,8 @@ export const RecipeFilters = ({
   onSearchChange,
   selectedMealType,
   onMealTypeChange,
+  onSortByRating,
+  isSortedByRating,
 }: RecipeFiltersProps) => {
   return (
     <div className="flex flex-col md:flex-row gap-4">
@@ -46,6 +51,15 @@ export const RecipeFilters = ({
           ))}
         </SelectContent>
       </Select>
+      <Button
+        variant={isSortedByRating ? "secondary" : "outline"}
+        size="default"
+        onClick={onSortByRating}
+        className="whitespace-nowrap"
+      >
+        <Star className={`h-4 w-4 mr-2 ${isSortedByRating ? "fill-current" : ""}`} />
+        Sort by Rating
+      </Button>
     </div>
   );
 };
