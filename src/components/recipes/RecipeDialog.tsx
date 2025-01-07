@@ -12,6 +12,7 @@ import { ShareButton } from "./ShareButton";
 import { Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 interface RecipeDialogProps {
   recipe: any;
@@ -39,6 +40,7 @@ export const RecipeDialog = ({
   onDelete,
 }: RecipeDialogProps) => {
   const { toast } = useToast();
+  const [tempRating, setTempRating] = useState<number | null>(null);
   
   if (!recipe) return null;
 
@@ -62,23 +64,32 @@ export const RecipeDialog = ({
   };
 
   const handleRating = async (rating: number) => {
+    setTempRating(rating);
+  };
+
+  const handleSaveRating = async () => {
+    if (tempRating === null) return;
+    
     try {
       const { error } = await supabase
         .from('saved_recipes')
-        .update({ rating })
+        .update({ rating: tempRating })
         .eq('id', recipe.id);
 
       if (error) throw error;
 
       toast({
-        title: "Rating updated",
-        description: "Your rating has been saved",
+        title: "Rating saved",
+        description: "Your rating has been saved successfully",
       });
+      
+      // Reset temp rating after saving
+      setTempRating(null);
     } catch (err) {
-      console.error("Failed to update rating:", err);
+      console.error("Failed to save rating:", err);
       toast({
         title: "Error",
-        description: "Failed to update rating",
+        description: "Failed to save rating",
         variant: "destructive",
       });
     }
@@ -129,18 +140,32 @@ export const RecipeDialog = ({
               </div>
             </div>
             <div className="flex justify-between items-center">
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((star) => (
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Button
+                      key={star}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRating(star)}
+                      className={`p-1 ${
+                        (tempRating ?? recipe.rating) >= star ? 'text-yellow-500' : 'text-gray-300'
+                      }`}
+                    >
+                      <Star className="h-5 w-5" fill={(tempRating ?? recipe.rating) >= star ? 'currentColor' : 'none'} />
+                    </Button>
+                  ))}
+                </div>
+                {tempRating !== null && (
                   <Button
-                    key={star}
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    onClick={() => handleRating(star)}
-                    className={`p-1 ${recipe.rating >= star ? 'text-yellow-500' : 'text-gray-300'}`}
+                    onClick={handleSaveRating}
+                    className="ml-2 text-xs"
                   >
-                    <Star className="h-5 w-5" fill={recipe.rating >= star ? 'currentColor' : 'none'} />
+                    Save Rating
                   </Button>
-                ))}
+                )}
               </div>
               <div className="flex gap-2">
                 <ShareButton onClick={handleShare} />
@@ -171,7 +196,7 @@ export const RecipeDialog = ({
               created_at={recipe.created_at}
               meal_type={recipe.meal_type}
               cuisine_type={recipe.cuisine_type}
-              rating={recipe.rating}
+              rating={tempRating ?? recipe.rating}
             />
             <div className="whitespace-pre-wrap">{recipe.content}</div>
           </div>
