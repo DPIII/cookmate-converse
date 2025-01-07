@@ -16,7 +16,9 @@ export default function Timeline() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTimelinePosts();
+    if (session?.user) {
+      fetchTimelinePosts();
+    }
   }, [session]);
 
   const fetchTimelinePosts = async () => {
@@ -38,7 +40,10 @@ export default function Timeline() {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
       setPosts(timelinePosts as TimelinePostType[]);
     } catch (error) {
       console.error('Error fetching timeline posts:', error);
@@ -47,6 +52,19 @@ export default function Timeline() {
       setLoading(false);
     }
   };
+
+  if (!session) {
+    return (
+      <div className="min-h-screen bg-green-50/30">
+        <Navigation />
+        <main className="max-w-4xl mx-auto pt-20 px-4">
+          <div className="text-center py-8 text-gray-500">
+            Please log in to view the timeline
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-green-50/30">
@@ -68,7 +86,7 @@ export default function Timeline() {
           <div className="text-center py-8">Loading...</div>
         ) : posts.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Coming soon
+            No posts yet. Connect with friends or save some recipes to see their activity here!
           </div>
         ) : (
           <div className="space-y-6">
