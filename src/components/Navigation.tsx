@@ -82,13 +82,13 @@ export const Navigation = () => {
             <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
               <Link to="/chat">
                 <MessageSquare className="h-4 w-4 mr-2" />
-                Chat
+                Recipe Maker
               </Link>
             </Button>
             <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
               <Link to="/timeline">
                 <Clock className="h-4 w-4 mr-2" />
-                Timeline
+                Friends
               </Link>
             </Button>
             <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
