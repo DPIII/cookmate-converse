@@ -142,7 +142,7 @@ const Chat = () => {
 
             {/* Second section - Image Upload */}
             <div className="border-b pb-8">
-              <p className="text-lg font-medium mb-4">
+              <p className="text-lg font-medium mb-4 text-primary">
                 Upload a picture of a meal, recipe, or menu item
               </p>
               <div className="flex gap-4">
@@ -152,9 +152,9 @@ const Chat = () => {
                   onChange={handleFileUpload}
                   className="flex-1"
                 />
-                <Button variant="outline">
+                <Button variant="default" className="bg-primary text-white hover:bg-primary/90">
                   <Upload className="h-4 w-4 mr-2" />
-                  Upload
+                  Generate Recipe
                 </Button>
               </div>
             </div>
