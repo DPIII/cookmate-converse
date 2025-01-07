@@ -1,4 +1,4 @@
 project_id = "nkseanjwwpnpfyrlwqwk"
 
-[functions.generate-recipe]
+[functions.chat-with-chef]
 verify_jwt = false
