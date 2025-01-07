@@ -3,24 +3,21 @@ import { TimelinePost as TimelinePostType } from "@/types/timeline";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function TimelinePost({ post }: { post: TimelinePostType }) {
   const navigate = useNavigate();
   const { session } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
-
-  const handleRecipeClick = () => {
-    if (post.recipe) {
-      navigate(`/recipes/${post.recipe.id}`);
-    }
-  };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleLike = async () => {
     if (!session?.user) {
@@ -88,22 +85,70 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
         <p className="text-gray-600">{post.content}</p>
         
         {post.recipe && (
-          <div 
-            className="bg-green-50 rounded-lg p-4 cursor-pointer hover:bg-green-100 transition-colors"
-            onClick={handleRecipeClick}
-          >
-            <h4 className="text-lg font-medium text-green-800 mb-2">
-              {post.recipe.title}
-            </h4>
-            {post.recipe.image_url && (
-              <img
-                src={post.recipe.image_url}
-                alt={post.recipe.title}
-                className="w-full h-48 object-cover rounded-md mb-3"
-              />
-            )}
-            <p className="text-gray-600 line-clamp-2">{post.recipe.content}</p>
-          </div>
+          <>
+            <div 
+              className="bg-green-50 rounded-lg p-4 cursor-pointer hover:bg-green-100 transition-colors"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <h4 className="text-lg font-medium text-green-800 mb-2">
+                {post.recipe.title}
+              </h4>
+              {post.recipe.image_url && (
+                <img
+                  src={post.recipe.image_url}
+                  alt={post.recipe.title}
+                  className="w-full h-48 object-cover rounded-md mb-3"
+                />
+              )}
+              <p className="text-gray-600 line-clamp-2">{post.recipe.content}</p>
+            </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent className="max-w-3xl max-h-[90vh]">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-semibold text-green-800">
+                    {post.recipe.title}
+                  </DialogTitle>
+                </DialogHeader>
+                <ScrollArea className="h-[calc(90vh-8rem)]">
+                  <div className="space-y-6 p-4">
+                    {post.recipe.image_url && (
+                      <img
+                        src={post.recipe.image_url}
+                        alt={post.recipe.title}
+                        className="w-full h-64 object-cover rounded-lg"
+                      />
+                    )}
+                    
+                    <div className="flex items-center gap-4">
+                      {post.recipe.cuisine_type && (
+                        <span className="inline-block text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                          {post.recipe.cuisine_type}
+                        </span>
+                      )}
+                      {post.recipe.rating && (
+                        <div className="flex items-center gap-1">
+                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <span className="text-sm font-medium">{post.recipe.rating}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="prose prose-green max-w-none">
+                      <div className="whitespace-pre-wrap">{post.recipe.content}</div>
+                    </div>
+
+                    {post.recipe.notes && (
+                      <div className="bg-gray-50 rounded-lg p-4 mt-6">
+                        <h3 className="font-medium text-gray-900 mb-2">Notes</h3>
+                        <p className="text-gray-600">{post.recipe.notes}</p>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
       </div>
 

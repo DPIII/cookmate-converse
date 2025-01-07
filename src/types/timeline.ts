@@ -7,13 +7,11 @@ export interface TimelinePost {
     title: string;
     content: string;
     image_url: string | null;
+    cuisine_type?: string;
+    rating?: number;
+    notes?: string;
   };
   user: {
     username: string;
   };
-}
-
-export interface UserProfile {
-  id: string;
-  username: string | null;
 }
