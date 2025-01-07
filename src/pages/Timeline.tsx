@@ -30,12 +30,17 @@ export default function Timeline() {
           content,
           created_at,
           recipe:saved_recipes!timeline_posts_recipe_id_fkey (
+            id,
             title,
             content,
-            image_url
+            image_url,
+            cuisine_type,
+            cooking_time
           ),
           user:profiles!timeline_posts_user_id_fkey (
-            username
+            id,
+            username,
+            avatar_url
           )
         `)
         .order('created_at', { ascending: false });
@@ -71,7 +76,7 @@ export default function Timeline() {
       <Navigation />
       <main className="max-w-4xl mx-auto pt-20 px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-green-800">Timeline</h1>
+          <h1 className="text-2xl font-bold text-green-800">Recipe Feed</h1>
           <Button
             variant="outline"
             onClick={() => setShowSearch(true)}
@@ -86,7 +91,7 @@ export default function Timeline() {
           <div className="text-center py-8">Loading...</div>
         ) : posts.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            No posts yet. Connect with friends or save some recipes to see their activity here!
+            No recipes shared yet. Connect with friends or save some recipes to see their activity here!
           </div>
         ) : (
           <div className="space-y-6">

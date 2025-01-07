@@ -1,25 +1,63 @@
 import { TimelinePost as TimelinePostType } from "@/types/timeline";
+import { Avatar } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+import { Heart, MessageCircle, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function TimelinePost({ post }: { post: TimelinePostType }) {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 border border-green-100">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h3 className="font-semibold text-green-800">{post.user.username}</h3>
-          <p className="text-sm text-gray-500">
-            {new Date(post.created_at).toLocaleDateString()}
-          </p>
+    <Card className="p-6 space-y-4">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center space-x-3">
+          <Avatar className="h-10 w-10">
+            <div className="bg-green-100 h-full w-full flex items-center justify-center text-green-800 font-semibold">
+              {post.user.username?.[0]?.toUpperCase() || '?'}
+            </div>
+          </Avatar>
+          <div>
+            <h3 className="font-semibold text-green-800">{post.user.username}</h3>
+            <p className="text-sm text-gray-500">
+              {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
+            </p>
+          </div>
         </div>
       </div>
-      <h4 className="text-lg font-medium mb-2">{post.recipe.title}</h4>
-      {post.recipe.image_url && (
-        <img
-          src={post.recipe.image_url}
-          alt={post.recipe.title}
-          className="w-full h-48 object-cover rounded-md mb-4"
-        />
-      )}
-      <p className="text-gray-700">{post.content}</p>
-    </div>
+
+      <div className="space-y-3">
+        <p className="text-gray-600">{post.content}</p>
+        
+        {post.recipe && (
+          <div className="bg-green-50 rounded-lg p-4">
+            <h4 className="text-lg font-medium text-green-800 mb-2">
+              {post.recipe.title}
+            </h4>
+            {post.recipe.image_url && (
+              <img
+                src={post.recipe.image_url}
+                alt={post.recipe.title}
+                className="w-full h-48 object-cover rounded-md mb-3"
+              />
+            )}
+            <p className="text-gray-600 line-clamp-2">{post.recipe.content}</p>
+          </div>
+        )}
+      </div>
+
+      <div className="flex items-center space-x-4 pt-2">
+        <Button variant="ghost" size="sm" className="text-gray-600">
+          <Heart className="h-4 w-4 mr-2" />
+          Like
+        </Button>
+        <Button variant="ghost" size="sm" className="text-gray-600">
+          <MessageCircle className="h-4 w-4 mr-2" />
+          Comment
+        </Button>
+        <Button variant="ghost" size="sm" className="text-gray-600">
+          <Share2 className="h-4 w-4 mr-2" />
+          Share
+        </Button>
+      </div>
+    </Card>
   );
 }
