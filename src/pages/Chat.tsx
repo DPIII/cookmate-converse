@@ -6,6 +6,9 @@ import { Navigation } from "@/components/Navigation";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { RecipeFilters } from "@/components/chat/RecipeFilters";
 import { useAuth } from "@/components/AuthProvider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Upload } from "lucide-react";
 
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
@@ -100,39 +103,76 @@ const Chat = () => {
     localStorage.removeItem("chatHistory");
   };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // TODO: Implement file upload functionality
+      toast({
+        title: "Coming Soon",
+        description: "Image upload functionality will be available soon!",
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
         <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
-          <div className="space-y-6">
-            <RecipeFilters
-              selectedMeal={selectedMeal}
-              setSelectedMeal={setSelectedMeal}
-              selectedCuisine={selectedCuisine}
-              setSelectedCuisine={setSelectedCuisine}
-              selectedDiet={selectedDiet}
-              setSelectedDiet={setSelectedDiet}
-              customMeal={customMeal}
-              setCustomMeal={setCustomMeal}
-              customCuisine={customCuisine}
-              setCustomCuisine={setCustomCuisine}
-              customDiet={customDiet}
-              setCustomDiet={setCustomDiet}
-              selectedPeople={selectedPeople}
-              setSelectedPeople={setSelectedPeople}
-            />
-            <ChatInterface
-              chatHistory={chatHistory}
-              isLoading={isLoading}
-              onSend={handleSend}
-              selectedMeal={selectedMeal}
-              selectedCuisine={selectedCuisine}
-              customMeal={customMeal}
-              customCuisine={customCuisine}
-              selectedPeople={selectedPeople}
-              onReset={handleReset}
-            />
+          <div className="space-y-8">
+            {/* First section - Recipe Filters */}
+            <div className="border-b pb-8">
+              <RecipeFilters
+                selectedMeal={selectedMeal}
+                setSelectedMeal={setSelectedMeal}
+                selectedCuisine={selectedCuisine}
+                setSelectedCuisine={setSelectedCuisine}
+                selectedDiet={selectedDiet}
+                setSelectedDiet={setSelectedDiet}
+                customMeal={customMeal}
+                setCustomMeal={setCustomMeal}
+                customCuisine={customCuisine}
+                setCustomCuisine={setCustomCuisine}
+                customDiet={customDiet}
+                setCustomDiet={setCustomDiet}
+                selectedPeople={selectedPeople}
+                setSelectedPeople={setSelectedPeople}
+              />
+            </div>
+
+            {/* Second section - Image Upload */}
+            <div className="border-b pb-8">
+              <p className="text-lg font-medium mb-4">
+                Upload a picture of a meal, recipe, or menu item
+              </p>
+              <div className="flex gap-4">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  className="flex-1"
+                />
+                <Button variant="outline">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload
+                </Button>
+              </div>
+            </div>
+
+            {/* Third section - Recipe Generation */}
+            <div>
+              <ChatInterface
+                chatHistory={chatHistory}
+                isLoading={isLoading}
+                onSend={handleSend}
+                selectedMeal={selectedMeal}
+                selectedCuisine={selectedCuisine}
+                customMeal={customMeal}
+                customCuisine={customCuisine}
+                selectedPeople={selectedPeople}
+                onReset={handleReset}
+              />
+            </div>
           </div>
         </Card>
       </div>
