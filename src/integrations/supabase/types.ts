@@ -105,6 +105,33 @@ export type Database = {
           },
         ]
       }
+      membership_history: {
+        Row: {
+          changed_at: string | null
+          id: string
+          new_tier: Database["public"]["Enums"]["membership_tier"] | null
+          previous_tier: Database["public"]["Enums"]["membership_tier"] | null
+          reason: string | null
+          user_id: string | null
+        }
+        Insert: {
+          changed_at?: string | null
+          id?: string
+          new_tier?: Database["public"]["Enums"]["membership_tier"] | null
+          previous_tier?: Database["public"]["Enums"]["membership_tier"] | null
+          reason?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          changed_at?: string | null
+          id?: string
+          new_tier?: Database["public"]["Enums"]["membership_tier"] | null
+          previous_tier?: Database["public"]["Enums"]["membership_tier"] | null
+          reason?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -113,6 +140,8 @@ export type Database = {
           dietary_preferences: string[] | null
           favorite_cuisines: string[] | null
           id: string
+          membership_tier: Database["public"]["Enums"]["membership_tier"]
+          membership_updated_at: string | null
           name: string | null
           profile_picture_url: string | null
           skill_level: string | null
@@ -125,6 +154,8 @@ export type Database = {
           dietary_preferences?: string[] | null
           favorite_cuisines?: string[] | null
           id: string
+          membership_tier?: Database["public"]["Enums"]["membership_tier"]
+          membership_updated_at?: string | null
           name?: string | null
           profile_picture_url?: string | null
           skill_level?: string | null
@@ -137,6 +168,8 @@ export type Database = {
           dietary_preferences?: string[] | null
           favorite_cuisines?: string[] | null
           id?: string
+          membership_tier?: Database["public"]["Enums"]["membership_tier"]
+          membership_updated_at?: string | null
           name?: string | null
           profile_picture_url?: string | null
           skill_level?: string | null
@@ -375,7 +408,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      membership_tier: "free" | "paid" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never

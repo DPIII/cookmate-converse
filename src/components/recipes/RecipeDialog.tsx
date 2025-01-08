@@ -76,7 +76,6 @@ export const RecipeDialog = ({
         description: "Your rating has been saved successfully",
       });
       
-      // Update the recipe object with the new rating
       recipe.rating = tempRating;
       setTempRating(null);
     } catch (err) {
@@ -99,8 +98,8 @@ export const RecipeDialog = ({
       if (error) throw error;
 
       toast({
-        title: "Recipe deleted",
-        description: "Your recipe has been deleted successfully",
+        title: "Recipe removed",
+        description: "Recipe has been removed from your saved recipes",
       });
 
       onClose();
@@ -109,7 +108,7 @@ export const RecipeDialog = ({
       console.error("Failed to delete recipe:", err);
       toast({
         title: "Error",
-        description: "Failed to delete recipe",
+        description: "Failed to remove recipe",
         variant: "destructive",
       });
     }
