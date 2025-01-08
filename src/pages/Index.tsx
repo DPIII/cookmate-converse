@@ -3,6 +3,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesGrid } from "@/components/home/FeaturesGrid";
 import { CommunityStats } from "@/components/home/CommunityStats";
+import { TestimonialSlider } from "@/components/home/TestimonialSlider";
 
 const Index = () => {
   const { session } = useAuth();
@@ -12,6 +13,7 @@ const Index = () => {
       <HeroSection />
       <FeaturesGrid />
       <CommunityStats />
+      <TestimonialSlider />
     </div>
   );
 
