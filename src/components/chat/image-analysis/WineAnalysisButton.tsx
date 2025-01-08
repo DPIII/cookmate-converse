@@ -15,7 +15,7 @@ export const WineAnalysisButton = ({ isLoading, onClick }: WineAnalysisButtonPro
       disabled={isLoading}
     >
       <Wine className="h-4 w-4 mr-2" />
-      {isLoading ? "Processing..." : "Decode My Wine List"}
+      {isLoading ? "Analyzing..." : "Decode My Wine List"}
     </Button>
   );
 };
