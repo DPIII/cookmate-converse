@@ -11,6 +11,7 @@ import Timeline from "@/pages/Timeline";
 import ChefChat from "@/pages/ChefChat";
 import Profile from "@/pages/Profile";
 import Billing from "@/pages/Billing";
+import Subscription from "@/pages/Subscription";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 
 const queryClient = new QueryClient({
@@ -30,6 +31,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/subscription" element={<Subscription />} />
             <Route
               path="/chat"
               element={
