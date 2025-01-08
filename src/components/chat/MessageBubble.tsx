@@ -6,14 +6,17 @@ interface Message {
 export const MessageBubble = ({ message }: { message: Message }) => {
   const isUser = message.role === "user";
 
-  const formatRecipeText = (text: string) => {
+  const formatText = (text: string) => {
     return text.split('\n').map((line, index) => {
+      // Main titles (ends with :)
       if (line.trim().endsWith(':')) {
         return `<strong><u>${line}</u></strong>`;
       }
-      if (/^\d+\./.test(line.trim())) {
+      // Categories or numbered items
+      if (/^\d+\./.test(line.trim()) || /^[A-Z\s]+:/.test(line.trim())) {
         return `<strong>${line}</strong>`;
       }
+      // Regular descriptive text
       return line;
     }).join('\n');
   };
@@ -31,7 +34,7 @@ export const MessageBubble = ({ message }: { message: Message }) => {
       ) : (
         <div 
           className="prose prose-green max-w-none"
-          dangerouslySetInnerHTML={{ __html: formatRecipeText(message.content) }} 
+          dangerouslySetInnerHTML={{ __html: formatText(message.content) }} 
         />
       )}
     </div>
