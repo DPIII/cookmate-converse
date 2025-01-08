@@ -3,7 +3,8 @@ import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { ChefHat, DollarSign } from "lucide-react";
+import { ChefHat, ImagePlus, Library, MessageSquare } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -23,6 +24,33 @@ const Index = () => {
     }
   });
 
+  const features = [
+    {
+      title: "Generate Recipe",
+      icon: <MessageSquare className="h-8 w-8 text-green-600" />,
+      description: "Create personalized recipes with AI assistance",
+      path: "/chat"
+    },
+    {
+      title: "Upload Picture",
+      icon: <ImagePlus className="h-8 w-8 text-green-600" />,
+      description: "Generate recipes from food images",
+      path: "/chat"
+    },
+    {
+      title: "My Library",
+      icon: <Library className="h-8 w-8 text-green-600" />,
+      description: "Access your saved recipes",
+      path: "/recipes"
+    },
+    {
+      title: "Chef Chat",
+      icon: <ChefHat className="h-8 w-8 text-green-600" />,
+      description: "Get cooking advice from Chef Ramsay",
+      path: "/chef"
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-sage-50 to-cream-50">
       {/* Hero Section */}
@@ -36,74 +64,46 @@ const Index = () => {
               Your personal AI-powered chef that helps you create delicious recipes
               tailored to your preferences, dietary needs, and available ingredients.
             </p>
-            <div className="flex justify-center gap-4">
-              {!session ? (
-                <Button
-                  onClick={() => navigate("/login")}
-                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
-                >
-                  Get Started
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => navigate("/chat")}
-                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
-                >
-                  Start Cooking
-                </Button>
-              )}
-            </div>
+            {!session && (
+              <Button
+                onClick={() => navigate("/login")}
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
+              >
+                Get Started
+              </Button>
+            )}
           </div>
         </div>
       </div>
 
       {/* Features Grid */}
-      <div className="py-24 sm:py-32 bg-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-green-800 sm:text-4xl">
-              Everything you need to cook amazing meals
-            </h2>
-          </div>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-lg bg-green-50 p-4 mb-4">
-                  <ChefHat className="h-8 w-8 text-green-600" />
-                </div>
-                <dt className="text-lg font-semibold leading-7 text-gray-900">
-                  AI-Powered Recipes
-                </dt>
-                <dd className="mt-4 text-base leading-7 text-gray-600">
-                  Get personalized recipe suggestions based on your preferences and available ingredients
-                </dd>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-lg bg-green-50 p-4 mb-4">
-                  <DollarSign className="h-8 w-8 text-green-600" />
-                </div>
-                <dt className="text-lg font-semibold leading-7 text-gray-900">
-                  Save Money
-                </dt>
-                <dd className="mt-4 text-base leading-7 text-gray-600">
-                  Cook at home and save money while enjoying delicious, restaurant-quality meals
-                </dd>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="rounded-lg bg-green-50 p-4 mb-4">
-                  <ChefHat className="h-8 w-8 text-green-600" />
-                </div>
-                <dt className="text-lg font-semibold leading-7 text-gray-900">
-                  Recipe Collections
-                </dt>
-                <dd className="mt-4 text-base leading-7 text-gray-600">
-                  Save and organize your favorite recipes in personal collections
-                </dd>
-              </div>
-            </dl>
+      {session && (
+        <div className="py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:gap-12 max-w-4xl mx-auto">
+              {features.map((feature) => (
+                <Card
+                  key={feature.title}
+                  className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => navigate(feature.path)}
+                >
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="rounded-lg bg-green-50 p-4">
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-xl font-semibold text-green-800">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600">
+                      {feature.description}
+                    </p>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Community Stats Section */}
       <div className="py-24 sm:py-32">
