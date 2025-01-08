@@ -7,9 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface ImageUploadSectionProps {
   onFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onAnalysisComplete: (analysis: string) => void;
 }
 
-export const ImageUploadSection = ({ onFileUpload }: ImageUploadSectionProps) => {
+export const ImageUploadSection = ({ onFileUpload, onAnalysisComplete }: ImageUploadSectionProps) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -18,6 +19,7 @@ export const ImageUploadSection = ({ onFileUpload }: ImageUploadSectionProps) =>
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
+      onFileUpload(event);
     }
   };
 
@@ -57,11 +59,13 @@ export const ImageUploadSection = ({ onFileUpload }: ImageUploadSectionProps) =>
 
       toast({
         title: "Analysis Complete",
-        description: "Image analyzed successfully. You can now generate a recipe based on the analysis.",
+        description: "Image analyzed successfully. Generating recipe suggestions...",
       });
 
-      // TODO: Pass the analysis to the chat interface for recipe generation
-      console.log('Image analysis:', data.analysis);
+      // Pass the analysis back to the chat interface
+      if (data.analysis) {
+        onAnalysisComplete(data.analysis);
+      }
 
     } catch (error) {
       console.error('Error processing image:', error);
@@ -94,7 +98,7 @@ export const ImageUploadSection = ({ onFileUpload }: ImageUploadSectionProps) =>
           disabled={isLoading}
         >
           <Upload className="h-4 w-4 mr-2" />
-          {isLoading ? "Analyzing..." : "Generate Recipe"}
+          {isLoading ? "Analyzing..." : "Analyze Image"}
         </Button>
       </div>
     </div>

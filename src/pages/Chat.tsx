@@ -104,11 +104,17 @@ const Chat = () => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      toast({
-        title: "Coming Soon",
-        description: "Image upload functionality will be available soon!",
-      });
+      // File is handled in ImageUploadSection component
     }
+  };
+
+  const handleAnalysisComplete = (analysis: string) => {
+    // Add the analysis to the chat history
+    setChatHistory(prev => [
+      ...prev,
+      { role: "user", content: "I uploaded an image for analysis." },
+      { role: "assistant", content: `Here's what I see in the image:\n\n${analysis}\n\nWould you like me to generate a recipe based on this?` }
+    ]);
   };
 
   return (
@@ -156,7 +162,10 @@ const Chat = () => {
               <h2 className="text-xl font-semibold text-primary mb-4">
                 Recipe from Image
               </h2>
-              <ImageUploadSection onFileUpload={handleFileUpload} />
+              <ImageUploadSection 
+                onFileUpload={handleFileUpload} 
+                onAnalysisComplete={handleAnalysisComplete}
+              />
             </div>
           </Card>
         </div>
