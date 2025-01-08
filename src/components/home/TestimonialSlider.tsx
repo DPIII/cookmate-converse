@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const testimonials = [
   {
@@ -33,7 +33,7 @@ const testimonials = [
 ];
 
 export const TestimonialSlider = () => {
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   const [api, setApi] = useState<any>();
 
   // Auto-advance the carousel every 5 seconds
