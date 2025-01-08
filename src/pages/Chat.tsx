@@ -101,13 +101,6 @@ const Chat = () => {
     localStorage.removeItem("chatHistory");
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // File is handled in ImageUploadSection component
-    }
-  };
-
   const handleAnalysisComplete = (analysis: string) => {
     // Add the analysis to the chat history and automatically trigger recipe generation
     setChatHistory(prev => [
@@ -165,10 +158,7 @@ const Chat = () => {
               <h2 className="text-xl font-semibold text-primary mb-4">
                 Recipe from Image
               </h2>
-              <ImageUploadSection 
-                onFileUpload={handleFileUpload} 
-                onAnalysisComplete={handleAnalysisComplete}
-              />
+              <ImageUploadSection onAnalysisComplete={handleAnalysisComplete} />
             </div>
           </Card>
         </div>
