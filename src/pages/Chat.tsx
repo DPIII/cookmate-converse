@@ -109,12 +109,15 @@ const Chat = () => {
   };
 
   const handleAnalysisComplete = (analysis: string) => {
-    // Add the analysis to the chat history
+    // Add the analysis to the chat history and automatically trigger recipe generation
     setChatHistory(prev => [
       ...prev,
       { role: "user", content: "I uploaded an image for analysis." },
-      { role: "assistant", content: `Here's what I see in the image:\n\n${analysis}\n\nWould you like me to generate a recipe based on this?` }
+      { role: "assistant", content: `Here's what I see in the image:\n\n${analysis}` }
     ]);
+
+    // Automatically trigger recipe generation based on the analysis
+    handleSend(`Generate a recipe based on this analysis: ${analysis}`, false);
   };
 
   return (

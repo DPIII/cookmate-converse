@@ -76,6 +76,7 @@ export const ImageUploadSection = ({ onFileUpload, onAnalysisComplete }: ImageUp
       });
     } finally {
       setIsLoading(false);
+      setSelectedFile(null);
     }
   };
 
@@ -98,7 +99,7 @@ export const ImageUploadSection = ({ onFileUpload, onAnalysisComplete }: ImageUp
           disabled={isLoading}
         >
           <Upload className="h-4 w-4 mr-2" />
-          {isLoading ? "Analyzing..." : "Analyze Image"}
+          {isLoading ? "Processing..." : "Upload & Generate Recipe"}
         </Button>
       </div>
     </div>
