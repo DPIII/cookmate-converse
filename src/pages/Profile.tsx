@@ -52,7 +52,9 @@ const Profile = () => {
 
       const { error } = await supabase
         .from("profiles")
-        .upsert(updates);
+        .upsert(updates, {
+          onConflict: 'id'
+        });
 
       if (error) throw error;
       toast.success("Profile updated successfully");
