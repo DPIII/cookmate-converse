@@ -10,7 +10,7 @@ export const ImageUploadInput = ({ onChange }: ImageUploadInputProps) => {
       type="file"
       accept="image/*"
       onChange={onChange}
-      className="flex-1"
+      className="flex-1 bg-transparent border-primary text-primary"
     />
   );
 };

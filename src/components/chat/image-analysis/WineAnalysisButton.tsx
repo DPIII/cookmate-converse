@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Wine } from "lucide-react";
 
-interface ImageAnalysisButtonProps {
+interface WineAnalysisButtonProps {
   isLoading: boolean;
   onClick: () => void;
 }
 
-export const ImageAnalysisButton = ({ isLoading, onClick }: ImageAnalysisButtonProps) => {
+export const WineAnalysisButton = ({ isLoading, onClick }: WineAnalysisButtonProps) => {
   return (
     <Button 
       variant="outline" 
@@ -14,8 +14,8 @@ export const ImageAnalysisButton = ({ isLoading, onClick }: ImageAnalysisButtonP
       onClick={onClick}
       disabled={isLoading}
     >
-      <Upload className="h-4 w-4 mr-2" />
-      {isLoading ? "Processing..." : "Generate Recipe"}
+      <Wine className="h-4 w-4 mr-2" />
+      {isLoading ? "Processing..." : "Decode My Wine List"}
     </Button>
   );
 };
