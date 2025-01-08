@@ -1,16 +1,18 @@
 import { cn } from "@/lib/utils";
+import { SVGProps } from "react";
 
-interface LoadingSpinnerProps {
+interface LoadingSpinnerProps extends SVGProps<SVGSVGElement> {
   className?: string;
 }
 
-export const LoadingSpinner = ({ className }: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({ className, ...props }: LoadingSpinnerProps) => {
   return (
     <svg
       className={cn("animate-spin", className)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
+      {...props}
     >
       <circle
         className="opacity-25"
