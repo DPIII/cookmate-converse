@@ -10,15 +10,15 @@ export const MessageBubble = ({ message }: { message: Message }) => {
     return text.split('\n').map((line, index) => {
       // Main titles (ends with :)
       if (line.trim().endsWith(':')) {
-        return `<strong><u>${line}</u></strong>`;
+        return `<h3 class="font-bold underline mb-2">${line}</h3>`;
       }
-      // Categories or numbered items
-      if (/^\d+\./.test(line.trim()) || /^[A-Z\s]+:/.test(line.trim())) {
-        return `<strong>${line}</strong>`;
+      // Categories or numbered items (including wine names)
+      if (/^\d+\./.test(line.trim()) || /^[A-Z][A-Za-z\s]+(Wine|Red|White|Rosé|Sparkling)?:/.test(line.trim())) {
+        return `<p class="font-bold mb-1">${line}</p>`;
       }
       // Regular descriptive text
-      return line;
-    }).join('\n');
+      return `<p class="mb-1">${line}</p>`;
+    }).join('');
   };
 
   return (
@@ -33,7 +33,7 @@ export const MessageBubble = ({ message }: { message: Message }) => {
         message.content
       ) : (
         <div 
-          className="prose prose-green max-w-none"
+          className="prose prose-green max-w-none [&>h3]:mt-4 [&>h3]:mb-2 [&>p]:my-0"
           dangerouslySetInnerHTML={{ __html: formatText(message.content) }} 
         />
       )}
