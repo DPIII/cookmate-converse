@@ -6,10 +6,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChefHat, ImagePlus, Library, MessageSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useEffect } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
   const { session } = useAuth();
+
+  useEffect(() => {
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        navigate("/chat");
+      }
+    });
+  }, [navigate]);
 
   const { data: stats } = useQuery({
     queryKey: ["recipeStats"],
@@ -58,13 +67,30 @@ const Index = () => {
       <div className="relative px-4 pt-20 lg:px-8">
         <div className="mx-auto max-w-4xl py-12 sm:py-16">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-green-800 sm:text-6xl mb-8">
+            <h1 className="text-4xl font-bold tracking-tight text-green-800 sm:text-6xl mb-4">
               Welcome to AnyRecipe
             </h1>
             <p className="text-lg leading-8 text-gray-600 mb-8 max-w-2xl mx-auto">
               Your personal AI-powered chef that helps you create delicious recipes
               tailored to your preferences, dietary needs, and available ingredients.
             </p>
+            {!session && (
+              <div className="flex items-center justify-center gap-4 mb-12">
+                <Button 
+                  onClick={() => navigate("/login")} 
+                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
+                >
+                  Create an Account
+                </Button>
+                <Button 
+                  onClick={() => navigate("/login")} 
+                  variant="ghost"
+                  className="text-gray-700 hover:text-gray-900 px-8 py-6 text-lg italic"
+                >
+                  Log in
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -132,21 +158,7 @@ const Index = () => {
       <MainContent />
     </ProtectedRoute>
   ) : (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sage-50 to-cream-50 p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
-            Welcome to AnyRecipe
-          </h1>
-          <Button
-            onClick={() => navigate("/login")}
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
-          >
-            Get Started
-          </Button>
-        </div>
-      </div>
-    </div>
+    <MainContent />
   );
 };
 
