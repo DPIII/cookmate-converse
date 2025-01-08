@@ -12,14 +12,6 @@ const Index = () => {
   const navigate = useNavigate();
   const { session } = useAuth();
 
-  useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        navigate("/chat");
-      }
-    });
-  }, [navigate]);
-
   const { data: stats } = useQuery({
     queryKey: ["recipeStats"],
     queryFn: async () => {
