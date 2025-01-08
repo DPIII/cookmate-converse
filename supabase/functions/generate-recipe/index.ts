@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -24,47 +23,46 @@ serve(async (req) => {
 
     console.log('Generating recipe with:', { prompt, mealType, cuisineType, dietaryRestriction, isEdit, servings });
 
-    let systemPrompt = `You are a professional chef and culinary expert specializing in ${cuisineType || 'various'} cuisine. 
-You MUST strictly follow these requirements:
-1. The recipe MUST be for a ${mealType || 'meal'} dish only
-2. If dietary restrictions are specified (${dietaryRestriction || 'none'}), they MUST be strictly followed
-3. The recipe MUST be portioned for ${servings || '2'} ${servings === '1' ? 'person' : 'people'}
-4. The recipe title MUST match the meal type (${mealType})
-5. DO NOT generate recipes that don't match these criteria
-6. When modifying an existing recipe, maintain its core characteristics and only apply the requested changes
+    let systemPrompt = `You are a professional chef and culinary expert. 
+When creating or modifying recipes, follow these guidelines:
+1. If meal type is specified, the recipe MUST be for that type only
+2. If dietary restrictions are specified, they MUST be strictly followed
+3. The recipe should be portioned appropriately for the specified number of servings
+4. Include precise measurements and clear instructions
+5. When modifying an existing recipe, maintain its core characteristics
+6. If working from an image analysis, use the identified ingredients and style as inspiration
 
-Provide detailed, structured recipes following this format:
+Format your response as follows:
 
-Title: [Recipe Name - MUST be a ${mealType} dish]
-Cuisine: [${cuisineType || 'Various'} cuisine]
+Title: [Recipe Name]
+Cuisine: [Cuisine Type]
 Prep Time: [Time]
 Cook Time: [Time]
-Servings: [${servings || '2'}]
+Servings: [Number]
 
 Ingredients:
-- [List each ingredient with precise measurements]
+[List with precise measurements]
 
 Instructions:
 1. [Clear, numbered steps]
-2. [Include cooking temperatures and times]
-3. [Add helpful tips where relevant]
+2. [Include temperatures and times]
 
-Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`;
+Chef's Notes: [Include tips, substitutions, or serving suggestions]`;
 
     let userMessage;
     if (isEdit && previousRecipe) {
-      userMessage = `Here is the current recipe:\n\n${previousRecipe}\n\nPlease adjust this recipe according to these modifications: ${prompt}\n\nProvide the complete updated recipe in the same format, maintaining the core characteristics of the original recipe while incorporating the requested changes.`;
+      userMessage = `Current recipe:\n\n${previousRecipe}\n\nModify according to: ${prompt}`;
     } else {
-      userMessage = `Create a ${mealType ? mealType.toLowerCase() : ''} recipe${
-        cuisineType ? ` from ${cuisineType} cuisine` : ""
+      userMessage = `Create a recipe with these requirements: ${prompt}${
+        mealType ? `. This should be a ${mealType} dish.` : ''
       }${
-        dietaryRestriction && dietaryRestriction !== "None"
-          ? ` that is ${dietaryRestriction.toLowerCase()}`
-          : ""
-      }${servings ? ` for ${servings} ${servings === "1" ? "person" : "people"}` : ""}. Additional requirements: ${prompt}${mealType ? `. IMPORTANT: The recipe MUST be a ${mealType} dish.` : ''}`;
+        cuisineType ? ` Use ${cuisineType} cuisine style.` : ''
+      }${
+        dietaryRestriction ? ` Must be ${dietaryRestriction}.` : ''
+      }${
+        servings ? ` Portion for ${servings} ${servings === "1" ? "person" : "people"}.` : ''
+      }`;
     }
-
-    console.log('Sending request to OpenAI with message:', userMessage);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -73,7 +71,7 @@ Chef's Notes: [Include any special tips, substitutions, or serving suggestions]`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }

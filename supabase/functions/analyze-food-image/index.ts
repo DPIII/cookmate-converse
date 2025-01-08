@@ -26,7 +26,7 @@ serve(async (req) => {
     const systemPrompt = `Analyze this image:
     a) If it's a picture of food, break down the food components and describe them in detail
     b) If it's a picture of a menu item, describe the dish and identify the type of cuisine/ambience (italian, soul food, etc.)
-    Be concise but detailed in your analysis.`;
+    Be concise but detailed in your analysis. Focus on ingredients, cooking methods, and cultural context if visible.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
