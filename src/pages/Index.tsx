@@ -6,7 +6,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChefHat, ImagePlus, Library, MessageSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useEffect } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -70,14 +69,14 @@ const Index = () => {
               <div className="flex items-center justify-center gap-4 mb-12">
                 <Button 
                   onClick={() => navigate("/login")} 
-                  className="bg-green-600 hover:bg-green-700 text-white px-8 py-6 text-lg"
+                  className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-6 text-lg"
                 >
                   Create an Account
                 </Button>
                 <Button 
                   onClick={() => navigate("/login")} 
-                  variant="ghost"
-                  className="text-gray-700 hover:text-gray-900 px-8 py-6 text-lg italic"
+                  variant="outline"
+                  className="text-gray-700 hover:text-gray-900 px-8 py-6 text-lg italic border-gray-700"
                 >
                   Log in
                 </Button>
