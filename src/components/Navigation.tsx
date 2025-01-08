@@ -1,10 +1,17 @@
-import { Home, MessageSquare, List, LogOut, Clock, ChefHat } from "lucide-react";
+import { Home, MessageSquare, List, LogOut, Clock, ChefHat, User, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "./AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const Navigation = () => {
   const { session } = useAuth();
@@ -56,13 +63,36 @@ export const Navigation = () => {
               <ChefHat className="h-6 w-6" />
             </Link>
             {session && (
-              <button
-                onClick={handleLogout}
-                className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-                aria-label="Logout"
-              >
-                <LogOut className="h-6 w-6" />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="p-2" aria-label="User menu">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={session.user?.user_metadata?.avatar_url} />
+                      <AvatarFallback>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/billing" className="flex items-center">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Billing
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>
@@ -106,14 +136,36 @@ export const Navigation = () => {
           </div>
         </div>
         {session && (
-          <Button 
-            variant="outline" 
-            className="border-green-200 text-green-600 hover:bg-green-50"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center gap-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={session.user?.user_metadata?.avatar_url} />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link to="/profile" className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/billing" className="flex items-center">
+                  <CreditCard className="mr-2 h-4 w-4" />
+                  Billing
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </nav>
