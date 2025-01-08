@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ChefHat, ImagePlus, Library, MessageSquare } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const Index = () => {
   const navigate = useNavigate();
