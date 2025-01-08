@@ -75,6 +75,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          contact_info: string | null
           created_at: string
           dietary_preferences: string[] | null
           favorite_cuisines: string[] | null
@@ -86,6 +87,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          contact_info?: string | null
           created_at?: string
           dietary_preferences?: string[] | null
           favorite_cuisines?: string[] | null
@@ -97,6 +99,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          contact_info?: string | null
           created_at?: string
           dietary_preferences?: string[] | null
           favorite_cuisines?: string[] | null
