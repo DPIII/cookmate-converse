@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      billing_subscriptions: {
+        Row: {
+          created_at: string | null
+          id: string
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       collection_recipes: {
         Row: {
           added_at: string | null
@@ -49,6 +79,7 @@ export type Database = {
           dietary_preferences: string[] | null
           favorite_cuisines: string[] | null
           id: string
+          name: string | null
           profile_picture_url: string | null
           skill_level: string | null
           username: string | null
@@ -59,6 +90,7 @@ export type Database = {
           dietary_preferences?: string[] | null
           favorite_cuisines?: string[] | null
           id: string
+          name?: string | null
           profile_picture_url?: string | null
           skill_level?: string | null
           username?: string | null
@@ -69,6 +101,7 @@ export type Database = {
           dietary_preferences?: string[] | null
           favorite_cuisines?: string[] | null
           id?: string
+          name?: string | null
           profile_picture_url?: string | null
           skill_level?: string | null
           username?: string | null

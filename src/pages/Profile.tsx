@@ -11,7 +11,7 @@ import { User } from "lucide-react";
 const Profile = () => {
   const { session } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
 
@@ -25,14 +25,14 @@ const Profile = () => {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("name, profile_picture_url")
+        .select("username, avatar_url")
         .eq("id", session.user.id)
         .single();
 
       if (error) throw error;
 
-      setName(data.name || "");
-      setAvatarUrl(data.profile_picture_url || "");
+      setUsername(data.username || "");
+      setAvatarUrl(data.avatar_url || "");
     } catch (error) {
       console.error("Error loading profile:", error);
       toast.error("Error loading profile");
@@ -47,8 +47,8 @@ const Profile = () => {
 
       const updates = {
         id: session.user.id,
-        name,
-        profile_picture_url: avatarUrl,
+        username,
+        avatar_url: avatarUrl,
         updated_at: new Date().toISOString(),
       };
 
@@ -130,13 +130,13 @@ const Profile = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="name"
+              id="username"
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
             />
           </div>
 
