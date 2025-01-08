@@ -14,10 +14,16 @@ serve(async (req) => {
   try {
     const { imageUrl } = await req.json();
 
+    if (!imageUrl) {
+      throw new Error('Image URL is required');
+    }
+
     const openAiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAiKey) {
       throw new Error('OpenAI API key not found');
     }
+
+    console.log('Analyzing wine list from image:', imageUrl);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -30,14 +36,22 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a wine expert. Analyze the wine list in the image and provide detailed descriptions.'
+            content: `You are a wine expert. Analyze the wine list in the image and provide detailed descriptions. 
+            For each wine, include:
+            - Name and producer
+            - Region and country of origin
+            - Type of wine (red, white, rosé, sparkling)
+            - Grape varieties
+            - Taste profile (dry, sweet, etc.)
+            - Suggested food pairings
+            Format the response in a clear, bulleted list.`
           },
           {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: 'This is a list of wines, please describe each wine in detail. Provide a bulleted list, of each with a clear name, origin, type of wine, type of taste (bitter, dry, sweet, etc.).'
+                text: 'Please analyze this wine list and provide detailed information about each wine.'
               },
               {
                 type: 'image_url',
@@ -46,7 +60,8 @@ serve(async (req) => {
             ]
           }
         ],
-        max_tokens: 1000
+        max_tokens: 1500,
+        temperature: 0.7
       }),
     });
 
@@ -57,13 +72,22 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    return new Response(JSON.stringify({ analysis: data.choices[0].message.content }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.log('Successfully analyzed wine list');
+
+    return new Response(
+      JSON.stringify({ analysis: data.choices[0].message.content }), 
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   } catch (error) {
     console.error('Error in analyze-wine-list function:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to analyze wine list' }), {
+      JSON.stringify({ 
+        error: error.message || 'Failed to analyze wine list',
+        details: error.toString()
+      }), 
+      {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
