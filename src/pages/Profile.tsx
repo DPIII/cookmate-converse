@@ -23,13 +23,15 @@ const Profile = () => {
         .from("profiles")
         .select("username, avatar_url, contact_info")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
-      setUsername(data.username || "");
-      setAvatarUrl(data.avatar_url || "");
-      setContactInfo(data.contact_info || "");
+      if (data) {
+        setUsername(data.username || "");
+        setAvatarUrl(data.avatar_url || "");
+        setContactInfo(data.contact_info || "");
+      }
     } catch (error) {
       console.error("Error loading profile:", error);
       toast.error("Error loading profile");
@@ -44,9 +46,9 @@ const Profile = () => {
 
       const updates = {
         id: session.user.id,
-        username,
+        username: username.trim(),
         avatar_url: avatarUrl,
-        contact_info: contactInfo,
+        contact_info: contactInfo.trim(),
         updated_at: new Date().toISOString(),
       };
 
@@ -57,6 +59,8 @@ const Profile = () => {
         });
 
       if (error) throw error;
+      
+      await getProfile(); // Refresh profile data after update
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Error updating profile:", error);
