@@ -14,6 +14,7 @@ const Profile = () => {
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [contactInfo, setContactInfo] = useState("");
 
   useEffect(() => {
     getProfile();
@@ -25,7 +26,7 @@ const Profile = () => {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("username, avatar_url")
+        .select("username, avatar_url, contact_info")
         .eq("id", session.user.id)
         .single();
 
@@ -33,6 +34,7 @@ const Profile = () => {
 
       setUsername(data.username || "");
       setAvatarUrl(data.avatar_url || "");
+      setContactInfo(data.contact_info || "");
     } catch (error) {
       console.error("Error loading profile:", error);
       toast.error("Error loading profile");
@@ -49,6 +51,7 @@ const Profile = () => {
         id: session.user.id,
         username,
         avatar_url: avatarUrl,
+        contact_info: contactInfo,
         updated_at: new Date().toISOString(),
       };
 
@@ -101,55 +104,87 @@ const Profile = () => {
 
   return (
     <div className="container max-w-2xl mx-auto pt-20 px-4">
-      <div className="bg-white rounded-lg shadow p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-green-800">Profile Settings</h1>
+      <div className="bg-white rounded-lg shadow p-6">
+        <h1 className="text-2xl font-bold text-green-800 mb-6">Profile Settings</h1>
         
-        <div className="space-y-4">
-          <div className="flex flex-col items-center gap-4">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={avatarUrl} />
-              <AvatarFallback>
-                <User className="h-12 w-12" />
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <Label htmlFor="avatar" className="cursor-pointer">
+        <table className="w-full">
+          <tbody>
+            <tr>
+              <td className="py-4">
+                <Label>Avatar</Label>
+              </td>
+              <td className="py-4">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={avatarUrl} />
+                    <AvatarFallback>
+                      <User className="h-8 w-8" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <Label htmlFor="avatar" className="cursor-pointer">
+                    <Input
+                      id="avatar"
+                      type="file"
+                      accept="image/*"
+                      onChange={uploadAvatar}
+                      disabled={uploading}
+                      className="hidden"
+                    />
+                    <Button variant="outline" disabled={uploading}>
+                      {uploading ? "Uploading..." : "Upload Avatar"}
+                    </Button>
+                  </Label>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td className="py-4">
+                <Label htmlFor="username">Username</Label>
+              </td>
+              <td className="py-4">
                 <Input
-                  id="avatar"
-                  type="file"
-                  accept="image/*"
-                  onChange={uploadAvatar}
-                  disabled={uploading}
-                  className="hidden"
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
                 />
-                <Button variant="outline" disabled={uploading}>
-                  {uploading ? "Uploading..." : "Upload Avatar"}
-                </Button>
-              </Label>
-            </div>
-          </div>
+              </td>
+            </tr>
 
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
-            />
-          </div>
+            <tr>
+              <td className="py-4">
+                <Label>Email</Label>
+              </td>
+              <td className="py-4">
+                <Input
+                  type="email"
+                  value={session?.user?.email || ""}
+                  disabled
+                  className="bg-gray-50"
+                />
+              </td>
+            </tr>
 
-          <div className="space-y-2">
-            <Label>Email</Label>
-            <Input
-              type="email"
-              value={session?.user?.email || ""}
-              disabled
-              className="bg-gray-50"
-            />
-          </div>
+            <tr>
+              <td className="py-4">
+                <Label htmlFor="contact">Contact Info</Label>
+              </td>
+              <td className="py-4">
+                <Input
+                  id="contact"
+                  type="text"
+                  value={contactInfo}
+                  onChange={(e) => setContactInfo(e.target.value)}
+                  placeholder="Enter your contact information"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
+        <div className="mt-6">
           <Button onClick={updateProfile} className="w-full">
             Update Profile
           </Button>
