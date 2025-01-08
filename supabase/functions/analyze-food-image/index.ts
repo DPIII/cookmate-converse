@@ -23,6 +23,8 @@ serve(async (req) => {
       throw new Error('Image URL is required');
     }
 
+    console.log('Analyzing image:', imageUrl);
+
     const systemPrompt = `Analyze this image:
     a) If it's a picture of food, break down the food components and describe them in detail
     b) If it's a picture of a menu item, describe the dish and identify the type of cuisine/ambience (italian, soul food, etc.)
@@ -42,7 +44,13 @@ serve(async (req) => {
             role: 'user',
             content: [
               { type: 'text', text: 'Please analyze this image.' },
-              { type: 'image_url', image_url: imageUrl }
+              {
+                type: 'image_url',
+                image_url: {
+                  url: imageUrl,
+                  detail: 'low'
+                }
+              }
             ]
           }
         ],
@@ -51,10 +59,13 @@ serve(async (req) => {
 
     if (!response.ok) {
       const error = await response.json();
+      console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Failed to analyze image');
     }
 
     const data = await response.json();
+    console.log('Analysis completed successfully');
+    
     return new Response(
       JSON.stringify({ analysis: data.choices[0].message.content }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
