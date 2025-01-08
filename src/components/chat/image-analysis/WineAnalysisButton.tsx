@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Wine } from "lucide-react";
+import { LoadingSpinner } from "../LoadingSpinner";
 
 interface WineAnalysisButtonProps {
   isLoading: boolean;
@@ -14,8 +15,17 @@ export const WineAnalysisButton = ({ isLoading, onClick }: WineAnalysisButtonPro
       onClick={onClick}
       disabled={isLoading}
     >
-      <Wine className="h-4 w-4 mr-2" />
-      {isLoading ? "Analyzing..." : "Decode My Wine List"}
+      {isLoading ? (
+        <>
+          <LoadingSpinner className="mr-2 h-4 w-4" />
+          Analyzing...
+        </>
+      ) : (
+        <>
+          <Wine className="h-4 w-4 mr-2" />
+          Decode My Wine List
+        </>
+      )}
     </Button>
   );
 };

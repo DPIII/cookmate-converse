@@ -21,6 +21,7 @@ export const ImageUploadSection = ({ onAnalysisComplete }: ImageUploadSectionPro
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isWineDialogOpen, setIsWineDialogOpen] = useState(false);
   const [wineAnalysis, setWineAnalysis] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +46,7 @@ export const ImageUploadSection = ({ onAnalysisComplete }: ImageUploadSectionPro
     }
 
     try {
+      setIsAnalyzing(true);
       // Upload image to get public URL
       const fileExt = "png";
       const fileName = `${Math.random()}.${fileExt}`;
@@ -74,6 +76,8 @@ export const ImageUploadSection = ({ onAnalysisComplete }: ImageUploadSectionPro
         description: "Failed to analyze wine list. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -94,7 +98,7 @@ export const ImageUploadSection = ({ onAnalysisComplete }: ImageUploadSectionPro
             onClick={handleUpload}
           />
           <WineAnalysisButton 
-            isLoading={isLoading}
+            isLoading={isAnalyzing}
             onClick={handleWineAnalysis}
           />
         </div>
