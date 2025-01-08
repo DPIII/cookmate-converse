@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface ImageUploadInputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -6,11 +7,21 @@ interface ImageUploadInputProps {
 
 export const ImageUploadInput = ({ onChange }: ImageUploadInputProps) => {
   return (
-    <Input
-      type="file"
-      accept="image/*"
-      onChange={onChange}
-      className="flex-1 bg-transparent border-primary text-primary"
-    />
+    <div className="relative">
+      <Input
+        type="file"
+        accept="image/*"
+        onChange={onChange}
+        className={cn(
+          "flex-1 bg-gray-100 hover:bg-gray-200 transition-colors",
+          "file:mr-4 file:py-2 file:px-4",
+          "file:rounded-md file:border-0",
+          "file:text-sm file:font-semibold",
+          "file:bg-gray-200 file:text-gray-700",
+          "hover:file:bg-gray-300",
+          "text-gray-500 italic"
+        )}
+      />
+    </div>
   );
 };

@@ -9,8 +9,8 @@ interface ImageAnalysisButtonProps {
 export const ImageAnalysisButton = ({ isLoading, onClick }: ImageAnalysisButtonProps) => {
   return (
     <Button 
-      variant="outline" 
-      className="bg-transparent text-primary border-primary hover:bg-primary/10"
+      variant="default"
+      className="w-full bg-primary-800 hover:bg-primary-900 text-white"
       onClick={onClick}
       disabled={isLoading}
     >

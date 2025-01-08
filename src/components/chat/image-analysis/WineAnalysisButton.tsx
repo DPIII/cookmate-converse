@@ -9,8 +9,8 @@ interface WineAnalysisButtonProps {
 export const WineAnalysisButton = ({ isLoading, onClick }: WineAnalysisButtonProps) => {
   return (
     <Button 
-      variant="outline" 
-      className="bg-transparent text-primary border-primary hover:bg-primary/10"
+      variant="default"
+      className="w-full bg-primary-700 hover:bg-primary-800 text-white"
       onClick={onClick}
       disabled={isLoading}
     >
