@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Loader2 } from "lucide-react";
+import { ChefHat, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -23,7 +23,7 @@ const plans = [
     price: "$5",
     priceId: "price_1Qf8oRFJOjsdKhod3HBH9B0Q",
     interval: "month",
-    description: "Great for cooking enthusiasts",
+    description: "Learning the ropes or need inspiration",
     features: [
       "Everything in Free",
       "Save up to 50 recipes",
@@ -38,7 +38,7 @@ const plans = [
     price: "$10",
     priceId: "price_1Qf8q2FJOjsdKhodwzKbe9HQ",
     interval: "month",
-    description: "For serious home chefs",
+    description: "Looking for lifechanging food and eats",
     features: [
       "Everything in Community",
       "Unlimited recipe saves",
@@ -87,6 +87,9 @@ const Subscription = () => {
   return (
     <div className="container max-w-7xl mx-auto pt-20 px-4">
       <div className="text-center mb-12">
+        <div className="flex justify-center mb-4">
+          <ChefHat className="h-16 w-16 text-primary-700" />
+        </div>
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Plan</h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           Select the perfect plan for your cooking journey. Upgrade or downgrade at any time.
@@ -97,22 +100,36 @@ const Subscription = () => {
         {plans.map((plan) => (
           <Card 
             key={plan.name} 
-            className={`flex flex-col ${plan.name === 'Premium' ? 'border-green-500 shadow-lg' : ''}`}
+            className={`flex flex-col relative ${
+              plan.name === 'Premium' 
+                ? 'border-green-500 shadow-lg transform hover:scale-105 transition-transform duration-200' 
+                : plan.name === 'Free' 
+                ? 'bg-gray-100 border-gray-200'
+                : 'bg-gray-50 border-gray-200'
+            }`}
           >
+            {plan.name === 'Premium' && (
+              <div className="absolute -top-4 left-0 right-0 text-center">
+                <span className="bg-primary-700 text-white text-sm font-semibold px-4 py-1 rounded-full">
+                  Most Popular
+                </span>
+              </div>
+            )}
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className={`flex items-center justify-between ${
+                plan.name === 'Premium' ? 'text-primary-700' : 'text-gray-700'
+              }`}>
                 {plan.name}
-                {plan.name === 'Premium' && (
-                  <span className="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                    Popular
-                  </span>
-                )}
               </CardTitle>
-              <CardDescription>{plan.description}</CardDescription>
+              <CardDescription className="min-h-[50px]">{plan.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow">
               <div className="mb-4">
-                <span className="text-4xl font-bold">{plan.price}</span>
+                <span className={`text-4xl font-bold ${
+                  plan.name === 'Premium' ? 'text-primary-700' : 'text-gray-700'
+                }`}>
+                  {plan.price}
+                </span>
                 {plan.interval && (
                   <span className="text-gray-600">/{plan.interval}</span>
                 )}
@@ -120,7 +137,9 @@ const Subscription = () => {
               <ul className="space-y-3">
                 {plan.features.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                    <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <Check className={`h-4 w-4 mt-0.5 shrink-0 ${
+                      plan.name === 'Premium' ? 'text-primary-700' : 'text-gray-500'
+                    }`} />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -128,8 +147,13 @@ const Subscription = () => {
             </CardContent>
             <CardFooter>
               <Button 
-                className="w-full" 
-                variant={plan.name === "Free" ? "outline" : "default"}
+                className={`w-full ${
+                  plan.name === 'Premium' 
+                    ? 'bg-primary-700 hover:bg-primary-800' 
+                    : plan.name === 'Free' 
+                    ? 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    : 'bg-gray-700 hover:bg-gray-800 text-white'
+                }`}
                 onClick={() => handleSubscribe(plan.name, plan.priceId)}
                 disabled={loading === plan.name}
               >
