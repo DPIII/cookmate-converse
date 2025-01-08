@@ -41,7 +41,7 @@ const Index = () => {
               {/* Sidebar content will be added when implementing chat and recipes features */}
             </SidebarContent>
           </Sidebar>
-          <main className="flex-1 p-6">
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 mx-auto max-w-7xl">
             <div className="max-w-4xl mx-auto space-y-12">
               <div>
                 <h1 className="text-3xl font-bold text-green-800 mb-6">
@@ -83,7 +83,7 @@ const Index = () => {
               {/* Statistics Section */}
               <div className="bg-white rounded-lg shadow-sm border border-green-100 p-8">
                 <h2 className="text-2xl font-bold text-green-800 mb-6 text-center">
-                  Community Impact
+                  AnyRecipe Community
                 </h2>
                 <div className="grid md:grid-cols-2 gap-8">
                   <div className="text-center">
