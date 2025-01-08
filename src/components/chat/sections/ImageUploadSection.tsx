@@ -30,21 +30,27 @@ export const ImageUploadSection = ({ onAnalysisComplete }: ImageUploadSectionPro
 
   return (
     <div className="border-b pb-8">
-      <p className="text-lg font-medium mb-4 text-primary">
+      <p className="text-lg font-medium mb-6 text-primary text-center">
         <em>Upload a picture of a meal, recipe, or menu item</em>
       </p>
-      <div className="flex flex-col gap-4">
-        <ImageUploadInput onChange={handleImageChange} />
-        <ImageAnalysisButton 
-          isLoading={isLoading} 
-          onClick={handleUpload}
-        />
-        <WineAnalysisButton 
-          isLoading={isLoading}
-          onClick={handleUpload}
-        />
+      <div className="flex flex-col gap-6">
+        <div className="flex justify-center">
+          <div className="w-full max-w-md">
+            <ImageUploadInput onChange={handleImageChange} />
+          </div>
+        </div>
+        <div className="space-y-4 max-w-md mx-auto w-full">
+          <ImageAnalysisButton 
+            isLoading={isLoading} 
+            onClick={handleUpload}
+          />
+          <WineAnalysisButton 
+            isLoading={isLoading}
+            onClick={handleUpload}
+          />
+        </div>
         {previewUrl && (
-          <div className="mt-2">
+          <div className="flex justify-center mt-4">
             <img 
               src={previewUrl} 
               alt="Preview" 

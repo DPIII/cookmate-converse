@@ -7,13 +7,14 @@ interface ImageUploadInputProps {
 
 export const ImageUploadInput = ({ onChange }: ImageUploadInputProps) => {
   return (
-    <div className="relative">
+    <div className="relative flex items-center justify-center">
       <Input
         type="file"
         accept="image/*"
         onChange={onChange}
         className={cn(
-          "flex-1 bg-gray-100 hover:bg-gray-200 transition-colors",
+          "flex h-10 items-center justify-center",
+          "bg-gray-100 hover:bg-gray-200 transition-colors",
           "file:mr-4 file:py-2 file:px-4",
           "file:rounded-md file:border-0",
           "file:text-sm file:font-semibold",
