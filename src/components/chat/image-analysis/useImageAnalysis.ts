@@ -14,7 +14,15 @@ export const useImageAnalysis = ({ onAnalysisComplete }: UseImageAnalysisProps) 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
+      if (file.type.startsWith('image/')) {
+        setSelectedFile(file);
+      } else {
+        toast({
+          title: "Invalid file type",
+          description: "Please select an image file.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -31,6 +39,7 @@ export const useImageAnalysis = ({ onAnalysisComplete }: UseImageAnalysisProps) 
     setIsLoading(true);
 
     try {
+      // Upload image to Supabase Storage
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -39,10 +48,12 @@ export const useImageAnalysis = ({ onAnalysisComplete }: UseImageAnalysisProps) 
 
       if (uploadError) throw uploadError;
 
+      // Get public URL for the uploaded image
       const { data: { publicUrl } } = supabase.storage
         .from('recipe-images')
         .getPublicUrl(fileName);
 
+      // Analyze the image using the Edge Function
       const { data, error } = await supabase.functions.invoke('analyze-food-image', {
         body: { imageUrl: publicUrl },
       });

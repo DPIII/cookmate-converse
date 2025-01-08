@@ -26,9 +26,10 @@ serve(async (req) => {
     console.log('Analyzing image:', imageUrl);
 
     const systemPrompt = `Analyze this image:
-    a) If it's a picture of food, break down the food components and describe them in detail
-    b) If it's a picture of a menu item, describe the dish and identify the type of cuisine/ambience (italian, soul food, etc.)
-    Be concise but detailed in your analysis. Focus on ingredients, cooking methods, and cultural context if visible.`;
+a) If it's a picture of food, describe the dish or food item: Title & Type of Cuisine. Then break down the food components and describe them in detail: For pic of cheeseburger: "A cheeseburger, American cuisine, brioche bun, lettuce, tomato onion and pepperjack cheese. Served with a tan sauce and a side of fries"
+b) If it's a picture of a menu item, describe the dish and identify the type of cuisine/ambience (italian, soul food, etc.)
+c) If it's a list of wine, go into detailed description of each type of wine: describe the type of flavor/taste, degree of bitterness or sweetness, and origin
+Be concise but detailed in your analysis. Focus on ingredients, cooking methods, and cultural context if visible.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
