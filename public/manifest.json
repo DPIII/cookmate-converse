@@ -2,13 +2,15 @@
   "name": "AnyRecipe",
   "short_name": "AnyRecipe",
   "description": "Your personal recipe assistant",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
+  "id": "/",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#ffffff",
   "theme_color": "#166534",
   "prefer_related_applications": false,
+  "categories": ["food", "lifestyle"],
   "icons": [
     {
       "src": "/chef-hat-192.svg",

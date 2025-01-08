@@ -2,23 +2,27 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>AnyRecipe</title>
     <meta name="description" content="Your personal recipe assistant" />
-    <meta name="theme-color" content="#166534" />
-    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- PWA primary color -->
+    <meta name="theme-color" content="#166534" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#166534" media="(prefers-color-scheme: dark)" />
     
     <!-- iOS specific meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="AnyRecipe" />
-    <link rel="apple-touch-icon" href="/chef-hat-192.svg" />
+    
+    <!-- iOS icons -->
+    <link rel="apple-touch-icon" sizes="192x192" href="/chef-hat-192.svg" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/chef-hat-512.svg" />
     <link rel="apple-touch-startup-image" href="/chef-hat-512.svg" />
     
-    <!-- Android specific meta tags -->
+    <!-- Android specific -->
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="AnyRecipe" />
-    <meta name="msapplication-TileColor" content="#166534" />
-    <meta name="msapplication-TileImage" content="/chef-hat-192.svg" />
     
     <!-- General PWA setup -->
     <link rel="manifest" href="/manifest.json" />
@@ -26,7 +30,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
