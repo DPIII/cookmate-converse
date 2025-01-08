@@ -3,9 +3,12 @@
   "short_name": "AnyRecipe",
   "description": "Your personal recipe assistant",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#166534",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/chef-hat-192.svg",
@@ -18,6 +21,15 @@
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Recipe",
+      "short_name": "Create",
+      "description": "Create a new recipe",
+      "url": "/chat",
+      "icons": [{ "src": "/chef-hat-192.svg", "sizes": "192x192" }]
     }
   ]
 }
