@@ -3,22 +3,29 @@ interface Message {
   content: string;
 }
 
+const formatLine = (line: string): string => {
+  const trimmedLine = line.trim();
+  
+  // Main titles (ends with :)
+  if (trimmedLine.endsWith(':')) {
+    return `<h3 class="font-bold underline mb-2">${trimmedLine}</h3>`;
+  }
+  
+  // Categories or numbered items (including wine names)
+  if (/^\d+\./.test(trimmedLine) || 
+      /^[A-Z][A-Za-z\s]+(Wine|Red|White|Rosé|Sparkling)?:/.test(trimmedLine)) {
+    return `<p class="font-bold mb-1">${trimmedLine}</p>`;
+  }
+  
+  // Regular descriptive text
+  return `<p class="mb-1">${trimmedLine}</p>`;
+}
+
 export const MessageBubble = ({ message }: { message: Message }) => {
   const isUser = message.role === "user";
 
-  const formatText = (text: string) => {
-    return text.split('\n').map((line, index) => {
-      // Main titles (ends with :)
-      if (line.trim().endsWith(':')) {
-        return `<h3 class="font-bold underline mb-2">${line}</h3>`;
-      }
-      // Categories or numbered items (including wine names)
-      if (/^\d+\./.test(line.trim()) || /^[A-Z][A-Za-z\s]+(Wine|Red|White|Rosé|Sparkling)?:/.test(line.trim())) {
-        return `<p class="font-bold mb-1">${line}</p>`;
-      }
-      // Regular descriptive text
-      return `<p class="mb-1">${line}</p>`;
-    }).join('');
+  const formatText = (text: string): string => {
+    return text.split('\n').map(formatLine).join('');
   };
 
   return (

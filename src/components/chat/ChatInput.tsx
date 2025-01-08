@@ -1,41 +1,47 @@
+import { memo } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface ChatInputProps {
   message: string;
   isLoading: boolean;
   isEditing: boolean;
-  onMessageChange: (message: string) => void;
+  onMessageChange: (value: string) => void;
   onSend: () => void;
   onKeyPress: (e: React.KeyboardEvent) => void;
 }
 
-export const ChatInput = ({
-  message,
-  isLoading,
-  isEditing,
-  onMessageChange,
-  onSend,
-  onKeyPress,
+export const ChatInput = memo(({ 
+  message, 
+  isLoading, 
+  isEditing, 
+  onMessageChange, 
+  onSend, 
+  onKeyPress 
 }: ChatInputProps) => {
   return (
-    <div className="flex gap-2">
-      <Input
+    <div className="flex flex-col sm:flex-row gap-4 mt-4">
+      <Textarea
         value={message}
         onChange={(e) => onMessageChange(e.target.value)}
-        placeholder={isEditing ? "Describe your modifications to the recipe..." : "Ask for a specific recipe or dietary requirements..."}
-        className="flex-1 bg-white border-primary/20"
-        onKeyPress={onKeyPress}
-        disabled={isLoading}
+        onKeyDown={onKeyPress}
+        placeholder={
+          isEditing
+            ? "Enter your modifications to the recipe..."
+            : "What would you like to cook?"
+        }
+        className="min-h-[80px] flex-1"
       />
       <Button
         onClick={onSend}
-        className="bg-primary hover:bg-primary/90 text-white"
+        className="w-full sm:w-24"
         disabled={isLoading}
       >
-        <Send className="h-4 w-4" />
+        {isLoading ? <LoadingSpinner /> : "Send"}
       </Button>
     </div>
   );
-};
+});
+
+ChatInput.displayName = "ChatInput";
