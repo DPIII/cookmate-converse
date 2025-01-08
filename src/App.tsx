@@ -10,6 +10,7 @@ import Recipes from "@/pages/Recipes";
 import Timeline from "@/pages/Timeline";
 import ChefChat from "@/pages/ChefChat";
 import Profile from "@/pages/Profile";
+import Billing from "@/pages/Billing";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 
 const queryClient = new QueryClient({
@@ -66,6 +67,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/billing"
+              element={
+                <ProtectedRoute>
+                  <Billing />
                 </ProtectedRoute>
               }
             />
