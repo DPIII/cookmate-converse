@@ -53,27 +53,34 @@ export const useImageAnalysis = ({ onAnalysisComplete }: UseImageAnalysisProps) 
         .from('recipe-images')
         .getPublicUrl(fileName);
 
+      console.log('Image uploaded, public URL:', publicUrl);
+
       // Analyze the image using the Edge Function
       const { data, error } = await supabase.functions.invoke('analyze-food-image', {
         body: { imageUrl: publicUrl },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      if (!data?.analysis) {
+        throw new Error('No analysis received from the API');
+      }
 
       toast({
         title: "Analysis Complete",
         description: "Image analyzed successfully. Generating recipe suggestions...",
       });
 
-      if (data.analysis) {
-        onAnalysisComplete(data.analysis);
-      }
+      onAnalysisComplete(data.analysis);
 
     } catch (error) {
       console.error('Error processing image:', error);
       toast({
         title: "Error",
-        description: "Failed to process the image. Please try again.",
+        description: error.message || "Failed to process the image. Please try again.",
         variant: "destructive",
       });
     } finally {
