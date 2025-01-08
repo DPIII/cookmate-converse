@@ -9,6 +9,7 @@ import Chat from "@/pages/Chat";
 import Recipes from "@/pages/Recipes";
 import Timeline from "@/pages/Timeline";
 import ChefChat from "@/pages/ChefChat";
+import Profile from "@/pages/Profile";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 
 const queryClient = new QueryClient({
@@ -57,6 +58,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ChefChat />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />
