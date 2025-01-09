@@ -4,9 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { ChefHat } from "lucide-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,7 +22,6 @@ const Login = () => {
       }
       
       if (session) {
-        // If user is already logged in, redirect to appropriate page
         navigate("/directory");
       }
     };
@@ -40,33 +38,8 @@ const Login = () => {
           return;
         }
 
-        try {
-          // Check if user has an existing subscription
-          const { data: subscription, error: subError } = await supabase
-            .from('billing_subscriptions')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .single();
-
-          if (subError && subError.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-            throw subError;
-          }
-
-          // If user has no subscription, redirect to subscription page
-          if (!subscription) {
-            navigate("/subscription");
-            return;
-          }
-
-          // If user has a subscription, redirect to directory
-          navigate("/directory");
-          toast.success("Welcome back!");
-        } catch (error) {
-          console.error("Error checking subscription:", error);
-          setError("Failed to verify subscription status");
-        }
-      } else if (event === 'SIGNED_OUT') {
-        setError(null);
+        navigate("/directory");
+        toast.success("Welcome back!");
       }
     });
 
@@ -74,21 +47,6 @@ const Login = () => {
       subscription.unsubscribe();
     };
   }, [navigate]);
-
-  const handlePasswordReset = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      
-      if (error) throw error;
-      
-      toast.success("Password reset instructions sent to your email");
-    } catch (error) {
-      console.error("Error requesting password reset:", error);
-      toast.error("Failed to send password reset email. Please try again.");
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sage-50 to-cream-50 p-4">
@@ -137,6 +95,13 @@ const Login = () => {
                   social_provider_text: 'Sign in with {{provider}}',
                   link_text: "Already have an account? Sign in",
                 },
+                sign_up: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                  button_label: 'Sign up',
+                  loading_button_label: 'Signing up...',
+                  link_text: "Don't have an account? Sign up",
+                },
                 forgotten_password: {
                   link_text: 'Forgot your password?',
                   button_label: 'Send reset instructions',
@@ -144,19 +109,6 @@ const Login = () => {
               },
             }}
           />
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <Button
-                variant="link"
-                className="text-primary-700 hover:text-primary-800 font-bold p-0"
-                onClick={() => navigate("/signup")}
-              >
-                Sign up
-              </Button>
-            </p>
-          </div>
         </div>
       </div>
     </div>
