@@ -1,11 +1,12 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { ChefHat } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -74,10 +75,29 @@ const Login = () => {
     };
   }, [navigate]);
 
+  const handlePasswordReset = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) throw error;
+      
+      toast.success("Password reset instructions sent to your email");
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      toast.error("Failed to send password reset email. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sage-50 to-cream-50 p-4">
       <div className="w-full max-w-md">
         <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-lg">
+          <div className="flex justify-center mb-6">
+            <ChefHat className="h-16 w-16 text-primary-700" />
+          </div>
+          
           <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
             Welcome to AnyRecipe
           </h1>
@@ -100,8 +120,29 @@ const Login = () => {
                   },
                 },
               },
+              className: {
+                anchor: 'text-primary-700 hover:text-primary-800',
+                button: 'bg-primary-700 hover:bg-primary-800',
+                container: 'space-y-4',
+              },
             }}
             providers={[]}
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Email',
+                  password_label: 'Password',
+                  button_label: 'Sign in',
+                  loading_button_label: 'Signing in...',
+                  social_provider_text: 'Sign in with {{provider}}',
+                  link_text: "Already have an account? Sign in",
+                },
+                forgotten_password: {
+                  link_text: 'Forgot your password?',
+                  button_label: 'Send reset instructions',
+                },
+              },
+            }}
           />
 
           <div className="mt-6 text-center">
@@ -109,7 +150,7 @@ const Login = () => {
               Don't have an account?{" "}
               <Button
                 variant="link"
-                className="text-green-600 hover:text-green-700 p-0"
+                className="text-primary-700 hover:text-primary-800 font-bold p-0"
                 onClick={() => navigate("/signup")}
               >
                 Sign up
