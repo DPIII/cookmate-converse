@@ -60,7 +60,7 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/`,
+      success_url: `${req.headers.get('origin')}/directory`,
       cancel_url: `${req.headers.get('origin')}/subscription`,
     });
 

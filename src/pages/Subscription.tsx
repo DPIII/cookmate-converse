@@ -58,18 +58,33 @@ const Subscription = () => {
   const navigate = useNavigate();
 
   const handleSubscribe = async (planName: string, priceId?: string) => {
-    if (!session) {
-      toast.error("Please login to subscribe");
+    if (!session?.user) {
+      toast.error("Please sign in to subscribe");
+      navigate("/login");
       return;
     }
 
     setLoading(planName);
     try {
       if (planName === "Free") {
-        // For free plan, directly navigate to the directory
+        // Update the user's profile with the free tier
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ 
+            membership_tier: 'free',
+            membership_updated_at: new Date().toISOString()
+          })
+          .eq('id', session.user.id);
+
+        if (profileError) throw profileError;
+
         toast.success("Welcome to Chef's Assistant!");
         navigate("/directory");
         return;
+      }
+
+      if (!priceId) {
+        throw new Error("Invalid subscription plan");
       }
 
       // For paid plans, create a checkout session
@@ -80,12 +95,13 @@ const Subscription = () => {
       if (error) throw error;
       
       if (data?.url) {
-        // Redirect to Stripe Checkout
         window.location.href = data.url;
+      } else {
+        throw new Error("Failed to create checkout session");
       }
     } catch (error) {
       console.error('Error:', error);
-      toast.error("Failed to start subscription process");
+      toast.error("Failed to process subscription. Please try again.");
     } finally {
       setLoading(null);
     }
