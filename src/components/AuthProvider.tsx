@@ -39,6 +39,26 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const checkSubscription = async (userId: string) => {
+    try {
+      const { data: subscription, error } = await supabase
+        .from('billing_subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error checking subscription:", error);
+        return;
+      }
+
+      // Handle subscription status if needed
+      console.log("Subscription status:", subscription);
+    } catch (error) {
+      console.error("Error checking subscription:", error);
+    }
+  };
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
@@ -49,6 +69,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           await handleAuthError(sessionError);
         } else if (initialSession) {
           setSession(initialSession);
+          await checkSubscription(initialSession.user.id);
         }
       } catch (error) {
         console.error("Error in auth initialization:", error);
@@ -70,6 +91,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.clear();
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setSession(currentSession);
+        if (currentSession?.user) {
+          await checkSubscription(currentSession.user.id);
+        }
       } else if (event === 'USER_UPDATED') {
         setSession(currentSession);
       }
