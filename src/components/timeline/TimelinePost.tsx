@@ -3,7 +3,7 @@ import { TimelinePost as TimelinePostType } from "@/types/timeline";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Share2, Star } from "lucide-react";
+import { Heart, MessageCircle, Share2, Star, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,14 @@ import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function TimelinePost({ post }: { post: TimelinePostType }) {
   const navigate = useNavigate();
@@ -63,6 +71,51 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
     }
   };
 
+  const handleShare = async () => {
+    if (post.recipe) {
+      try {
+        await navigator.share({
+          title: post.recipe.title,
+          text: `Check out this recipe: ${post.recipe.title}`,
+          url: window.location.href
+        });
+      } catch (err) {
+        const shareUrl = window.location.href;
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Link copied to clipboard!");
+      }
+    }
+  };
+
+  const handleSaveToPDF = async () => {
+    if (!post.recipe) return;
+
+    try {
+      const recipeContent = document.getElementById(`recipe-content-${post.recipe.id}`);
+      if (!recipeContent) return;
+
+      toast.loading("Generating PDF...");
+
+      const canvas = await html2canvas(recipeContent);
+      const imgData = canvas.toDataURL('image/png');
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`${post.recipe.title}.pdf`);
+
+      toast.dismiss();
+      toast.success("PDF downloaded successfully!");
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error("Failed to generate PDF");
+    }
+  };
+
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-start justify-between">
@@ -111,7 +164,7 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
                   </DialogTitle>
                 </DialogHeader>
                 <ScrollArea className="h-[calc(90vh-8rem)]">
-                  <div className="space-y-6 p-4">
+                  <div id={`recipe-content-${post.recipe.id}`} className="space-y-6 p-4">
                     {post.recipe.image_url && (
                       <img
                         src={post.recipe.image_url}
@@ -171,10 +224,23 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
           <MessageCircle className="h-4 w-4 mr-2" />
           Comment
         </Button>
-        <Button variant="ghost" size="sm" className="text-gray-600">
-          <Share2 className="h-4 w-4 mr-2" />
-          Share
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm" className="text-gray-600">
+              <Share2 className="h-4 w-4 mr-2" />
+              Share
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={handleShare}>
+              Share Recipe
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSaveToPDF}>
+              <Download className="h-4 w-4 mr-2" />
+              Save as PDF
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </Card>
   );
