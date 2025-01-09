@@ -27,42 +27,42 @@ export const Navigation = () => {
       <nav className="bg-white border-b border-green-100 fixed top-0 w-full z-50">
         <div className="flex items-center justify-between px-4 py-3">
           <Link 
-            to="/" 
+            to={session ? "/directory" : "/"} 
             className="text-green-700 hover:bg-green-50 p-2 rounded-full"
-            aria-label="AnyRecipe Home"
+            aria-label="Home"
           >
             <Home className="h-6 w-6" />
           </Link>
-          <div className="flex items-center gap-4">
-            <Link 
-              to="/chat" 
-              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-              aria-label="Chat"
-            >
-              <MessageSquare className="h-6 w-6" />
-            </Link>
-            <Link 
-              to="/timeline" 
-              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-              aria-label="Timeline"
-            >
-              <Clock className="h-6 w-6" />
-            </Link>
-            <Link 
-              to="/recipes" 
-              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-              aria-label="Recipes"
-            >
-              <List className="h-6 w-6" />
-            </Link>
-            <Link 
-              to="/chef" 
-              className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-              aria-label="Chef Chat"
-            >
-              <ChefHat className="h-6 w-6" />
-            </Link>
-            {session && (
+          {session && (
+            <div className="flex items-center gap-4">
+              <Link 
+                to="/chat" 
+                className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+                aria-label="Chat"
+              >
+                <MessageSquare className="h-6 w-6" />
+              </Link>
+              <Link 
+                to="/timeline" 
+                className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+                aria-label="Timeline"
+              >
+                <Clock className="h-6 w-6" />
+              </Link>
+              <Link 
+                to="/recipes" 
+                className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+                aria-label="Recipes"
+              >
+                <List className="h-6 w-6" />
+              </Link>
+              <Link 
+                to="/chef" 
+                className="text-green-600 hover:bg-green-50 p-2 rounded-full"
+                aria-label="Chef Chat"
+              >
+                <ChefHat className="h-6 w-6" />
+              </Link>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="p-2" aria-label="User menu">
@@ -93,8 +93,8 @@ export const Navigation = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </nav>
     );
@@ -104,36 +104,41 @@ export const Navigation = () => {
     <nav className="bg-white border-b border-green-100 px-4 py-3 fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link to="/" className="text-xl font-semibold text-green-700 flex items-center gap-2">
+          <Link 
+            to={session ? "/directory" : "/"} 
+            className="text-xl font-semibold text-green-700 flex items-center gap-2"
+          >
             <Home className="h-5 w-5" />
             AnyRecipe
           </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
-              <Link to="/chat">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Recipe Maker
-              </Link>
-            </Button>
-            <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
-              <Link to="/timeline">
-                <Clock className="h-4 w-4 mr-2" />
-                Friends
-              </Link>
-            </Button>
-            <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
-              <Link to="/recipes">
-                <List className="h-4 w-4 mr-2" />
-                Recipes
-              </Link>
-            </Button>
-            <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
-              <Link to="/chef">
-                <ChefHat className="h-4 w-4 mr-2" />
-                Chef Chat
-              </Link>
-            </Button>
-          </div>
+          {session && (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
+                <Link to="/chat">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Recipe Maker
+                </Link>
+              </Button>
+              <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
+                <Link to="/timeline">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Friends
+                </Link>
+              </Button>
+              <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
+                <Link to="/recipes">
+                  <List className="h-4 w-4 mr-2" />
+                  Recipes
+                </Link>
+              </Button>
+              <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
+                <Link to="/chef">
+                  <ChefHat className="h-4 w-4 mr-2" />
+                  Chef Chat
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
         {session && (
           <DropdownMenu>

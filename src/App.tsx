@@ -11,6 +11,7 @@ import Timeline from "@/pages/Timeline";
 import ChefChat from "@/pages/ChefChat";
 import Profile from "@/pages/Profile";
 import Billing from "@/pages/Billing";
+import Directory from "@/pages/Directory";
 import Subscription from "@/pages/Subscription";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 import { SignupForm } from "@/components/auth/SignupForm";
@@ -33,13 +34,14 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignupForm />} />
-            <Route 
-              path="/subscription" 
+            <Route path="/subscription" element={<Subscription />} />
+            <Route
+              path="/directory"
               element={
                 <ProtectedRoute>
-                  <Subscription />
+                  <Directory />
                 </ProtectedRoute>
-              } 
+              }
             />
             <Route
               path="/chat"
