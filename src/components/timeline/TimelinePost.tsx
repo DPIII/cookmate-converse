@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ScrollArea } from "@/components/ui/scroll-area";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { RatingStars } from "@/components/recipes/RatingStars";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +27,7 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [tempRating, setTempRating] = useState<number | null>(null);
 
   const handleLike = async () => {
     if (!session?.user) {
@@ -116,6 +118,30 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
     }
   };
 
+  const handleRating = (rating: number) => {
+    setTempRating(rating);
+  };
+
+  const handleSaveRating = async () => {
+    if (!tempRating || !post.recipe) return;
+    
+    try {
+      const { error } = await supabase
+        .from('saved_recipes')
+        .update({ rating: tempRating })
+        .eq('id', post.recipe.id);
+
+      if (error) throw error;
+
+      toast.success("Rating saved successfully!");
+      post.recipe.rating = tempRating;
+      setTempRating(null);
+    } catch (error) {
+      console.error('Error saving rating:', error);
+      toast.error("Failed to save rating");
+    }
+  };
+
   return (
     <Card className="p-6 space-y-4">
       <div className="flex items-start justify-between">
@@ -179,12 +205,12 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
                           {post.recipe.cuisine_type}
                         </span>
                       )}
-                      {post.recipe.rating && (
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          <span className="text-sm font-medium">{post.recipe.rating}</span>
-                        </div>
-                      )}
+                      <RatingStars
+                        rating={post.recipe.rating ?? null}
+                        tempRating={tempRating}
+                        onRatingChange={handleRating}
+                        onSaveRating={handleSaveRating}
+                      />
                     </div>
 
                     <div className="prose prose-green max-w-none">
