@@ -5,6 +5,7 @@ import { ChefHat, Check, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const plans = [
   {
@@ -54,6 +55,7 @@ const plans = [
 const Subscription = () => {
   const { session } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubscribe = async (planName: string, priceId?: string) => {
     if (!session) {
@@ -61,19 +63,24 @@ const Subscription = () => {
       return;
     }
 
-    if (planName === "Free") {
-      toast.success("You are now on the Free plan");
-      return;
-    }
-
     setLoading(planName);
     try {
+      if (planName === "Free") {
+        // For free plan, directly navigate to the directory
+        toast.success("Welcome to Chef's Assistant!");
+        navigate("/directory");
+        return;
+      }
+
+      // For paid plans, create a checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { priceId }
       });
 
       if (error) throw error;
+      
       if (data?.url) {
+        // Redirect to Stripe Checkout
         window.location.href = data.url;
       }
     } catch (error) {
