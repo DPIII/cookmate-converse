@@ -17,7 +17,7 @@ export const HeroSection = () => {
           </p>
           <div className="flex items-center justify-center gap-4 mb-12">
             <Button 
-              onClick={() => navigate("/login")} 
+              onClick={() => navigate("/signup")} 
               className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-6 text-lg"
             >
               Create an Account
