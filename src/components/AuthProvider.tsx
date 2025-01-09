@@ -45,17 +45,19 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('billing_subscriptions')
         .select('*')
         .eq('user_id', userId)
-        .maybeSingle();
+        .maybeSingle(); // Using maybeSingle() instead of single()
 
       if (error) {
         console.error("Error checking subscription:", error);
-        return;
+        return null;
       }
 
-      // Handle subscription status if needed
-      console.log("Subscription status:", subscription);
+      // Log subscription status for debugging
+      console.log("Subscription status:", subscription || "No subscription found");
+      return subscription;
     } catch (error) {
       console.error("Error checking subscription:", error);
+      return null;
     }
   };
 
