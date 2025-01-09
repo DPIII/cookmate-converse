@@ -35,7 +35,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.clear();
       toast.error("Session expired. Please log in again.");
     } else {
-      toast.error("Authentication error. Please try logging in again.");
+      toast.error(error.message || "Authentication error. Please try logging in again.");
     }
   };
 
