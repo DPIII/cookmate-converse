@@ -14,6 +14,7 @@ export const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +42,7 @@ export const SignupForm = () => {
         options: {
           data: {
             username,
+            name,
             avatar_url: avatarUrl,
           },
         },
@@ -100,6 +102,17 @@ export const SignupForm = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                className="mt-1"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="mt-1"
               />
             </div>
