@@ -1,11 +1,12 @@
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ChefHat } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -85,6 +86,7 @@ const Login = () => {
               },
             }}
             providers={[]}
+            view="sign_in"
             localization={{
               variables: {
                 sign_in: {
@@ -93,22 +95,19 @@ const Login = () => {
                   button_label: 'Sign in',
                   loading_button_label: 'Signing in...',
                   social_provider_text: 'Sign in with {{provider}}',
-                  link_text: "Already have an account? Sign in",
-                },
-                sign_up: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                  button_label: 'Sign up',
-                  loading_button_label: 'Signing up...',
-                  link_text: "Don't have an account? Sign up",
-                },
-                forgotten_password: {
-                  link_text: 'Forgot your password?',
-                  button_label: 'Send reset instructions',
                 },
               },
             }}
           />
+          
+          <div className="mt-6 text-center">
+            <p className="text-gray-600">
+              Don't have an account?{' '}
+              <Button variant="link" className="text-primary-700 hover:text-primary-800 p-0" asChild>
+                <Link to="/signup">Sign up here</Link>
+              </Button>
+            </p>
+          </div>
         </div>
       </div>
     </div>
