@@ -30,18 +30,20 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     
     if (error.message.includes("refresh_token_not_found") || 
         error.message.includes("Invalid Refresh Token")) {
+      // Clear the session and local storage
       await supabase.auth.signOut();
       setSession(null);
       localStorage.clear();
       toast.error("Session expired. Please log in again.");
     } else {
-      toast.error(error.message || "Authentication error. Please try logging in again.");
+      toast.error(error.message || "Authentication error occurred");
     }
   };
 
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Get the initial session
         const { data: { session: initialSession }, error: sessionError } = 
           await supabase.auth.getSession();
         
@@ -58,8 +60,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // Initialize authentication
     initializeAuth();
 
+    // Set up auth state change listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
@@ -77,6 +81,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
+    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
     };
