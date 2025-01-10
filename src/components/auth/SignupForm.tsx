@@ -7,50 +7,68 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { ChefHat } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const SignupForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [profileName, setProfileName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     
-    if (!email && !phone) {
-      toast.error("Please provide either an email or phone number");
+    if (!email || !password || !username) {
+      setError("Please fill in all required fields");
       return;
     }
 
-    if (!profileName) {
-      toast.error("Please provide a profile name");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
       return;
     }
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      // Sign up the user
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            username: profileName,
+            username,
             avatar_url: avatarUrl,
-            phone,
           },
         },
       });
 
-      if (error) throw error;
+      if (signUpError) throw signUpError;
 
-      toast.success("Account created successfully!");
-      navigate("/chat");
-    } catch (error) {
+      if (authData.user) {
+        // Check if profile was created by the trigger
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', authData.user.id)
+          .single();
+
+        if (profileError) {
+          console.error("Profile fetch error:", profileError);
+          throw new Error("Error verifying account creation");
+        }
+
+        toast.success("Account created successfully!");
+        // Redirect to subscription page
+        navigate("/subscription");
+      }
+    } catch (error: any) {
       console.error("Error signing up:", error);
-      toast.error("Error creating account. Please try again.");
+      setError(error.message || "Error creating account. Please try again.");
+      toast.error(error.message || "Error creating account");
     } finally {
       setLoading(false);
     }
@@ -67,25 +85,34 @@ export const SignupForm = () => {
             Create Your Account
           </h1>
           
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          
           <form onSubmit={handleSignUp} className="space-y-6">
             <div>
-              <Label htmlFor="profileName">Profile Name *</Label>
+              <Label htmlFor="username">Username *</Label>
               <Input
-                id="profileName"
+                id="username"
                 type="text"
-                value={profileName}
-                onChange={(e) => setProfileName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
+                className="mt-1"
               />
             </div>
 
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email *</Label>
               <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                required
+                className="mt-1"
               />
             </div>
 
@@ -98,16 +125,7 @@ export const SignupForm = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                className="mt-1"
               />
             </div>
 
