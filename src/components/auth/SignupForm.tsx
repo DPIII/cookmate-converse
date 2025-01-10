@@ -47,7 +47,7 @@ export const SignupForm = () => {
       if (error) throw error;
 
       toast.success("Account created successfully!");
-      navigate("/subscription");
+      navigate("/chat");
     } catch (error) {
       console.error("Error signing up:", error);
       toast.error("Error creating account. Please try again.");
