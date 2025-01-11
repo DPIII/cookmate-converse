@@ -1,4 +1,4 @@
-import { Home, MessageSquare, List, LogOut, Clock, ChefHat, User, CreditCard } from "lucide-react";
+import { Home, Book, List, LogOut, Users, ChefHat, User, CreditCard } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "./AuthProvider";
@@ -38,16 +38,16 @@ export const Navigation = () => {
               <Link 
                 to="/chat" 
                 className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-                aria-label="Chat"
+                aria-label="Recipe Maker"
               >
-                <MessageSquare className="h-6 w-6" />
+                <Book className="h-6 w-6" />
               </Link>
               <Link 
                 to="/timeline" 
                 className="text-green-600 hover:bg-green-50 p-2 rounded-full"
-                aria-label="Timeline"
+                aria-label="Friends"
               >
-                <Clock className="h-6 w-6" />
+                <Users className="h-6 w-6" />
               </Link>
               <Link 
                 to="/recipes" 
@@ -115,13 +115,13 @@ export const Navigation = () => {
             <div className="flex items-center gap-2">
               <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
                 <Link to="/chat">
-                  <MessageSquare className="h-4 w-4 mr-2" />
+                  <Book className="h-4 w-4 mr-2" />
                   Recipe Maker
                 </Link>
               </Button>
               <Button variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50" asChild>
                 <Link to="/timeline">
-                  <Clock className="h-4 w-4 mr-2" />
+                  <Users className="h-4 w-4 mr-2" />
                   Friends
                 </Link>
               </Button>
