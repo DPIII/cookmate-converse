@@ -38,9 +38,9 @@ const Directory = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
-      <div className="container mx-auto px-4 py-8 pt-24">
+      <div className="container mx-auto px-4 py-8 pt-24 flex-grow">
         <h1 className="text-3xl font-bold text-green-800 mb-8">Your Cooking Dashboard</h1>
         <div className="grid md:grid-cols-2 gap-6">
           {navigationItems.map((item) => (
@@ -60,6 +60,52 @@ const Directory = () => {
           ))}
         </div>
       </div>
+      
+      <footer className="bg-[#F2FCE2] mt-auto">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="font-semibold text-green-800 mb-4">Account</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/profile" className="text-green-700 hover:text-green-900">Profile</Link>
+                </li>
+                <li>
+                  <Link to="/billing" className="text-green-700 hover:text-green-900">Billing</Link>
+                </li>
+                <li>
+                  <Link to="/subscription" className="text-green-700 hover:text-green-900">Subscription</Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-green-800 mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/terms" className="text-green-700 hover:text-green-900">Terms & Conditions</Link>
+                </li>
+                <li>
+                  <Link to="/privacy" className="text-green-700 hover:text-green-900">Privacy Policy</Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-green-800 mb-4">Company</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link to="/about" className="text-green-700 hover:text-green-900">About Us</Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="text-green-700 hover:text-green-900">Contact Us</Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-green-200 text-center text-green-700">
+            <p>&copy; {new Date().getFullYear()} AnyRecipe. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
