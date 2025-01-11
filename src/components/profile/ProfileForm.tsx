@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ProfileFormProps {
   username: string;
@@ -62,17 +63,29 @@ export const ProfileForm = ({
 
   const handleSubscribe = async (priceId: string) => {
     try {
+      if (!priceId) {
+        toast.error("Invalid plan selected");
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { priceId }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Checkout error:', error);
+        toast.error("Failed to start checkout process");
+        return;
+      }
       
       if (data?.url) {
         window.location.href = data.url;
+      } else {
+        toast.error("Failed to get checkout URL");
       }
     } catch (error) {
       console.error('Error:', error);
+      toast.error("An error occurred while processing your request");
     }
   };
 
@@ -174,7 +187,7 @@ export const ProfileForm = ({
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {plans?.map((plan) => (
-                        profile?.membership_tier !== plan.name && (
+                        plan.stripe_price_id && profile?.membership_tier !== plan.name && (
                           <Button
                             key={plan.id}
                             onClick={() => handleSubscribe(plan.stripe_price_id)}
