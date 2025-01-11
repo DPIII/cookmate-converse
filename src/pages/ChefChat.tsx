@@ -178,6 +178,7 @@ const ChefChat = () => {
         onSave={handleSaveRecipe}
         isGeneratingImage={false}
         generatedImage={generatedImage}
+        recipe={lastAssistantMessage || { role: "assistant", content: "" }}
       />
     </div>
   );

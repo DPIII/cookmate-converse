@@ -160,6 +160,10 @@ export const ChatInterface = ({
     }
   };
 
+  const lastAssistantMessage = [...chatHistory]
+    .reverse()
+    .find((msg) => msg.role === "assistant");
+
   return (
     <ChatContainer>
       <ChatHistory messages={chatHistory} isLoading={isLoading} />
@@ -189,6 +193,7 @@ export const ChatInterface = ({
         onSave={handleSaveRecipe}
         isGeneratingImage={false}
         generatedImage={generatedImage}
+        recipe={lastAssistantMessage || { role: "assistant", content: "" }}
       />
     </ChatContainer>
   );
