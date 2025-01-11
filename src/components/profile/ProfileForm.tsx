@@ -68,6 +68,7 @@ export const ProfileForm = ({
         return;
       }
 
+      console.log('Starting checkout with price ID:', priceId);
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
         body: { priceId }
       });
