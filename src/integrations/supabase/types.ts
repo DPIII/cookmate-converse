@@ -143,6 +143,8 @@ export type Database = {
           membership_tier: Database["public"]["Enums"]["membership_tier"]
           membership_updated_at: string | null
           name: string | null
+          phone_number: string | null
+          phone_verified: boolean | null
           profile_picture_url: string | null
           skill_level: string | null
           username: string | null
@@ -157,6 +159,8 @@ export type Database = {
           membership_tier?: Database["public"]["Enums"]["membership_tier"]
           membership_updated_at?: string | null
           name?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean | null
           profile_picture_url?: string | null
           skill_level?: string | null
           username?: string | null
@@ -171,6 +175,8 @@ export type Database = {
           membership_tier?: Database["public"]["Enums"]["membership_tier"]
           membership_updated_at?: string | null
           name?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean | null
           profile_picture_url?: string | null
           skill_level?: string | null
           username?: string | null
