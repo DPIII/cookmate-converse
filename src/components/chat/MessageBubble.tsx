@@ -8,17 +8,17 @@ const formatLine = (line: string): string => {
   
   // Main titles (ends with :)
   if (trimmedLine.endsWith(':')) {
-    return `<h3 class="font-bold underline mb-2">${trimmedLine}</h3>`;
+    return `<h3 class="font-bold text-lg md:text-xl mb-3">${trimmedLine}</h3>`;
   }
   
   // Categories or numbered items (including wine names)
   if (/^\d+\./.test(trimmedLine) || 
       /^[A-Z][A-Za-z\s]+(Wine|Red|White|Rosé|Sparkling)?:/.test(trimmedLine)) {
-    return `<p class="font-bold mb-1">${trimmedLine}</p>`;
+    return `<p class="font-semibold mb-2">${trimmedLine}</p>`;
   }
   
   // Regular descriptive text
-  return `<p class="mb-1">${trimmedLine}</p>`;
+  return `<p class="mb-2 text-sm md:text-base">${trimmedLine}</p>`;
 }
 
 export const MessageBubble = ({ message }: { message: Message }) => {
@@ -28,22 +28,20 @@ export const MessageBubble = ({ message }: { message: Message }) => {
     return text.split('\n').map(formatLine).join('');
   };
 
+  // Only show assistant messages (menu output)
+  if (isUser) {
+    return null;
+  }
+
   return (
-    <div
-      className={`mb-4 p-4 rounded-lg ${
-        isUser
-          ? "bg-primary/20 ml-auto max-w-[80%] text-left"
-          : "bg-accent/20 mr-auto max-w-[90%] sm:max-w-[85%] whitespace-pre-wrap text-left font-serif leading-relaxed mx-auto"
-      }`}
-    >
-      {isUser ? (
-        message.content
-      ) : (
-        <div 
-          className="prose prose-green max-w-none [&>h3]:mt-4 [&>h3]:mb-2 [&>p]:my-0"
-          dangerouslySetInnerHTML={{ __html: formatText(message.content) }} 
-        />
-      )}
+    <div className="w-full max-w-3xl mx-auto px-4 py-6">
+      <div 
+        className="prose prose-green max-w-none 
+          [&>h3]:mt-4 [&>h3]:mb-2 [&>p]:my-0
+          bg-white rounded-lg shadow-sm p-6
+          border border-primary/10"
+        dangerouslySetInnerHTML={{ __html: formatText(message.content) }} 
+      />
     </div>
   );
 };
