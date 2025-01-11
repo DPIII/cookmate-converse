@@ -5,11 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChefHat } from "lucide-react";
 import { useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -26,23 +25,15 @@ const Login = () => {
       console.log('Auth state changed:', event);
       
       if (event === 'SIGNED_IN') {
-        toast({
-          title: "Welcome back!",
-          description: "Successfully logged in.",
-        });
+        toast.success("Successfully logged in!");
         navigate('/directory');
-      } else if (event === 'SIGNED_OUT') {
-        toast({
-          title: "Signed out",
-          description: "You have been logged out.",
-        });
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, toast]);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sage-50 to-cream-50 p-4">

@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   session: Session | null;
@@ -24,6 +25,7 @@ export const useAuth = () => {
 function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const handleAuthError = async (error: AuthError) => {
     console.error("Auth error:", error);
@@ -35,6 +37,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(null);
       localStorage.clear();
       toast.error("Session expired. Please log in again.");
+      navigate("/login");
     } else {
       toast.error(error.message || "Authentication error occurred");
     }
@@ -51,6 +54,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           await handleAuthError(sessionError);
         } else if (initialSession) {
           setSession(initialSession);
+          navigate("/directory");
         }
       } catch (error) {
         console.error("Error in auth initialization:", error);
@@ -72,8 +76,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       if (event === 'SIGNED_OUT') {
         setSession(null);
         localStorage.clear();
+        navigate("/login");
       } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setSession(currentSession);
+        navigate("/directory");
       } else if (event === 'USER_UPDATED') {
         setSession(currentSession);
       }
@@ -85,7 +91,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const value = {
     session,
