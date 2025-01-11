@@ -42,13 +42,11 @@ const Login = () => {
                 sign_in: {
                   email_label: 'Email',
                   password_label: 'Password',
-                  phone_label: 'Phone Number',
                   button_label: 'Sign In',
                 },
                 sign_up: {
                   email_label: 'Email',
                   password_label: 'Password',
-                  phone_label: 'Phone Number',
                   button_label: 'Sign Up',
                 },
               },
