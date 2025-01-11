@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Session } from "@supabase/supabase-js";
+import { UserMenu } from "./UserMenu";
 
 interface MobileNavProps {
   session: Session | null;
