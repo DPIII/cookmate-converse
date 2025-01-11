@@ -186,6 +186,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limits: {
+        Row: {
+          concurrent_requests_limit: number
+          daily_recipes_limit: number
+          monthly_recipes_limit: number
+          tier: Database["public"]["Enums"]["membership_tier"]
+        }
+        Insert: {
+          concurrent_requests_limit: number
+          daily_recipes_limit: number
+          monthly_recipes_limit: number
+          tier: Database["public"]["Enums"]["membership_tier"]
+        }
+        Update: {
+          concurrent_requests_limit?: number
+          daily_recipes_limit?: number
+          monthly_recipes_limit?: number
+          tier?: Database["public"]["Enums"]["membership_tier"]
+        }
+        Relationships: []
+      }
       recipe_collections: {
         Row: {
           created_at: string | null
