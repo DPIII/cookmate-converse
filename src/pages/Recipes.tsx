@@ -8,6 +8,16 @@ import { useToast } from "@/hooks/use-toast";
 import { RecipeCard } from "@/components/recipes/RecipeCard";
 import { RecipeDialog } from "@/components/recipes/RecipeDialog";
 import { RecipeFilters } from "@/components/recipes/RecipeFilters";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 20;
 
 const Recipes = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<any>(null);
@@ -16,6 +26,7 @@ const Recipes = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedMealType, setSelectedMealType] = useState<string>("all");
   const [isSortedByRating, setIsSortedByRating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
 
   const { data: recipes, isLoading, refetch } = useQuery({
@@ -63,20 +74,29 @@ const Recipes = () => {
 
   const toggleSortByRating = () => {
     setIsSortedByRating(!isSortedByRating);
+    setCurrentPage(1);
   };
 
-  const filteredAndSortedRecipes = recipes?.filter((recipe) => {
+  const filteredRecipes = recipes?.filter((recipe) => {
     const matchesSearch = recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          recipe.content.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMealType = selectedMealType === "all" || 
                            (recipe.meal_type && recipe.meal_type.toLowerCase() === selectedMealType.toLowerCase());
     return matchesSearch && matchesMealType;
-  }).sort((a, b) => {
+  });
+
+  const sortedRecipes = [...(filteredRecipes || [])].sort((a, b) => {
     if (!isSortedByRating) return 0;
     const ratingA = a.rating ?? 0;
     const ratingB = b.rating ?? 0;
     return ratingB - ratingA;
   });
+
+  const totalPages = Math.ceil((sortedRecipes?.length || 0) / ITEMS_PER_PAGE);
+  const paginatedRecipes = sortedRecipes?.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   if (isLoading) {
     return (
@@ -124,7 +144,7 @@ const Recipes = () => {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredAndSortedRecipes?.map((recipe) => (
+            {paginatedRecipes?.map((recipe) => (
               <RecipeCard
                 key={recipe.id}
                 recipe={recipe}
@@ -135,6 +155,35 @@ const Recipes = () => {
               />
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <Pagination className="mt-6">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
 
         <RecipeDialog
