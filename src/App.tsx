@@ -14,6 +14,7 @@ import Billing from "@/pages/Billing";
 import Directory from "@/pages/Directory";
 import { SharedRecipeView } from "@/components/recipes/SharedRecipeView";
 import { SignupForm } from "@/components/auth/SignupForm";
+import Subscription from "@/pages/Subscription";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +34,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignupForm />} />
+            <Route path="/subscription" element={<Subscription />} />
             <Route
               path="/directory"
               element={
