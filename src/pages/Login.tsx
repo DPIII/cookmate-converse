@@ -4,9 +4,45 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChefHat } from "lucide-react";
+import { useEffect } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate('/directory');
+      }
+    };
+    checkUser();
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event);
+      
+      if (event === 'SIGNED_IN') {
+        toast({
+          title: "Welcome back!",
+          description: "Successfully logged in.",
+        });
+        navigate('/directory');
+      } else if (event === 'SIGNED_OUT') {
+        toast({
+          title: "Signed out",
+          description: "You have been logged out.",
+        });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sage-50 to-cream-50 p-4">
@@ -37,23 +73,9 @@ const Login = () => {
                 input: 'auth-input',
               },
             }}
-            localization={{
-              variables: {
-                sign_in: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                  button_label: 'Sign In',
-                },
-                sign_up: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                  button_label: 'Sign Up',
-                },
-              },
-            }}
             providers={[]}
-            view="sign_in"
-            showLinks={false}
+            redirectTo={`${window.location.origin}/directory`}
+            onlyThirdPartyProviders={false}
           />
           
           <div className="mt-6 text-center">
