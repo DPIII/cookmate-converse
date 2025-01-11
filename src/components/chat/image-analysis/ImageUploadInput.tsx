@@ -13,14 +13,16 @@ export const ImageUploadInput = ({ onChange }: ImageUploadInputProps) => {
         accept="image/*"
         onChange={onChange}
         className={cn(
-          "flex h-10 items-center justify-center",
+          "flex h-10 w-full items-center justify-center",
           "bg-gray-100 hover:bg-gray-200 transition-colors",
           "file:mr-4 file:py-2 file:px-4",
           "file:rounded-md file:border-0",
           "file:text-sm file:font-semibold",
           "file:bg-gray-200 file:text-gray-700",
           "hover:file:bg-gray-300",
-          "text-gray-500 italic"
+          "text-gray-500 italic",
+          "text-center",
+          "cursor-pointer"
         )}
       />
     </div>
