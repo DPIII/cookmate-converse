@@ -8,10 +8,12 @@ interface LoadingSpinnerProps extends SVGProps<SVGSVGElement> {
 export const LoadingSpinner = ({ className, ...props }: LoadingSpinnerProps) => {
   return (
     <svg
-      className={cn("animate-spin", className)}
+      className={cn("animate-spin text-primary/40", className)}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
+      width="24"
+      height="24"
       {...props}
     >
       <circle
@@ -20,7 +22,7 @@ export const LoadingSpinner = ({ className, ...props }: LoadingSpinnerProps) => 
         cy="12"
         r="10"
         stroke="currentColor"
-        strokeWidth="4"
+        strokeWidth="3"
       />
       <path
         className="opacity-75"
