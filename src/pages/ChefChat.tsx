@@ -109,6 +109,10 @@ const ChefChat = () => {
     }
   };
 
+  const lastAssistantMessage = [...messages]
+    .reverse()
+    .find((msg) => msg.role === "assistant");
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
