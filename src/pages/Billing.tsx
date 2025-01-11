@@ -8,7 +8,18 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { Check, CreditCard, Loader2 } from "lucide-react";
+import { Check, CreditCard, Loader2, XCircle } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface BillingPlan {
   id: string;
@@ -24,6 +35,12 @@ const Billing = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+
+  useEffect(() => {
+    if (!session) {
+      navigate('/login');
+    }
+  }, [session, navigate]);
 
   const { data: plans, isLoading: isLoadingPlans } = useQuery({
     queryKey: ['billing-plans'],
@@ -56,12 +73,45 @@ const Billing = () => {
   const handleSubscribe = async (planId: string) => {
     setIsProcessing(true);
     try {
-      // This is a placeholder - will be replaced with actual Stripe integration
-      toast.info("Stripe integration coming soon! This is just a placeholder.");
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { priceId: planId }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Failed to create checkout session");
+      }
     } catch (error) {
       console.error('Subscription error:', error);
       toast.error("Failed to process subscription");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!subscription?.stripe_subscription_id) {
+      toast.error("No active subscription found");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const { error } = await supabase.functions.invoke('cancel-subscription', {
+        body: { subscriptionId: subscription.stripe_subscription_id }
+      });
+
+      if (error) throw error;
+      
+      toast.success("Subscription cancelled successfully");
+      // Refetch subscription data
+      await subscription.refetch();
+    } catch (error) {
+      console.error('Cancellation error:', error);
+      toast.error("Failed to cancel subscription");
     } finally {
       setIsProcessing(false);
     }
@@ -182,9 +232,45 @@ const Billing = () => {
                 )}
               </div>
             </CardContent>
-            <CardFooter>
-              <Button variant="outline" className="w-full" disabled={isProcessing}>
-                Manage Subscription
+            <CardFooter className="flex gap-4">
+              {subscription.status === 'active' && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="w-full" disabled={isProcessing}>
+                      <XCircle className="mr-2 h-4 w-4" />
+                      Cancel Subscription
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Cancel Subscription</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to cancel your subscription? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Keep Subscription</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleCancelSubscription}>
+                        {isProcessing ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing
+                          </>
+                        ) : (
+                          'Yes, Cancel'
+                        )}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => window.location.href = 'https://billing.stripe.com/p/login/test_28o5kq8Xf3Ys3GE288'}
+                disabled={isProcessing}
+              >
+                Manage Billing
               </Button>
             </CardFooter>
           </Card>
