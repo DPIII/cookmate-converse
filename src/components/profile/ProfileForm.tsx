@@ -46,21 +46,6 @@ export const ProfileForm = ({
     },
   });
 
-  // Fetch available plans
-  const { data: plans, isLoading: isLoadingPlans } = useQuery({
-    queryKey: ['billing_plans'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('billing_plans')
-        .select('*')
-        .eq('is_active', true)
-        .order('price');
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const handleSubscribe = async (priceId: string) => {
     try {
       if (!priceId) {
@@ -100,6 +85,21 @@ export const ProfileForm = ({
         return 'bg-gray-500';
     }
   };
+
+  const plans = [
+    {
+      name: "community",
+      displayName: "Community",
+      priceId: "price_1Qf8oRFJOjsdKhod3HBH9B0Q",
+      price: "$5/month"
+    },
+    {
+      name: "premium",
+      displayName: "Premium",
+      priceId: "price_1Qf8q2FJOjsdKhodwzKbe9HQ",
+      price: "$10/month"
+    }
+  ];
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -180,27 +180,20 @@ export const ProfileForm = ({
                     {profile?.membership_tier?.toUpperCase() || 'FREE'} PLAN
                   </Badge>
                   
-                  {isLoadingPlans ? (
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Loading plans...</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {plans?.map((plan) => (
-                        plan.stripe_price_id && profile?.membership_tier !== plan.name && (
-                          <Button
-                            key={plan.id}
-                            onClick={() => handleSubscribe(plan.stripe_price_id)}
-                            variant="outline"
-                            size="sm"
-                          >
-                            {profile?.membership_tier === 'free' ? 'Upgrade to' : 'Switch to'} {plan.name}
-                          </Button>
-                        )
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {plans.map((plan) => (
+                      profile?.membership_tier !== plan.name && (
+                        <Button
+                          key={plan.name}
+                          onClick={() => handleSubscribe(plan.priceId)}
+                          variant="outline"
+                          size="sm"
+                        >
+                          {profile?.membership_tier === 'free' ? 'Upgrade to' : 'Switch to'} {plan.displayName} ({plan.price})
+                        </Button>
+                      )
+                    ))}
+                  </div>
                 </div>
               )}
             </td>
