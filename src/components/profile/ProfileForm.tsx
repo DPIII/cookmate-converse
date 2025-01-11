@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { AvatarUpload } from "./AvatarUpload";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Badge } from "@/components/ui/badge";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { SubscriptionBadge } from "./SubscriptionBadge";
+import { SubscriptionPlans } from "./SubscriptionPlans";
 
 interface ProfileFormProps {
   username: string;
@@ -31,7 +32,8 @@ export const ProfileForm = ({
   userId,
   onSubmit,
 }: ProfileFormProps) => {
-  // Fetch current subscription status
+  const [loading, setLoading] = useState<string | null>(null);
+
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ['profile', userId],
     queryFn: async () => {
@@ -46,8 +48,10 @@ export const ProfileForm = ({
     },
   });
 
-  const handleSubscribe = async (priceId: string) => {
+  const handleSubscribe = async (planName: string, priceId: string) => {
     try {
+      setLoading(planName);
+      
       if (!priceId) {
         toast.error("Invalid plan selected");
         return;
@@ -72,34 +76,10 @@ export const ProfileForm = ({
     } catch (error) {
       console.error('Error:', error);
       toast.error("An error occurred while processing your request");
+    } finally {
+      setLoading(null);
     }
   };
-
-  const getTierBadgeColor = (tier: string) => {
-    switch (tier) {
-      case 'premium':
-        return 'bg-purple-500';
-      case 'community':
-        return 'bg-blue-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const plans = [
-    {
-      name: "community",
-      displayName: "Community",
-      priceId: "price_1Qf8oRFJOjsdKhod3HBH9B0Q",
-      price: "$5/month"
-    },
-    {
-      name: "premium",
-      displayName: "Premium",
-      priceId: "price_1Qf8q2FJOjsdKhodwzKbe9HQ",
-      price: "$10/month"
-    }
-  ];
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
@@ -176,24 +156,12 @@ export const ProfileForm = ({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <Badge className={getTierBadgeColor(profile?.membership_tier)}>
-                    {profile?.membership_tier?.toUpperCase() || 'FREE'} PLAN
-                  </Badge>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {plans.map((plan) => (
-                      profile?.membership_tier !== plan.name && (
-                        <Button
-                          key={plan.name}
-                          onClick={() => handleSubscribe(plan.priceId)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          {profile?.membership_tier === 'free' ? 'Upgrade to' : 'Switch to'} {plan.displayName} ({plan.price})
-                        </Button>
-                      )
-                    ))}
-                  </div>
+                  <SubscriptionBadge tier={profile?.membership_tier} />
+                  <SubscriptionPlans 
+                    currentTier={profile?.membership_tier || 'free'}
+                    onSubscribe={handleSubscribe}
+                    isLoading={loading}
+                  />
                 </div>
               )}
             </td>
