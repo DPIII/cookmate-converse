@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ const Billing = () => {
   const { session } = useAuth();
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!session) {
@@ -108,7 +109,7 @@ const Billing = () => {
       
       toast.success("Subscription cancelled successfully");
       // Refetch subscription data
-      await subscription.refetch();
+      await queryClient.invalidateQueries({ queryKey: ['subscription', session?.user?.id] });
     } catch (error) {
       console.error('Cancellation error:', error);
       toast.error("Failed to cancel subscription");
