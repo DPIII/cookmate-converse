@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { AvatarUpload } from "@/components/profile/AvatarUpload";
 import { ChefHat } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AuthError } from "@supabase/supabase-js";
 
 export const SignupForm = () => {
   const navigate = useNavigate();
@@ -15,7 +15,6 @@ export const SignupForm = () => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,7 +42,6 @@ export const SignupForm = () => {
           data: {
             username,
             name,
-            avatar_url: avatarUrl,
           },
         },
       });
@@ -69,8 +67,23 @@ export const SignupForm = () => {
       }
     } catch (error: any) {
       console.error("Error signing up:", error);
-      setError(error.message || "Error creating account. Please try again.");
-      toast.error(error.message || "Error creating account");
+      let errorMessage = "Error creating account. Please try again.";
+      
+      if (error instanceof AuthError) {
+        switch (error.message) {
+          case "User already registered":
+            errorMessage = "This email is already registered. Please sign in instead.";
+            break;
+          case "Password should be at least 6 characters":
+            errorMessage = "Password must be at least 6 characters long.";
+            break;
+          default:
+            errorMessage = error.message;
+        }
+      }
+      
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -142,15 +155,6 @@ export const SignupForm = () => {
               />
             </div>
 
-            <div>
-              <Label>Profile Picture (Optional)</Label>
-              <AvatarUpload
-                avatarUrl={avatarUrl}
-                userId="temp"
-                onAvatarChange={setAvatarUrl}
-              />
-            </div>
-
             <Button 
               type="submit" 
               className="w-full"
@@ -158,6 +162,17 @@ export const SignupForm = () => {
             >
               {loading ? "Creating Account..." : "Create Account"}
             </Button>
+
+            <p className="text-center text-sm text-gray-600">
+              Already have an account?{" "}
+              <button
+                type="button"
+                onClick={() => navigate("/login")}
+                className="text-primary-600 hover:text-primary-800 font-semibold"
+              >
+                Sign in
+              </button>
+            </p>
           </form>
         </div>
       </div>
