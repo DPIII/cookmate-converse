@@ -29,6 +29,7 @@ interface BillingPlan {
   interval: 'month' | 'year';
   features: string[];
   is_active: boolean;
+  stripe_price_id: string;
 }
 
 const Billing = () => {
@@ -71,11 +72,16 @@ const Billing = () => {
     enabled: !!session?.user?.id,
   });
 
-  const handleSubscribe = async (planId: string) => {
+  const handleSubscribe = async (plan: BillingPlan) => {
+    if (!plan.stripe_price_id) {
+      toast.error("This plan is not available for subscription");
+      return;
+    }
+
     setIsProcessing(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { priceId: planId }
+        body: { priceId: plan.stripe_price_id }
       });
 
       if (error) throw error;
@@ -108,7 +114,6 @@ const Billing = () => {
       if (error) throw error;
       
       toast.success("Subscription cancelled successfully");
-      // Refetch subscription data
       await queryClient.invalidateQueries({ queryKey: ['subscription', session?.user?.id] });
     } catch (error) {
       console.error('Cancellation error:', error);
@@ -185,8 +190,8 @@ const Billing = () => {
               <CardFooter>
                 <Button 
                   className="w-full" 
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={isProcessing || isCurrentPlan}
+                  onClick={() => handleSubscribe(plan)}
+                  disabled={isProcessing || isCurrentPlan || !plan.stripe_price_id}
                 >
                   {isProcessing ? (
                     <>
@@ -195,6 +200,8 @@ const Billing = () => {
                     </>
                   ) : isCurrentPlan ? (
                     'Current Plan'
+                  ) : !plan.stripe_price_id ? (
+                    'Not Available'
                   ) : (
                     <>
                       <CreditCard className="mr-2 h-4 w-4" />

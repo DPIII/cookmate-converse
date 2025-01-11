@@ -19,6 +19,7 @@ export type Database = {
           is_active: boolean | null
           name: string
           price: number
+          stripe_price_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -29,6 +30,7 @@ export type Database = {
           is_active?: boolean | null
           name: string
           price: number
+          stripe_price_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -39,6 +41,7 @@ export type Database = {
           is_active?: boolean | null
           name?: string
           price?: number
+          stripe_price_id?: string | null
         }
         Relationships: []
       }
