@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 interface AuthContextType {
   session: Session | null;
@@ -26,13 +26,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleAuthError = async (error: AuthError) => {
     console.error("Auth error:", error);
     
     if (error.message.includes("refresh_token_not_found") || 
         error.message.includes("Invalid Refresh Token")) {
-      // Clear the session and local storage
       await supabase.auth.signOut();
       setSession(null);
       localStorage.clear();
@@ -46,7 +46,6 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Get the initial session
         const { data: { session: initialSession }, error: sessionError } = 
           await supabase.auth.getSession();
         
@@ -54,7 +53,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           await handleAuthError(sessionError);
         } else if (initialSession) {
           setSession(initialSession);
-          navigate("/directory");
+          // Only redirect to root if coming from login
+          if (location.pathname === "/login") {
+            navigate("/");
+          }
         }
       } catch (error) {
         console.error("Error in auth initialization:", error);
@@ -64,10 +66,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Initialize authentication
     initializeAuth();
 
-    // Set up auth state change listener
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
@@ -77,9 +77,12 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(null);
         localStorage.clear();
         navigate("/login");
-      } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      } else if (event === 'SIGNED_IN') {
         setSession(currentSession);
-        navigate("/directory");
+        // Only redirect to root if coming from login
+        if (location.pathname === "/login") {
+          navigate("/");
+        }
       } else if (event === 'USER_UPDATED') {
         setSession(currentSession);
       }
@@ -87,11 +90,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
-    // Cleanup subscription on unmount
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, location]);
 
   const value = {
     session,

@@ -15,7 +15,7 @@ const Login = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/directory');
+        navigate('/');
       }
     };
     checkUser();
@@ -26,7 +26,7 @@ const Login = () => {
       
       if (event === 'SIGNED_IN') {
         toast.success("Successfully logged in!");
-        navigate('/directory');
+        navigate('/');
       }
     });
 
@@ -65,7 +65,7 @@ const Login = () => {
               },
             }}
             providers={[]}
-            redirectTo={`${window.location.origin}/directory`}
+            redirectTo={`${window.location.origin}/`}
             onlyThirdPartyProviders={false}
           />
           
