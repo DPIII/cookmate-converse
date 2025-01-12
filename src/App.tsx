@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
@@ -35,14 +35,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<SignupForm />} />
             <Route path="/subscription" element={<Subscription />} />
-            <Route
-              path="/directory"
-              element={
-                <ProtectedRoute>
-                  <Directory />
-                </ProtectedRoute>
-              }
-            />
+            <Route path="/directory" element={<Directory />} />
             <Route
               path="/chat"
               element={

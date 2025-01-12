@@ -14,7 +14,6 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   if (!session) {
-    // Save the attempted URL
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
