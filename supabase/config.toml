@@ -2,3 +2,6 @@ project_id = "nkseanjwwpnpfyrlwqwk"
 
 [functions.chat-with-chef]
 verify_jwt = false
+
+[functions.analyze-menu]
+verify_jwt = false
