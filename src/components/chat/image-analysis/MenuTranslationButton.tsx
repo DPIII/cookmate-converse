@@ -11,7 +11,7 @@ export const MenuTranslationButton = ({ isLoading, onClick }: MenuTranslationBut
   return (
     <Button 
       variant="default"
-      className="w-full bg-primary-600 hover:bg-primary-700 text-white"
+      className="w-full bg-primary-800 hover:bg-primary-900 text-white"
       onClick={onClick}
       disabled={isLoading}
     >
