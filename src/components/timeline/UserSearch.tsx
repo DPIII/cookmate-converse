@@ -41,33 +41,16 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
     }
 
     try {
-      const { data: usernameResults, error: usernameError } = await supabase
+      // Only search by username pattern
+      const { data: searchResults, error } = await supabase
         .from('profiles')
         .select('id, username, avatar_url, created_at')
-        .or(`username.ilike.%${query}%,id.eq.${query}`)
+        .ilike('username', `%${query}%`)
         .limit(10);
 
-      if (usernameError) throw usernameError;
+      if (error) throw error;
       
-      // If query looks like an email, also search in auth.users
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (emailPattern.test(query)) {
-        const { data: emailResults, error: emailError } = await supabase
-          .from('profiles')
-          .select('id, username, avatar_url, created_at')
-          .eq('id', query)
-          .limit(1);
-
-        if (emailError) throw emailError;
-        
-        if (emailResults && emailResults.length > 0) {
-          setSearchResults([...usernameResults, ...emailResults]);
-        } else {
-          setSearchResults(usernameResults);
-        }
-      } else {
-        setSearchResults(usernameResults);
-      }
+      setSearchResults(searchResults || []);
       setHasSearched(true);
     } catch (error) {
       console.error('Error searching users:', error);
@@ -119,7 +102,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
         <DialogHeader>
           <DialogTitle>Find Friends</DialogTitle>
           <DialogDescription>
-            Search for users by username or email and connect with them.
+            Search for users by username and connect with them.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -127,7 +110,7 @@ export function UserSearch({ showSearch, setShowSearch }: UserSearchProps) {
             <PopoverTrigger asChild>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Search by username or email"
+                  placeholder="Search by username"
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
