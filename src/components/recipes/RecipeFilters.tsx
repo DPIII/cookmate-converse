@@ -1,14 +1,10 @@
 import { Input } from "@/components/ui/input";
-import { Search, Star } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { MEAL_TYPES } from "@/components/chat/filters/FilterConstants";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, SortAsc } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { ImageUploadSection } from "../chat/sections/ImageUploadSection";
 
 interface RecipeFiltersProps {
   searchQuery: string;
@@ -27,39 +23,59 @@ export const RecipeFilters = ({
   onSortByRating,
   isSortedByRating,
 }: RecipeFiltersProps) => {
+  const [isAddRecipeOpen, setIsAddRecipeOpen] = useState(false);
+
+  const handleAnalysisComplete = async (analysis: string) => {
+    // Close the dialog after analysis is complete
+    setIsAddRecipeOpen(false);
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+      <div className="flex-1">
         <Input
           placeholder="Search recipes..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
+          className="w-full"
         />
       </div>
-      <Select value={selectedMealType} onValueChange={onMealTypeChange}>
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Filter by meal type" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All meal types</SelectItem>
-          {MEAL_TYPES.map((type) => (
-            <SelectItem key={type} value={type.toLowerCase()}>
-              {type}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Button
-        variant={isSortedByRating ? "secondary" : "outline"}
-        size="default"
-        onClick={onSortByRating}
-        className="whitespace-nowrap"
-      >
-        <Star className={`h-4 w-4 mr-2 ${isSortedByRating ? "fill-current" : ""}`} />
-        Sort by Rating
-      </Button>
+      <div className="flex gap-2">
+        <Select value={selectedMealType} onValueChange={onMealTypeChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter by meal type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            <SelectItem value="breakfast">Breakfast</SelectItem>
+            <SelectItem value="lunch">Lunch</SelectItem>
+            <SelectItem value="dinner">Dinner</SelectItem>
+            <SelectItem value="dessert">Dessert</SelectItem>
+            <SelectItem value="snack">Snack</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          variant="outline"
+          onClick={onSortByRating}
+          className={isSortedByRating ? "bg-primary/10" : ""}
+        >
+          <SortAsc className="h-4 w-4 mr-2" />
+          Rating
+        </Button>
+        <Button onClick={() => setIsAddRecipeOpen(true)} className="bg-primary text-white">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Recipe
+        </Button>
+      </div>
+
+      <Dialog open={isAddRecipeOpen} onOpenChange={setIsAddRecipeOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Add New Recipe</DialogTitle>
+          </DialogHeader>
+          <ImageUploadSection onAnalysisComplete={handleAnalysisComplete} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
