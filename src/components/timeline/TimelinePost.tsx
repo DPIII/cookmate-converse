@@ -3,7 +3,7 @@ import { TimelinePost as TimelinePostType } from "@/types/timeline";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Share2, Star, Download } from "lucide-react";
+import { Heart, MessageCircle, Share2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,8 +11,6 @@ import { useAuth } from "@/components/AuthProvider";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { RatingStars } from "@/components/recipes/RatingStars";
 import {
   DropdownMenu,
@@ -76,45 +74,36 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
   const handleShare = async () => {
     if (post.recipe) {
       try {
-        await navigator.share({
-          title: post.recipe.title,
-          text: `Check out this recipe: ${post.recipe.title}`,
-          url: window.location.href
-        });
-      } catch (err) {
-        const shareUrl = window.location.href;
+        const shareUrl = `${window.location.origin}/recipes/shared/${post.recipe.share_id}`;
         await navigator.clipboard.writeText(shareUrl);
-        toast.success("Link copied to clipboard!");
+        toast.success("Recipe link copied to clipboard!");
+      } catch (err) {
+        console.error('Error copying to clipboard:', err);
+        toast.error("Failed to copy link");
       }
     }
   };
 
-  const handleSaveToPDF = async () => {
+  const handleCopyText = async () => {
     if (!post.recipe) return;
 
     try {
-      const recipeContent = document.getElementById(`recipe-content-${post.recipe.id}`);
-      if (!recipeContent) return;
+      const recipeText = `
+Recipe: ${post.recipe.title}
 
-      toast.loading("Generating PDF...");
+${post.recipe.content}
 
-      const canvas = await html2canvas(recipeContent);
-      const imgData = canvas.toDataURL('image/png');
-      
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width, canvas.height]
-      });
+${post.recipe.notes ? `Notes: ${post.recipe.notes}` : ''}
 
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`${post.recipe.title}.pdf`);
+Cuisine: ${post.recipe.cuisine_type || 'Not specified'}
+Rating: ${post.recipe.rating ? `${post.recipe.rating}/5` : 'Not rated'}
+`.trim();
 
-      toast.dismiss();
-      toast.success("PDF downloaded successfully!");
+      await navigator.clipboard.writeText(recipeText);
+      toast.success("Recipe text copied to clipboard!");
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast.error("Failed to generate PDF");
+      console.error('Error copying recipe text:', error);
+      toast.error("Failed to copy recipe text");
     }
   };
 
@@ -259,11 +248,12 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={handleShare}>
-              Share Recipe
+              <Share2 className="h-4 w-4 mr-2" />
+              Copy Link
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleSaveToPDF}>
-              <Download className="h-4 w-4 mr-2" />
-              Save as PDF
+            <DropdownMenuItem onClick={handleCopyText}>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Text
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
