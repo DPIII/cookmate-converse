@@ -72,15 +72,18 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
   };
 
   const handleShare = async () => {
-    if (post.recipe) {
-      try {
-        const shareUrl = `${window.location.origin}/recipes/shared/${post.recipe.share_id}`;
-        await navigator.clipboard.writeText(shareUrl);
-        toast.success("Recipe link copied to clipboard!");
-      } catch (err) {
-        console.error('Error copying to clipboard:', err);
-        toast.error("Failed to copy link");
-      }
+    if (!post.recipe?.share_id) {
+      toast.error("Share ID not available for this recipe");
+      return;
+    }
+
+    try {
+      const shareUrl = `${window.location.origin}/recipes/shared/${post.recipe.share_id}`;
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("Recipe link copied to clipboard!");
+    } catch (err) {
+      console.error('Error copying to clipboard:', err);
+      toast.error("Failed to copy link");
     }
   };
 
