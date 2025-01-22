@@ -10,6 +10,7 @@ export interface TimelinePost {
     cuisine_type?: string;
     rating?: number;
     notes?: string;
+    share_id?: string;  // Added this line
   };
   user: {
     username: string;
