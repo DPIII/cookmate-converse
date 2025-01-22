@@ -135,7 +135,9 @@ const Billing = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {plans.map((plan) => {
-          const isCurrentPlan = currentSubscription?.status === 'active';
+          const isCurrentPlan = currentSubscription?.status === 'active' && 
+            ((plan.name === 'Free' && !currentSubscription) || 
+             (plan.priceId && currentSubscription?.stripe_subscription_id));
           
           return (
             <Card 
@@ -195,14 +197,14 @@ const Billing = () => {
                       : 'bg-gray-700 hover:bg-gray-800 text-white'
                   }`}
                   onClick={() => handleSubscribe(plan.name, plan.priceId)}
-                  disabled={loading === plan.name || (isCurrentPlan && plan.priceId)}
+                  disabled={loading === plan.name || isCurrentPlan}
                 >
                   {loading === plan.name ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Processing
                     </>
-                  ) : isCurrentPlan && plan.priceId ? (
+                  ) : isCurrentPlan ? (
                     "Current Plan"
                   ) : plan.name === "Free" ? (
                     "Get Started"
