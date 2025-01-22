@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { TimelinePost as TimelinePostType } from "@/types/timeline";
 import { TimelinePost } from "@/components/timeline/TimelinePost";
 import { UserSearch } from "@/components/timeline/UserSearch";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Pagination,
   PaginationContent,
@@ -17,7 +18,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const ITEMS_PER_PAGE = 20;
+type PageSize = 10 | 20 | 'max';
 
 export default function Timeline() {
   const { session } = useAuth();
@@ -25,6 +26,7 @@ export default function Timeline() {
   const [showSearch, setShowSearch] = useState(false);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState<PageSize>(10);
 
   useEffect(() => {
     if (session?.user) {
@@ -69,11 +71,17 @@ export default function Timeline() {
     }
   };
 
-  const totalPages = Math.ceil(posts.length / ITEMS_PER_PAGE);
+  const itemsPerPage = pageSize === 'max' ? posts.length : pageSize;
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
   const paginatedPosts = posts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
+
+  // Reset to first page when changing page size
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize]);
 
   if (!session) {
     return (
@@ -93,7 +101,32 @@ export default function Timeline() {
       <Navigation />
       <main className="max-w-4xl mx-auto pt-20 px-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-green-800">Recipe Feed</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-green-800">Recipe Feed</h1>
+            <div className="flex items-center gap-2 border rounded-lg p-1 bg-white">
+              <Toggle
+                pressed={pageSize === 10}
+                onPressedChange={() => setPageSize(10)}
+                className="px-2.5 data-[state=on]:bg-green-50"
+              >
+                10
+              </Toggle>
+              <Toggle
+                pressed={pageSize === 20}
+                onPressedChange={() => setPageSize(20)}
+                className="px-2.5 data-[state=on]:bg-green-50"
+              >
+                20
+              </Toggle>
+              <Toggle
+                pressed={pageSize === 'max'}
+                onPressedChange={() => setPageSize('max')}
+                className="px-2.5 data-[state=on]:bg-green-50"
+              >
+                All
+              </Toggle>
+            </div>
+          </div>
           <Button
             variant="outline"
             onClick={() => setShowSearch(true)}
