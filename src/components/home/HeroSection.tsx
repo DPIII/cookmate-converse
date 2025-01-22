@@ -1,8 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleLogin = () => {
+    navigate("/login", { state: { from: location } });
+  };
+
+  const handleSignup = () => {
+    navigate("/signup");
+  };
 
   return (
     <div className="relative px-4 pt-20 lg:px-8">
@@ -17,13 +26,13 @@ export const HeroSection = () => {
           </p>
           <div className="flex items-center justify-center gap-4 mb-12">
             <Button 
-              onClick={() => navigate("/signup")} 
+              onClick={handleSignup}
               className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-6 text-lg"
             >
               Create an Account
             </Button>
             <Button 
-              onClick={() => navigate("/login")} 
+              onClick={handleLogin}
               variant="outline"
               className="text-gray-700 hover:text-gray-900 px-8 py-6 text-lg italic border-gray-700"
             >
