@@ -139,30 +139,38 @@ export const ImageUploadSection = ({ onAnalysisComplete }: ImageUploadSectionPro
             <ImageUploadInput onChange={handleImageChange} />
           </div>
         </div>
-        <div className="space-y-4 max-w-md mx-auto w-full">
-          <ImageAnalysisButton 
-            isLoading={isLoading} 
-            onClick={handleUpload}
-          />
-          <WineAnalysisButton 
-            isLoading={isAnalyzing}
-            onClick={handleWineAnalysis}
-          />
-          <MenuTranslationButton
-            isLoading={isTranslating}
-            onClick={handleMenuTranslation}
-          />
-        </div>
-        {previewUrl && (
-          <div className="flex justify-center mt-4">
-            <img 
-              src={previewUrl} 
-              alt="Preview" 
-              className="max-w-[200px] h-auto rounded-lg shadow-md"
+
+        {/* Preview image and buttons container */}
+        <div className="flex flex-col md:flex-row gap-6 items-start justify-center">
+          {/* Buttons container - always visible */}
+          <div className="space-y-4 w-full max-w-md order-2 md:order-1">
+            <ImageAnalysisButton 
+              isLoading={isLoading} 
+              onClick={handleUpload}
+            />
+            <WineAnalysisButton 
+              isLoading={isAnalyzing}
+              onClick={handleWineAnalysis}
+            />
+            <MenuTranslationButton
+              isLoading={isTranslating}
+              onClick={handleMenuTranslation}
             />
           </div>
-        )}
+
+          {/* Preview image container - conditionally rendered */}
+          {previewUrl && (
+            <div className="flex justify-center order-1 md:order-2 w-full md:w-auto">
+              <img 
+                src={previewUrl} 
+                alt="Preview" 
+                className="max-w-[200px] h-auto rounded-lg shadow-md"
+              />
+            </div>
+          )}
+        </div>
       </div>
+
       <WineAnalysisDialog
         open={isWineDialogOpen}
         onOpenChange={setIsWineDialogOpen}
