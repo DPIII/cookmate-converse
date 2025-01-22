@@ -75,10 +75,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         navigate("/login");
       } else if (event === 'SIGNED_IN') {
         setSession(currentSession);
-        if (location.pathname === '/login') {
-          const intendedPath = location.state?.from?.pathname || '/';
-          navigate(intendedPath);
-        }
+        navigate("/directory");
       } else if (event === 'USER_UPDATED') {
         setSession(currentSession);
       }
