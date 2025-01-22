@@ -5,6 +5,7 @@ import { Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useAuth } from "@/components/AuthProvider";
 
 interface WineAnalysisDialogProps {
   open: boolean;
@@ -18,21 +19,22 @@ export const WineAnalysisDialog = ({
   analysis,
 }: WineAnalysisDialogProps) => {
   const { toast } = useToast();
+  const { session } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 
   // Format text to preserve HTML-like formatting
   const formatAnalysis = (text: string | null) => {
     if (!text) return "";
     return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/__(.*?)__/g, '<u>$1</u>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>')
+      .replace(/__(.*?)__/g, '<u class="underline">$1</u>')
       .split('\n')
-      .map(line => `<p>${line}</p>`)
+      .map(line => `<p class="mb-4">${line}</p>`)
       .join('');
   };
 
   const handleSave = async () => {
-    if (!analysis) return;
+    if (!analysis || !session?.user?.id) return;
     
     setIsSaving(true);
     try {
@@ -42,6 +44,7 @@ export const WineAnalysisDialog = ({
           title: 'Wine Analysis',
           content: analysis,
           meal_type: 'Wine Pairing',
+          user_id: session.user.id
         });
 
       if (error) throw error;
@@ -70,7 +73,7 @@ export const WineAnalysisDialog = ({
         </DialogHeader>
         <ScrollArea className="h-[60vh] mt-4">
           <div 
-            className="prose prose-green max-w-none px-4"
+            className="prose prose-green max-w-none px-4 prose-strong:font-bold prose-p:my-2"
             dangerouslySetInnerHTML={{ 
               __html: formatAnalysis(analysis) 
             }}
@@ -79,7 +82,7 @@ export const WineAnalysisDialog = ({
         <div className="flex justify-end mt-4">
           <Button
             onClick={handleSave}
-            disabled={isSaving || !analysis}
+            disabled={isSaving || !analysis || !session?.user}
             className="bg-primary text-white hover:bg-primary-700"
           >
             <Save className="w-4 h-4 mr-2" />
