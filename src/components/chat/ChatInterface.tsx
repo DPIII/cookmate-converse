@@ -47,10 +47,23 @@ export const ChatInterface = ({
   };
 
   const handleSaveRecipeWrapper = async (title: string, notes: string, generatePhoto: boolean) => {
-    const success = await handleSaveRecipe(title, notes, generatePhoto, handleGenerateImage);
-    if (success) {
-      setIsSaveDialogOpen(false);
-      setGeneratedImage(null);
+    try {
+      const success = await handleSaveRecipe(title, notes, generatePhoto, handleGenerateImage);
+      if (success) {
+        setIsSaveDialogOpen(false);
+        setGeneratedImage(null);
+        toast({
+          title: "Success",
+          description: "Recipe saved successfully!",
+        });
+      }
+    } catch (error) {
+      console.error("Error saving recipe:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save recipe. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -62,7 +75,8 @@ export const ChatInterface = ({
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !isLoading) {
+    if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+      e.preventDefault();
       handleSendMessage();
     }
   };

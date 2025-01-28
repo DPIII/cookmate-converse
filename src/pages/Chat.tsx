@@ -102,14 +102,12 @@ const Chat = () => {
   };
 
   const handleAnalysisComplete = (analysis: string) => {
-    // Add the analysis to the chat history and automatically trigger recipe generation
     setChatHistory(prev => [
       ...prev,
       { role: "user", content: "I uploaded an image for analysis." },
       { role: "assistant", content: `Here's what I see in the image:\n\n${analysis}` }
     ]);
 
-    // Automatically trigger recipe generation based on the analysis
     handleSend(`Generate a recipe based on this analysis: ${analysis}`, false);
   };
 
@@ -118,7 +116,6 @@ const Chat = () => {
       <Navigation />
       <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
         <div className="space-y-6">
-          {/* First Card: Filters and Chat Interface */}
           <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
             <div className="space-y-8">
               <FilterSection
@@ -152,7 +149,6 @@ const Chat = () => {
             </div>
           </Card>
 
-          {/* Second Card: Image Upload Interface */}
           <Card className="p-6 bg-card/50 shadow-lg border-primary/20">
             <div className="space-y-4">
               <h2 className="text-xl font-semibold text-primary mb-4">
