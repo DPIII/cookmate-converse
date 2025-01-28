@@ -5,3 +5,9 @@ verify_jwt = false
 
 [functions.analyze-menu]
 verify_jwt = false
+
+[functions.generate-recipe]
+verify_jwt = false
+
+[functions.generate-shopping-list]
+verify_jwt = false
