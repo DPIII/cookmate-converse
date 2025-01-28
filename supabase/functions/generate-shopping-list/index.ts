@@ -34,10 +34,13 @@ serve(async (req) => {
           {
             role: 'system',
             content: `You are a helpful assistant that generates organized shopping lists from recipes. 
-            Extract all ingredients from the recipe and create a categorized shopping list.
-            Format the list by categories (e.g., Produce, Meat, Dairy, Pantry, etc.).
-            Include quantities in standard measurements.
-            Focus only on the ingredients needed, not the full recipe.`
+            Your task is to:
+            1. First, identify and extract ONLY the ingredients section from the provided recipe
+            2. Create a clear, categorized shopping list from these ingredients
+            3. Format the list by categories (e.g., Produce, Meat, Dairy, Pantry, etc.)
+            4. Include quantities in standard measurements
+            5. If quantities are not specified, make reasonable assumptions for 2-4 servings
+            6. Group similar items together within categories`
           },
           {
             role: 'user',
