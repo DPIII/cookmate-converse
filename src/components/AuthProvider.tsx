@@ -53,6 +53,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           await handleAuthError(sessionError);
         } else if (initialSession) {
           setSession(initialSession);
+          // Only redirect to directory if user is on root or login page
+          if (location.pathname === "/" || location.pathname === "/login") {
+            navigate("/directory");
+          }
         }
       } catch (error) {
         console.error("Error in auth initialization:", error);
@@ -73,10 +77,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(null);
         localStorage.clear();
         navigate("/login");
-      } else if (event === 'SIGNED_IN') {
+      } else if (event === 'SIGNED_IN' && currentSession) {
         setSession(currentSession);
-        navigate("/directory");
-      } else if (event === 'USER_UPDATED') {
+        // Only redirect to directory if user is on root or login page
+        if (location.pathname === "/" || location.pathname === "/login") {
+          navigate("/directory");
+        }
+      } else if (event === 'USER_UPDATED' && currentSession) {
         setSession(currentSession);
       }
 
