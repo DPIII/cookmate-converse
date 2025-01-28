@@ -3,27 +3,24 @@ import { Languages } from "lucide-react";
 import { LoadingSpinner } from "../LoadingSpinner";
 
 interface MenuTranslationButtonProps {
-  isLoading: boolean;
   onClick: () => void;
+  isLoading?: boolean;
 }
 
-export const MenuTranslationButton = ({ isLoading, onClick }: MenuTranslationButtonProps) => {
+export const MenuTranslationButton = ({ onClick, isLoading }: MenuTranslationButtonProps) => {
   return (
     <Button 
       variant="default"
-      className="w-full bg-primary-800 hover:bg-primary-900 text-white"
+      className="w-full bg-green-700 hover:bg-green-800 text-white"
       onClick={onClick}
       disabled={isLoading}
     >
       {isLoading ? (
-        <>
-          <LoadingSpinner className="mr-2 h-4 w-4" />
-          Translating...
-        </>
+        <LoadingSpinner />
       ) : (
         <>
-          <Languages className="h-4 w-4 mr-2" />
-          Translate My Menu
+          <Languages className="mr-2 h-4 w-4" />
+          Translate Menu
         </>
       )}
     </Button>
