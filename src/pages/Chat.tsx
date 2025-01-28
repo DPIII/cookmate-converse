@@ -15,6 +15,12 @@ const Chat = () => {
   const [customDiet, setCustomDiet] = useState("");
   const [activeSection, setActiveSection] = useState<"none" | "generator" | "image">("none");
 
+  // Updated to return a Promise
+  const handleSendMessage = async (message: string, isEdit?: boolean): Promise<void> => {
+    // Placeholder for actual implementation
+    return Promise.resolve();
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -69,13 +75,13 @@ const Chat = () => {
                   <ChatSection
                     chatHistory={[]}
                     isLoading={false}
-                    onSend={() => {}}
+                    onSend={handleSendMessage}
                     selectedMeal={selectedMeal}
                     selectedCuisine={selectedCuisine}
                     customMeal={customMeal}
                     customCuisine={customCuisine}
                     selectedPeople={selectedPeople}
-                    onReset={() => {}}
+                    onReset={() => Promise.resolve()}
                   />
                 </div>
               </Card>
