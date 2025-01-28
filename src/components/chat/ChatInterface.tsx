@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +28,19 @@ export const ChatInterface = ({
   const { toast } = useToast();
   const navigate = useNavigate();
   const { session } = useAuth();
+
+  // Add connection state monitoring
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const hasRecipe = chatHistory.some(msg => msg.role === "assistant");
 
@@ -116,7 +129,6 @@ export const ChatInterface = ({
 
       setIsSaveDialogOpen(false);
       setGeneratedImage(null);
-      navigate("/recipes");
     } catch (error) {
       console.error("Error saving recipe:", error);
       toast({
