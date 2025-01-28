@@ -42,8 +42,14 @@ export const ChatActions = ({
     setShoppingListDialogOpen(true);
     
     try {
+      // Find the recipe content in the message bubble
+      const recipeBubble = document.querySelector('.prose');
+      if (!recipeBubble) {
+        throw new Error('Recipe content not found');
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-shopping-list', {
-        body: { recipe: document.querySelector('.message-bubble')?.textContent || '' },
+        body: { recipe: recipeBubble.textContent || '' },
       });
 
       if (error) throw error;

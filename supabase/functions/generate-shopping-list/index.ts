@@ -34,8 +34,10 @@ serve(async (req) => {
           {
             role: 'system',
             content: `You are a helpful assistant that generates organized shopping lists from recipes. 
+            Extract all ingredients from the recipe and create a categorized shopping list.
             Format the list by categories (e.g., Produce, Meat, Dairy, Pantry, etc.).
-            Include quantities in standard measurements.`
+            Include quantities in standard measurements.
+            Focus only on the ingredients needed, not the full recipe.`
           },
           {
             role: 'user',
