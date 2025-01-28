@@ -4,6 +4,8 @@ import { Navigation } from "@/components/Navigation";
 import { FilterSection } from "@/components/chat/sections/FilterSection";
 import { ImageUploadSection } from "@/components/chat/sections/ImageUploadSection";
 import { ChatSection } from "@/components/chat/sections/ChatSection";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
@@ -14,10 +16,60 @@ const Chat = () => {
   const [customCuisine, setCustomCuisine] = useState("");
   const [customDiet, setCustomDiet] = useState("");
   const [activeSection, setActiveSection] = useState<"none" | "generator" | "image">("none");
+  const [chatHistory, setChatHistory] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  // Updated to return a Promise
   const handleSendMessage = async (message: string, isEdit?: boolean): Promise<void> => {
-    // Placeholder for actual implementation
+    try {
+      setIsLoading(true);
+      
+      // Add user message to chat history
+      const newMessage = { role: "user" as const, content: message };
+      setChatHistory(prev => [...prev, newMessage]);
+
+      // Prepare the prompt with all context
+      const prompt = {
+        message,
+        mealType: selectedMeal === "Other" ? customMeal : selectedMeal,
+        cuisineType: selectedCuisine === "Other" ? customCuisine : selectedCuisine,
+        dietaryRestriction: selectedDiet === "Other" ? customDiet : selectedDiet,
+        servings: selectedPeople,
+        isEdit,
+        previousRecipe: isEdit ? chatHistory.find(msg => msg.role === "assistant")?.content : undefined
+      };
+
+      // Call the generate-recipe edge function
+      const { data, error } = await supabase.functions.invoke('generate-recipe', {
+        body: prompt
+      });
+
+      if (error) throw error;
+
+      // Add assistant response to chat history
+      setChatHistory(prev => [...prev, { role: "assistant", content: data.recipe }]);
+
+    } catch (error) {
+      console.error('Error generating recipe:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate recipe. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReset = async (): Promise<void> => {
+    setChatHistory([]);
+    setSelectedMeal(undefined);
+    setSelectedCuisine(undefined);
+    setSelectedDiet(undefined);
+    setSelectedPeople("2");
+    setCustomMeal("");
+    setCustomCuisine("");
+    setCustomDiet("");
     return Promise.resolve();
   };
 
@@ -73,15 +125,15 @@ const Chat = () => {
                   />
 
                   <ChatSection
-                    chatHistory={[]}
-                    isLoading={false}
+                    chatHistory={chatHistory}
+                    isLoading={isLoading}
                     onSend={handleSendMessage}
                     selectedMeal={selectedMeal}
                     selectedCuisine={selectedCuisine}
                     customMeal={customMeal}
                     customCuisine={customCuisine}
                     selectedPeople={selectedPeople}
-                    onReset={() => Promise.resolve()}
+                    onReset={handleReset}
                   />
                 </div>
               </Card>
