@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Navigation } from "@/components/Navigation";
 import { FilterSection } from "@/components/chat/sections/FilterSection";
 import { ImageUploadSection } from "@/components/chat/sections/ImageUploadSection";
 import { ChatSection } from "@/components/chat/sections/ChatSection";
@@ -21,6 +20,8 @@ const Chat = () => {
   const { toast } = useToast();
 
   const handleSendMessage = async (message: string, isEdit?: boolean): Promise<void> => {
+    if (!message.trim()) return;
+
     try {
       setIsLoading(true);
       
@@ -44,7 +45,13 @@ const Chat = () => {
         body: prompt
       });
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
+
+      if (!data?.recipe) {
+        throw new Error('No recipe was generated');
+      }
 
       // Add assistant response to chat history
       setChatHistory(prev => [...prev, { role: "assistant", content: data.recipe }]);
@@ -75,7 +82,6 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
       <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
         {activeSection === "none" ? (
           <div className="grid md:grid-cols-2 gap-6">
