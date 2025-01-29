@@ -5,6 +5,7 @@ import { ImageUploadSection } from "@/components/chat/sections/ImageUploadSectio
 import { ChatSection } from "@/components/chat/sections/ChatSection";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Navigation } from "@/components/Navigation";
 
 const Chat = () => {
   const [selectedMeal, setSelectedMeal] = useState<string>();
@@ -85,6 +86,7 @@ const Chat = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Navigation />
       <div className="container mx-auto max-w-4xl px-4 py-6 pt-20">
         {activeSection === "none" ? (
           <div className="grid md:grid-cols-2 gap-6">
