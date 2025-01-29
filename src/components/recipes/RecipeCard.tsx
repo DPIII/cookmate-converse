@@ -1,58 +1,79 @@
-import { format } from "date-fns";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { RatingStars } from "./RatingStars";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { ShoppingListDialog } from "../chat/actions/ShoppingListDialog";
 
 interface RecipeCardProps {
   recipe: {
     id: string;
     title: string;
     content: string;
-    created_at: string;
-    meal_type?: string;
     cuisine_type?: string;
-    rating?: number;
+    meal_type?: string;
+    created_at: string;
+    image_url?: string | null;
+    rating?: number | null;
+    shopping_list?: string | null;
   };
   onClick: () => void;
 }
 
 export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
+  const [showShoppingList, setShowShoppingList] = useState(false);
+
+  const handleShoppingListClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowShoppingList(true);
+  };
+
   return (
-    <Card 
-      className="hover:shadow-lg transition-shadow cursor-pointer"
-      onClick={onClick}
-    >
-      <CardHeader>
-        <CardTitle className="text-lg">{recipe.title}</CardTitle>
-        <CardDescription>
-          Saved on {format(new Date(recipe.created_at), 'MMMM d, yyyy')}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-gray-600 line-clamp-3">{recipe.content}</p>
-        <div className="flex flex-col gap-2 mt-2">
-          <div className="flex gap-2">
-            {recipe.meal_type && (
-              <span className="inline-block text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                {recipe.meal_type}
-              </span>
-            )}
+    <>
+      <Card
+        className="p-6 hover:shadow-lg transition-shadow cursor-pointer relative group"
+        onClick={onClick}
+      >
+        {recipe.image_url && (
+          <div className="aspect-video mb-4 overflow-hidden rounded-lg">
+            <img
+              src={recipe.image_url}
+              alt={recipe.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
+        <div className="space-y-2">
+          <h3 className="text-xl font-semibold text-gray-900 line-clamp-2">
+            {recipe.title}
+          </h3>
+          <div className="flex items-center gap-2">
             {recipe.cuisine_type && (
-              <span className="inline-block text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
-                {recipe.cuisine_type}
-              </span>
+              <span className="text-sm text-gray-500">{recipe.cuisine_type}</span>
+            )}
+            {recipe.meal_type && (
+              <span className="text-sm text-gray-500">• {recipe.meal_type}</span>
             )}
           </div>
-          {recipe.rating !== null && recipe.rating !== undefined && (
-            <RatingStars
-              rating={recipe.rating}
-              tempRating={null}
-              onRatingChange={() => {}}
-              readonly
+          {recipe.shopping_list && (
+            <Button
+              variant="outline"
               size="sm"
-            />
+              className="mt-2"
+              onClick={handleShoppingListClick}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              See Shopping List
+            </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </Card>
+
+      <ShoppingListDialog
+        open={showShoppingList}
+        onOpenChange={setShowShoppingList}
+        generatingList={false}
+        shoppingList={recipe.shopping_list}
+      />
+    </>
   );
 };

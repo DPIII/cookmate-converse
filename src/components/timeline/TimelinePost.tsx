@@ -26,6 +26,7 @@ export function TimelinePost({ post }: { post: TimelinePostType }) {
   const [likeCount, setLikeCount] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [tempRating, setTempRating] = useState<number | null>(null);
+  const [showShoppingList, setShowShoppingList] = useState(false);
 
   const handleLike = async () => {
     if (!session?.user) {
@@ -172,6 +173,20 @@ Rating: ${post.recipe.rating ? `${post.recipe.rating}/5` : 'Not rated'}
                 />
               )}
               <p className="text-gray-600 line-clamp-2">{post.recipe.content}</p>
+              {post.recipe.shopping_list && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowShoppingList(true);
+                  }}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  See Shopping List
+                </Button>
+              )}
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -219,6 +234,13 @@ Rating: ${post.recipe.rating ? `${post.recipe.rating}/5` : 'Not rated'}
                 </ScrollArea>
               </DialogContent>
             </Dialog>
+
+            <ShoppingListDialog
+              open={showShoppingList}
+              onOpenChange={setShowShoppingList}
+              generatingList={false}
+              shoppingList={post.recipe.shopping_list}
+            />
           </>
         )}
       </div>
