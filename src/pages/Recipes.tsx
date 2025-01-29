@@ -36,6 +36,7 @@ const Recipes = () => {
       const { data, error } = await supabase
         .from("saved_recipes")
         .select("*")
+        .eq("user_id", (await supabase.auth.getUser()).data.user?.id)
         .eq('is_deleted', false)
         .order("created_at", { ascending: false });
       
