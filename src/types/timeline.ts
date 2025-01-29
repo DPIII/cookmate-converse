@@ -10,7 +10,8 @@ export interface TimelinePost {
     cuisine_type?: string;
     rating?: number;
     notes?: string;
-    share_id?: string;  // Added this line
+    share_id?: string;
+    shopping_list?: string | null;
   };
   user: {
     username: string;
