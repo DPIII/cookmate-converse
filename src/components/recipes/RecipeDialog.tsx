@@ -35,6 +35,7 @@ export const RecipeDialog = ({
   const { toast } = useToast();
   const [tempRating, setTempRating] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [generatingList, setGeneratingList] = useState(false);
   
   if (!recipe) return null;
 
@@ -125,6 +126,41 @@ export const RecipeDialog = ({
     }
   };
 
+  const handleShoppingListClick = async () => {
+    if (!recipe.shopping_list) {
+      try {
+        setGeneratingList(true);
+        const { data, error } = await supabase.functions.invoke('generate-shopping-list', {
+          body: { recipe: recipe.content },
+        });
+
+        if (error) throw error;
+
+        const { error: updateError } = await supabase
+          .from('saved_recipes')
+          .update({ shopping_list: data.shoppingList })
+          .eq('id', recipe.id);
+
+        if (updateError) throw updateError;
+
+        recipe.shopping_list = data.shoppingList;
+        toast({
+          title: "Success",
+          description: "Shopping list generated successfully!",
+        });
+      } catch (error) {
+        console.error('Error generating shopping list:', error);
+        toast({
+          title: "Error",
+          description: "Failed to generate shopping list. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setGeneratingList(false);
+      }
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl">
@@ -143,6 +179,8 @@ export const RecipeDialog = ({
             onRatingChange={handleRating}
             onSaveRating={handleSaveRating}
             isDeleting={isDeleting}
+            onShoppingListClick={handleShoppingListClick}
+            generatingList={generatingList}
           />
         </DialogHeader>
         <ScrollArea className="max-h-[70vh]">
