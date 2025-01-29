@@ -15,23 +15,22 @@ serve(async (req) => {
 
   try {
     if (!openAIApiKey) {
-      console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
     }
 
-    const { prompt, mealType, cuisineType, dietaryRestriction, isEdit, previousRecipe, servings } = await req.json();
+    const { message, mealType, cuisineType, dietaryRestriction, isEdit, previousRecipe, servings } = await req.json();
 
-    console.log('Generating recipe with:', { prompt, mealType, cuisineType, dietaryRestriction, isEdit, servings });
+    console.log('Generating recipe with:', { message, mealType, cuisineType, dietaryRestriction, isEdit, servings });
 
-    let systemPrompt = `You are a professional chef and culinary expert. 
-When creating or modifying recipes, follow these guidelines:
-1. If meal type is specified, the recipe MUST be for that type only
-2. If dietary restrictions are specified, they MUST be strictly followed
-3. The recipe should be portioned appropriately for the specified number of servings
-4. Include precise measurements and clear instructions
-5. When modifying an existing recipe, maintain its core characteristics
+    let systemPrompt = `You are a professional chef and culinary expert. Create detailed, precise recipes following these requirements:
 
-Format your response as follows:
+1. Recipe MUST be for the specified meal type if provided
+2. Recipe MUST strictly follow any dietary restrictions
+3. Recipe MUST be portioned for the exact number of servings specified
+4. Include precise measurements and clear, numbered instructions
+5. When modifying recipes, maintain core characteristics while incorporating requested changes
+
+Format your response exactly as follows:
 
 Title: [Recipe Name]
 Cuisine: [Cuisine Type]
@@ -48,20 +47,17 @@ Instructions:
 
 Chef's Notes: [Include tips, substitutions, or serving suggestions]`;
 
-    let userMessage;
-    if (isEdit && previousRecipe) {
-      userMessage = `Current recipe:\n\n${previousRecipe}\n\nModify according to: ${prompt}`;
-    } else {
-      userMessage = `Create a recipe with these requirements: ${prompt}${
-        mealType ? `. This should be a ${mealType} dish.` : ''
-      }${
-        cuisineType ? ` Use ${cuisineType} cuisine style.` : ''
-      }${
-        dietaryRestriction ? ` Must be ${dietaryRestriction}.` : ''
-      }${
-        servings ? ` Portion for ${servings} ${servings === "1" ? "person" : "people"}.` : ''
-      }`;
-    }
+    let userMessage = isEdit && previousRecipe 
+      ? `Current recipe:\n\n${previousRecipe}\n\nModify according to: ${message}`
+      : `Create a recipe for: ${message}${
+          mealType ? `. This must be a ${mealType} recipe.` : ''
+        }${
+          cuisineType ? ` Use ${cuisineType} cuisine style.` : ''
+        }${
+          dietaryRestriction ? ` Must be ${dietaryRestriction}.` : ''
+        }${
+          servings ? ` Portion for exactly ${servings} ${servings === "1" ? "person" : "people"}.` : ''
+        }`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
