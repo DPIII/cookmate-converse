@@ -307,6 +307,7 @@ export type Database = {
           id: string
           image_url: string | null
           ingredients: Json | null
+          is_deleted: boolean | null
           is_favorite: boolean | null
           meal_type: string | null
           notes: string | null
@@ -324,6 +325,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           ingredients?: Json | null
+          is_deleted?: boolean | null
           is_favorite?: boolean | null
           meal_type?: string | null
           notes?: string | null
@@ -341,6 +343,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           ingredients?: Json | null
+          is_deleted?: boolean | null
           is_favorite?: boolean | null
           meal_type?: string | null
           notes?: string | null

@@ -92,14 +92,14 @@ export const RecipeDialog = ({
     try {
       const { error } = await supabase
         .from('saved_recipes')
-        .delete()
+        .update({ is_deleted: true })
         .eq('id', recipe.id);
 
       if (error) throw error;
 
       toast({
         title: "Recipe removed",
-        description: "Recipe has been removed from your saved recipes",
+        description: "Recipe has been removed from your timeline",
       });
 
       onClose();
