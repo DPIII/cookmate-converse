@@ -40,6 +40,8 @@ const Chat = () => {
         previousRecipe: isEdit ? chatHistory.find(msg => msg.role === "assistant")?.content : undefined
       };
 
+      console.log('Sending recipe generation request:', prompt);
+
       // Call the generate-recipe edge function
       const { data, error } = await supabase.functions.invoke('generate-recipe', {
         body: prompt
