@@ -34,6 +34,7 @@ export const RecipeDialog = ({
 }: RecipeDialogProps) => {
   const { toast } = useToast();
   const [tempRating, setTempRating] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   if (!recipe) return null;
 
@@ -90,6 +91,7 @@ export const RecipeDialog = ({
 
   const handleDelete = async () => {
     try {
+      setIsDeleting(true);
       const { error } = await supabase
         .from('saved_recipes')
         .update({ is_deleted: true })
@@ -111,6 +113,8 @@ export const RecipeDialog = ({
         description: "Failed to remove recipe",
         variant: "destructive",
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -131,6 +135,7 @@ export const RecipeDialog = ({
             tempRating={tempRating}
             onRatingChange={handleRating}
             onSaveRating={handleSaveRating}
+            isDeleting={isDeleting}
           />
         </DialogHeader>
         <ScrollArea className="max-h-[70vh]">

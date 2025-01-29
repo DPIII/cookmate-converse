@@ -34,6 +34,7 @@ interface RecipeDialogHeaderProps {
   tempRating: number | null;
   onRatingChange: (rating: number) => void;
   onSaveRating: () => void;
+  isDeleting: boolean;
 }
 
 export const RecipeDialogHeader = ({
@@ -49,6 +50,7 @@ export const RecipeDialogHeader = ({
   tempRating,
   onRatingChange,
   onSaveRating,
+  isDeleting,
 }: RecipeDialogHeaderProps) => {
   return (
     <div className="flex flex-col space-y-4">
@@ -97,7 +99,12 @@ export const RecipeDialogHeader = ({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={onDelete}>Remove</AlertDialogAction>
+                    <AlertDialogAction 
+                      onClick={onDelete}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Removing..." : "Remove"}
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

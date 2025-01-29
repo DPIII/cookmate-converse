@@ -69,8 +69,8 @@ const Recipes = () => {
     }
   };
 
-  const handleRecipeDeleted = () => {
-    refetch();
+  const handleRecipeDeleted = async () => {
+    await refetch();
     setSelectedRecipe(null);
   };
 
