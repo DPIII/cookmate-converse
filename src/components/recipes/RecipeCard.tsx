@@ -6,6 +6,9 @@ import { ShoppingListDialog } from "../chat/actions/ShoppingListDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { RatingStars } from "./RatingStars";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface RecipeCardProps {
   recipe: {
@@ -18,6 +21,7 @@ interface RecipeCardProps {
     image_url?: string | null;
     rating?: number | null;
     shopping_list?: string | null;
+    notes?: string | null;
   };
   onClick: () => void;
 }
@@ -26,6 +30,8 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
   const [showShoppingList, setShowShoppingList] = useState(false);
   const [showRecipePreview, setShowRecipePreview] = useState(false);
   const [generatingList, setGeneratingList] = useState(false);
+  const [tempRating, setTempRating] = useState<number | null>(null);
+  const [notes, setNotes] = useState(recipe.notes || "");
   const { toast } = useToast();
 
   const handleShoppingListClick = async (e: React.MouseEvent) => {
@@ -68,6 +74,53 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
   const handlePreviewClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowRecipePreview(true);
+  };
+
+  const handleRatingChange = async (rating: number) => {
+    setTempRating(rating);
+    try {
+      const { error } = await supabase
+        .from('saved_recipes')
+        .update({ rating })
+        .eq('id', recipe.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Rating updated successfully!",
+      });
+    } catch (error) {
+      console.error('Error updating rating:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update rating. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleNotesChange = async () => {
+    try {
+      const { error } = await supabase
+        .from('saved_recipes')
+        .update({ notes })
+        .eq('id', recipe.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Notes updated successfully!",
+      });
+    } catch (error) {
+      console.error('Error updating notes:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update notes. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const previewContent = recipe.content.slice(0, 150) + "...";
@@ -128,9 +181,44 @@ export const RecipeCard = ({ recipe, onClick }: RecipeCardProps) => {
 
       <Dialog open={showRecipePreview} onOpenChange={setShowRecipePreview}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden">
-          <div className="prose prose-green max-w-none overflow-y-auto p-6">
-            <h2 className="text-2xl font-semibold mb-4">{recipe.title}</h2>
-            <div dangerouslySetInnerHTML={{ __html: recipe.content }} />
+          <div className="space-y-6 p-6">
+            <div className="space-y-4">
+              <h2 className="text-2xl font-semibold">{recipe.title}</h2>
+              
+              <div className="flex items-center justify-between">
+                <RatingStars
+                  rating={recipe.rating}
+                  tempRating={tempRating}
+                  onRatingChange={handleRatingChange}
+                  size="md"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShoppingListClick}
+                  disabled={generatingList}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {generatingList ? "Generating..." : "Shopping List"}
+                </Button>
+              </div>
+
+              <div className="prose prose-green max-w-none">
+                <div dangerouslySetInnerHTML={{ __html: recipe.content }} />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="notes">Notes</Label>
+                <Textarea
+                  id="notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  onBlur={handleNotesChange}
+                  placeholder="Add your notes here..."
+                  className="min-h-[100px]"
+                />
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
