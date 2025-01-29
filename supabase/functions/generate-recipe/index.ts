@@ -30,7 +30,6 @@ When creating or modifying recipes, follow these guidelines:
 3. The recipe should be portioned appropriately for the specified number of servings
 4. Include precise measurements and clear instructions
 5. When modifying an existing recipe, maintain its core characteristics
-6. If working from an image analysis, use the identified ingredients and style as inspiration
 
 Format your response as follows:
 

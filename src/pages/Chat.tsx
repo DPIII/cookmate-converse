@@ -46,6 +46,7 @@ const Chat = () => {
       });
 
       if (error) {
+        console.error('Error from edge function:', error);
         throw error;
       }
 
