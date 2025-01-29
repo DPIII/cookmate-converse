@@ -3,7 +3,7 @@ import { TimelinePost as TimelinePostType } from "@/types/timeline";
 import { Avatar } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Share2, Copy } from "lucide-react";
+import { Heart, MessageCircle, Share2, Copy, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RatingStars } from "@/components/recipes/RatingStars";
+import { ShoppingListDialog } from "@/components/chat/actions/ShoppingListDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
