@@ -35,6 +35,7 @@ const Recipes = () => {
       const { data, error } = await supabase
         .from("saved_recipes")
         .select("*")
+        .eq('is_deleted', false)
         .order("created_at", { ascending: false });
       
       if (error) throw error;
@@ -70,6 +71,7 @@ const Recipes = () => {
 
   const handleRecipeDeleted = () => {
     refetch();
+    setSelectedRecipe(null);
   };
 
   const toggleSortByRating = () => {
