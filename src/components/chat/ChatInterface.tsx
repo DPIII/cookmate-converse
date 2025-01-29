@@ -28,7 +28,6 @@ export const ChatInterface = ({
   const { toast } = useToast();
   const { session } = useAuth();
 
-  // Use custom hooks
   useConnectionMonitor();
   const { generateImage } = useImageGeneration();
   const { handleSaveRecipe, generatedImage, setGeneratedImage } = useRecipeSave(
@@ -67,7 +66,8 @@ export const ChatInterface = ({
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = (e?: React.FormEvent) => {
+    e?.preventDefault(); // Prevent form submission
     if (message.trim() && !isLoading) {
       onSend(message, isEditing);
       setMessage("");
@@ -94,10 +94,8 @@ export const ChatInterface = ({
     if (message.trim()) {
       onSend(message, false);
       setMessage("");
-    } else {
-      if (onReset) {
-        onReset();
-      }
+    } else if (onReset) {
+      onReset();
     }
   };
 
