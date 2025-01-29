@@ -32,13 +32,19 @@ const Recipes = () => {
   const { data: recipes, isLoading, refetch } = useQuery({
     queryKey: ["saved-recipes"],
     queryFn: async () => {
+      console.log("Fetching recipes...");
       const { data, error } = await supabase
         .from("saved_recipes")
         .select("*")
         .eq('is_deleted', false)
         .order("created_at", { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching recipes:", error);
+        throw error;
+      }
+      
+      console.log("Fetched recipes:", data);
       return data;
     },
   });
@@ -70,8 +76,22 @@ const Recipes = () => {
   };
 
   const handleRecipeDeleted = async () => {
-    await refetch();
-    setSelectedRecipe(null);
+    console.log("Recipe deleted, refreshing list...");
+    try {
+      await refetch();
+      setSelectedRecipe(null);
+      toast({
+        title: "Success",
+        description: "Recipe removed successfully",
+      });
+    } catch (error) {
+      console.error("Error refreshing recipes:", error);
+      toast({
+        title: "Error",
+        description: "Failed to refresh recipe list",
+        variant: "destructive",
+      });
+    }
   };
 
   const toggleSortByRating = () => {

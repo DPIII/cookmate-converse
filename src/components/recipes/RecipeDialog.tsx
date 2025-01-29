@@ -90,22 +90,29 @@ export const RecipeDialog = ({
   };
 
   const handleDelete = async () => {
+    if (isDeleting) return;
+    
     try {
       setIsDeleting(true);
+      console.log("Deleting recipe:", recipe.id);
+      
       const { error } = await supabase
         .from('saved_recipes')
         .update({ is_deleted: true })
         .eq('id', recipe.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error deleting recipe:", error);
+        throw error;
+      }
 
-      toast({
-        title: "Recipe removed",
-        description: "Recipe has been removed from your timeline",
-      });
-
+      console.log("Recipe deleted successfully");
+      
+      if (onDelete) {
+        await onDelete();
+      }
+      
       onClose();
-      if (onDelete) onDelete();
     } catch (err) {
       console.error("Failed to delete recipe:", err);
       toast({
