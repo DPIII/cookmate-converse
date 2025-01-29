@@ -312,6 +312,7 @@ export type Database = {
           notes: string | null
           rating: number | null
           share_id: string | null
+          shopping_list: string | null
           title: string
           user_id: string
         }
@@ -328,6 +329,7 @@ export type Database = {
           notes?: string | null
           rating?: number | null
           share_id?: string | null
+          shopping_list?: string | null
           title: string
           user_id: string
         }
@@ -344,6 +346,7 @@ export type Database = {
           notes?: string | null
           rating?: number | null
           share_id?: string | null
+          shopping_list?: string | null
           title?: string
           user_id?: string
         }

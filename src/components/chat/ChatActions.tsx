@@ -27,6 +27,7 @@ export const ChatActions = ({
   const [shoppingListDialogOpen, setShoppingListDialogOpen] = useState(false);
   const [generatingList, setGeneratingList] = useState(false);
   const [shoppingList, setShoppingList] = useState<string | null>(null);
+  const [hasGeneratedList, setHasGeneratedList] = useState(false);
   const { toast } = useToast();
 
   const handleGenerateImage = async () => {
@@ -38,6 +39,11 @@ export const ChatActions = ({
   };
 
   const handleGenerateShoppingList = async () => {
+    if (hasGeneratedList && shoppingList) {
+      setShoppingListDialogOpen(true);
+      return;
+    }
+
     setGeneratingList(true);
     setShoppingListDialogOpen(true);
     
@@ -55,6 +61,24 @@ export const ChatActions = ({
       if (error) throw error;
 
       setShoppingList(data.shoppingList);
+      setHasGeneratedList(true);
+      
+      // Save the shopping list to the database
+      const recipeElement = document.querySelector('[data-recipe-id]');
+      if (recipeElement) {
+        const recipeId = recipeElement.getAttribute('data-recipe-id');
+        if (recipeId) {
+          const { error: updateError } = await supabase
+            .from('saved_recipes')
+            .update({ shopping_list: data.shoppingList })
+            .eq('id', recipeId);
+
+          if (updateError) {
+            console.error('Error saving shopping list:', updateError);
+          }
+        }
+      }
+
       toast({
         title: "Success",
         description: "Shopping list generated successfully!",
@@ -99,7 +123,7 @@ export const ChatActions = ({
           disabled={isLoading || generatingList}
         >
           <ShoppingCart className="mr-2 h-4 w-4" />
-          Generate Shopping List
+          {hasGeneratedList ? "Show Shopping List" : "Generate Shopping List"}
         </Button>
         <Button
           onClick={onSave}
@@ -148,7 +172,7 @@ export const ChatActions = ({
       </Dialog>
 
       <Dialog open={shoppingListDialogOpen} onOpenChange={setShoppingListDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <button
             onClick={() => setShoppingListDialogOpen(false)}
             className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none"
@@ -156,7 +180,7 @@ export const ChatActions = ({
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </button>
-          <div className="py-4">
+          <div className="flex-1 overflow-auto py-4">
             {generatingList ? (
               <div className="text-center">
                 <LoadingSpinner />
@@ -164,7 +188,7 @@ export const ChatActions = ({
               </div>
             ) : shoppingList ? (
               <div className="prose max-w-none">
-                <pre className="whitespace-pre-wrap text-sm">{shoppingList}</pre>
+                <pre className="whitespace-pre-wrap text-sm font-sans">{shoppingList}</pre>
               </div>
             ) : null}
           </div>

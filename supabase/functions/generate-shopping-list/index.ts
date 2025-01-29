@@ -29,18 +29,33 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
             content: `You are a helpful assistant that generates organized shopping lists from recipes. 
-            Your task is to:
-            1. First, identify and extract ONLY the ingredients section from the provided recipe
-            2. Create a clear, categorized shopping list from these ingredients
-            3. Format the list by categories (e.g., Produce, Meat, Dairy, Pantry, etc.)
-            4. Include quantities in standard measurements
-            5. If quantities are not specified, make reasonable assumptions for 2-4 servings
-            6. Group similar items together within categories`
+            Format your response in a clean, mobile-friendly way:
+
+            1. Group items by category (Produce, Meat, Dairy, Pantry, etc.)
+            2. Use bullet points (•) for each item
+            3. Include quantities in standard measurements
+            4. If quantities aren't specified, assume 2-4 servings
+            5. Sort items alphabetically within categories
+            6. Use clear category headers in ALL CAPS
+            7. Add a blank line between categories
+            8. Format example:
+
+            PRODUCE
+            • Carrots (2 medium)
+            • Onions (1 large)
+
+            MEAT & POULTRY
+            • Chicken breast (2 lbs)
+            • Ground beef (1 lb)
+
+            DAIRY
+            • Butter (4 tbsp)
+            • Milk (1 cup)`
           },
           {
             role: 'user',
