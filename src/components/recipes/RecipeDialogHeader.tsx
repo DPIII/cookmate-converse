@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RecipeTitleEditor } from "./RecipeTitleEditor";
 import { RatingStars } from "./RatingStars";
-import { MoreVertical, Trash } from "lucide-react";
+import { MoreVertical, Trash, ShoppingCart } from "lucide-react";
 
 interface RecipeDialogHeaderProps {
   recipe: any;
@@ -35,6 +35,8 @@ interface RecipeDialogHeaderProps {
   onRatingChange: (rating: number) => void;
   onSaveRating: () => void;
   isDeleting: boolean;
+  onShoppingListClick?: () => void;
+  generatingList?: boolean;
 }
 
 export const RecipeDialogHeader = ({
@@ -51,6 +53,8 @@ export const RecipeDialogHeader = ({
   onRatingChange,
   onSaveRating,
   isDeleting,
+  onShoppingListClick,
+  generatingList = false,
 }: RecipeDialogHeaderProps) => {
   return (
     <div className="flex flex-col space-y-4">
@@ -75,6 +79,17 @@ export const RecipeDialogHeader = ({
           onSaveRating={onSaveRating}
         />
         <div className="flex gap-2">
+          {onShoppingListClick && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onShoppingListClick}
+              disabled={generatingList}
+            >
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              {generatingList ? "Generating..." : "Shopping List"}
+            </Button>
+          )}
           <ShareButton onClick={onShare} />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
