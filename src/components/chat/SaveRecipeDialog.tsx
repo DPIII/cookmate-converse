@@ -10,6 +10,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShoppingCart } from "lucide-react";
 import { Message } from "./types";
 import { ShoppingListDialog } from "./actions/ShoppingListDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface SaveRecipeDialogProps {
   open: boolean;
@@ -32,12 +34,41 @@ export const SaveRecipeDialog = ({
   const [recipeNotes, setRecipeNotes] = useState("");
   const [generatePhoto, setGeneratePhoto] = useState(false);
   const [shoppingListOpen, setShoppingListOpen] = useState(false);
+  const [generatingList, setGeneratingList] = useState(false);
+  const { toast } = useToast();
 
   const handleSave = async () => {
     await onSave(recipeTitle, recipeNotes, generatePhoto);
     setRecipeTitle("");
     setRecipeNotes("");
     setGeneratePhoto(false);
+  };
+
+  const handleShoppingListClick = async () => {
+    try {
+      setGeneratingList(true);
+      const { data, error } = await supabase.functions.invoke('generate-shopping-list', {
+        body: { recipe: recipe.content },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Shopping list generated successfully!",
+      });
+
+      setShoppingListOpen(true);
+    } catch (error) {
+      console.error('Error generating shopping list:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate shopping list. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setGeneratingList(false);
+    }
   };
 
   return (
@@ -50,11 +81,12 @@ export const SaveRecipeDialog = ({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setShoppingListOpen(true)}
+                onClick={handleShoppingListClick}
+                disabled={generatingList}
                 className="ml-4"
               >
                 <ShoppingCart className="h-4 w-4 mr-2" />
-                See Shopping List
+                {generatingList ? "Generating..." : "Shopping List"}
               </Button>
             </DialogTitle>
           </DialogHeader>
@@ -137,7 +169,7 @@ export const SaveRecipeDialog = ({
       <ShoppingListDialog
         open={shoppingListOpen}
         onOpenChange={setShoppingListOpen}
-        generatingList={false}
+        generatingList={generatingList}
         shoppingList={recipe.content}
       />
     </>
