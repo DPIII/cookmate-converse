@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { Label } from "@/components/ui/label";
 import { SubscriptionBadge } from "./SubscriptionBadge";
 import { SubscriptionPlans } from "./SubscriptionPlans";
 
