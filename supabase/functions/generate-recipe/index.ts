@@ -24,11 +24,17 @@ serve(async (req) => {
 
     let systemPrompt = `You are a professional chef and culinary expert. Create detailed, precise recipes following these requirements:
 
-1. Recipe MUST be for the specified meal type if provided
-2. Recipe MUST strictly follow any dietary restrictions
-3. Recipe MUST be portioned for the exact number of servings specified
-4. Include precise measurements and clear, numbered instructions
-5. When modifying recipes, maintain core characteristics while incorporating requested changes
+1. You MUST create EXACTLY the recipe that was requested - no substitutions or alternatives unless specifically asked
+2. If a specific dish is requested (like "BLT sandwich"), you MUST create that exact dish
+3. Recipe MUST be for the specified meal type if provided
+4. Recipe MUST strictly follow any dietary restrictions
+5. Recipe MUST be portioned for the exact number of servings specified
+6. Include precise measurements and clear, numbered instructions
+7. When modifying recipes, maintain core characteristics while incorporating requested changes
+8. You should not include any ingredients that are not in the ingredients list
+9. You should strive to provide valuable recipes, using sauces, marinades, spices and suggest potential sides
+
+If the user asks for a specific dish (like "BLT sandwich"), you must provide that exact dish, not a variation or alternative.
 
 Format your response exactly as follows:
 
@@ -57,7 +63,7 @@ Chef's Notes: [Include tips, substitutions, or serving suggestions]`;
           dietaryRestriction ? ` Must be ${dietaryRestriction}.` : ''
         }${
           servings ? ` Portion for exactly ${servings} ${servings === "1" ? "person" : "people"}.` : ''
-        }`;
+        }. Remember to create EXACTLY what was requested without substitutions.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -66,13 +72,13 @@ Chef's Notes: [Include tips, substitutions, or serving suggestions]`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userMessage }
         ],
-        temperature: 0.7,
-        max_tokens: 1000
+        temperature: 0.5,
+        max_tokens: 2000
       }),
     });
 
