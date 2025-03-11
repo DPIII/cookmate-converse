@@ -141,8 +141,10 @@ const Chat = () => {
                     onSend={handleSendMessage}
                     selectedMeal={selectedMeal}
                     selectedCuisine={selectedCuisine}
+                    selectedDiet={selectedDiet}
                     customMeal={customMeal}
                     customCuisine={customCuisine}
+                    customDiet={customDiet}
                     selectedPeople={selectedPeople}
                     onReset={handleReset}
                   />

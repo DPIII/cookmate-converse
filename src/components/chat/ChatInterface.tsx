@@ -68,35 +68,40 @@ export const ChatInterface = ({
     }
   };
 
+  const constructFullMessage = (baseMessage: string) => {
+    let fullMessage = baseMessage;
+    
+    // Add meal type to the message if present
+    if (selectedMeal && selectedMeal !== "None") {
+      const mealType = selectedMeal === "Other" ? customMeal : selectedMeal;
+      if (!fullMessage.toLowerCase().includes(mealType.toLowerCase())) {
+        fullMessage = `${fullMessage} as a ${mealType} dish`;
+      }
+    }
+
+    // Add cuisine type to the message if present
+    if (selectedCuisine && selectedCuisine !== "None") {
+      const cuisine = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
+      if (!fullMessage.toLowerCase().includes(cuisine.toLowerCase())) {
+        fullMessage = `${fullMessage} in ${cuisine} style`;
+      }
+    }
+
+    // Add dietary restrictions to the message if present
+    if (selectedDiet && selectedDiet !== "None") {
+      const dietRestriction = selectedDiet === "Other" ? customDiet : selectedDiet;
+      if (!fullMessage.toLowerCase().includes(dietRestriction.toLowerCase())) {
+        fullMessage = `${fullMessage} (Must follow ${dietRestriction} dietary restrictions)`;
+      }
+    }
+
+    return fullMessage;
+  };
+
   const handleSendMessage = (e?: React.FormEvent) => {
     e?.preventDefault(); // Prevent form submission
     if (message.trim() && !isLoading) {
-      let fullMessage = message;
-      
-      // Add meal type to the message if present
-      if (selectedMeal && selectedMeal !== "None") {
-        const mealType = selectedMeal === "Other" ? customMeal : selectedMeal;
-        if (!fullMessage.toLowerCase().includes(mealType.toLowerCase())) {
-          fullMessage = `${fullMessage} as a ${mealType} dish`;
-        }
-      }
-
-      // Add cuisine type to the message if present
-      if (selectedCuisine && selectedCuisine !== "None") {
-        const cuisine = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
-        if (!fullMessage.toLowerCase().includes(cuisine.toLowerCase())) {
-          fullMessage = `${fullMessage} in ${cuisine} style`;
-        }
-      }
-
-      // Add dietary restrictions to the message if present
-      if (selectedDiet && selectedDiet !== "None") {
-        const dietRestriction = selectedDiet === "Other" ? customDiet : selectedDiet;
-        if (!fullMessage.toLowerCase().includes(dietRestriction.toLowerCase())) {
-          fullMessage = `${fullMessage} (Must follow ${dietRestriction} dietary restrictions)`;
-        }
-      }
-      
+      const fullMessage = constructFullMessage(message);
       onSend(fullMessage, isEditing);
       setMessage("");
     }
@@ -120,7 +125,8 @@ export const ChatInterface = ({
   const handleNewRecipe = () => {
     setIsEditing(false);
     if (message.trim()) {
-      onSend(message, false);
+      const fullMessage = constructFullMessage(message);
+      onSend(fullMessage, false);
       setMessage("");
     } else if (onReset) {
       onReset();

@@ -6,8 +6,10 @@ interface ChatSectionProps {
   onSend: (message: string, isEdit?: boolean) => Promise<void>;
   selectedMeal?: string;
   selectedCuisine?: string;
+  selectedDiet?: string;
   customMeal: string;
   customCuisine: string;
+  customDiet: string;
   selectedPeople: string;
   onReset: () => void;
 }
@@ -18,8 +20,10 @@ export const ChatSection = ({
   onSend,
   selectedMeal,
   selectedCuisine,
+  selectedDiet,
   customMeal,
   customCuisine,
+  customDiet,
   selectedPeople,
   onReset,
 }: ChatSectionProps) => {
@@ -31,8 +35,10 @@ export const ChatSection = ({
         onSend={onSend}
         selectedMeal={selectedMeal}
         selectedCuisine={selectedCuisine}
+        selectedDiet={selectedDiet}
         customMeal={customMeal}
         customCuisine={customCuisine}
+        customDiet={customDiet}
         selectedPeople={selectedPeople}
         onReset={onReset}
       />

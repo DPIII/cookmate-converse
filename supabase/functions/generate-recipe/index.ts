@@ -27,12 +27,13 @@ serve(async (req) => {
 1. You MUST create EXACTLY the recipe that was requested - no substitutions or alternatives unless specifically asked
 2. If a specific dish is requested (like "BLT sandwich"), you MUST create that exact dish
 3. Recipe MUST be for the specified meal type if provided
-4. Recipe MUST strictly follow any dietary restrictions
+4. Recipe MUST strictly follow any dietary restrictions - this is CRITICAL for health and safety
 5. Recipe MUST be portioned for the exact number of servings specified
 6. Include precise measurements and clear, numbered instructions
 7. When modifying recipes, maintain core characteristics while incorporating requested changes
 8. You should not include any ingredients that are not in the ingredients list
 9. You should strive to provide valuable recipes, using sauces, marinades, spices and suggest potential sides
+10. If dietary restrictions are provided, you MUST verify and confirm that all ingredients comply
 
 If the user asks for a specific dish (like "BLT sandwich"), you must provide that exact dish, not a variation or alternative.
 
@@ -43,6 +44,7 @@ Cuisine: [Cuisine Type]
 Prep Time: [Time]
 Cook Time: [Time]
 Servings: [Number]
+${dietaryRestriction ? `Dietary Notes: [Confirm compliance with ${dietaryRestriction} requirements]` : ''}
 
 Ingredients:
 [List with precise measurements]
@@ -60,7 +62,7 @@ Chef's Notes: [Include tips, substitutions, or serving suggestions]`;
         }${
           cuisineType ? ` Use ${cuisineType} cuisine style.` : ''
         }${
-          dietaryRestriction ? ` Must be ${dietaryRestriction}.` : ''
+          dietaryRestriction ? ` This MUST strictly follow ${dietaryRestriction} dietary requirements - this is critical for health and safety.` : ''
         }${
           servings ? ` Portion for exactly ${servings} ${servings === "1" ? "person" : "people"}.` : ''
         }. Remember to create EXACTLY what was requested without substitutions.`;
