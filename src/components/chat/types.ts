@@ -4,13 +4,15 @@ export interface Message {
 }
 
 export interface ChatInterfaceProps {
-  chatHistory: Message[];
+  chatHistory: Array<{ role: "user" | "assistant"; content: string }>;
   isLoading: boolean;
-  onSend: (message: string, isEdit?: boolean) => void;
+  onSend: (message: string, isEdit?: boolean) => Promise<void>;
   selectedMeal?: string;
   selectedCuisine?: string;
+  selectedDiet?: string;
   customMeal: string;
   customCuisine: string;
+  customDiet: string;
   selectedPeople: string;
-  onReset?: () => void;
+  onReset: () => void;
 }

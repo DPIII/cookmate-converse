@@ -17,8 +17,10 @@ export const ChatInterface = ({
   onSend,
   selectedMeal,
   selectedCuisine,
+  selectedDiet,
   customMeal,
   customCuisine,
+  customDiet,
   selectedPeople,
   onReset,
 }: ChatInterfaceProps) => {
@@ -69,7 +71,33 @@ export const ChatInterface = ({
   const handleSendMessage = (e?: React.FormEvent) => {
     e?.preventDefault(); // Prevent form submission
     if (message.trim() && !isLoading) {
-      onSend(message, isEditing);
+      let fullMessage = message;
+      
+      // Add meal type to the message if present
+      if (selectedMeal && selectedMeal !== "None") {
+        const mealType = selectedMeal === "Other" ? customMeal : selectedMeal;
+        if (!fullMessage.toLowerCase().includes(mealType.toLowerCase())) {
+          fullMessage = `${fullMessage} as a ${mealType} dish`;
+        }
+      }
+
+      // Add cuisine type to the message if present
+      if (selectedCuisine && selectedCuisine !== "None") {
+        const cuisine = selectedCuisine === "Other" ? customCuisine : selectedCuisine;
+        if (!fullMessage.toLowerCase().includes(cuisine.toLowerCase())) {
+          fullMessage = `${fullMessage} in ${cuisine} style`;
+        }
+      }
+
+      // Add dietary restrictions to the message if present
+      if (selectedDiet && selectedDiet !== "None") {
+        const dietRestriction = selectedDiet === "Other" ? customDiet : selectedDiet;
+        if (!fullMessage.toLowerCase().includes(dietRestriction.toLowerCase())) {
+          fullMessage = `${fullMessage} (Must follow ${dietRestriction} dietary restrictions)`;
+        }
+      }
+      
+      onSend(fullMessage, isEditing);
       setMessage("");
     }
   };
